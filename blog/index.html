@@ -1,0 +1,145 @@
+﻿<!doctype html>
+<html>
+<head>
+	<meta charset="gbk">
+	<title>首页_小彬个人博客 - 后端技术员个人博客网站</title>
+	<meta name="keywords" content="个人博客,小彬个人博客，程序员" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="css/base.css" rel="stylesheet">
+	<link href="css/index.css" rel="stylesheet">
+	<link href="css/m.css" rel="stylesheet">
+</head>
+
+<body>
+	<header class="header-navigation" id="header">
+		<nav>
+			<div class="logo">
+				<a href="/">杨青个人博客</a>
+			</div>
+			<h2 id="mnavh"><span class="navicon"></span></h2>
+			<ul id="starlist">
+				<li>
+					<a href="index.html">网站首页</a>
+				</li>
+				<li>
+					<a href="albumList.html">我的相册</a>
+				</li>
+				<li>
+					<a href="list.html">我的日记</a>
+				</li>
+				<li>
+					<a href="about.html">关于我</a>
+				</li>
+				<li>
+					<a href="gbook.html">留言</a>
+				</li>
+				<li>
+					<a href="info.html">内容页</a>
+				</li>
+				<li>
+					<a href="infopic.html">内容页</a>
+				</li>
+			</ul>
+		</nav>
+	</header>
+	<article>
+		<aside>
+			<div class="l_box" id="stickMe">
+				<div class="about_me">
+					<h2>关于我</h2>
+					<ul>
+						<i><img src="images/4.jpg"></i>
+						<p><b>杨青</b>，一个80后草根女站长！09年入行。一直潜心研究web前端技术，一边工作一边积累经验，分享一些个人博客模板，以及SEO优化等心得。</p>
+					</ul>
+				</div>
+				<div class="search">
+					<form action="/e/search/index.php" method="post" name="searchform" id="searchform">
+						<input name="keyboard" id="keyboard" class="input_text" value="请输入关键字词" style="color: rgb(153, 153, 153);" onfocus="if(value=='请输入关键字词'){this.style.color='#000';value=''}" onblur="if(value==''){this.style.color='#999';value='请输入关键字词'}" type="text">
+						<input name="show" value="title" type="hidden">
+						<input name="tempid" value="1" type="hidden">
+						<input name="tbname" value="news" type="hidden">
+						<input name="Submit" class="input_submit" value="搜索" type="submit">
+					</form>
+				</div>
+				<div class="fenlei">
+					<h2>文章分类</h2>
+					<ul>
+						
+					</ul>
+				</div>
+				<div class="tuijian">
+					<h2>站长推荐</h2>
+					<ul>
+						
+					</ul>
+				</div>
+				<div class="links">
+					<h2>友情链接</h2>
+					<ul>
+						<a href="http://www.yangqq.com">杨青个人博客</a>
+						<a href="http://www.yangqq.com">杨青博客</a>
+					</ul>
+				</div>
+				<div class="guanzhu">
+					<h2>关注我 么么哒</h2>
+					<ul>
+						<img src="images/wx.jpg">
+					</ul>
+				</div>
+			</div>
+		</aside>
+		<div class="r_box">
+			<div class="wenzhanglie">
+				<h2>文章列表</h2>
+				<ul>
+					
+				</ul>
+			</div>
+			<div class="wdxc">
+				<h2>我的相册</h2>
+				<ul>
+					
+				</ul>
+			</div>
+		</div>
+	</article>
+	<footer>
+		<p>Design by
+			<a href="index.html">杨青个人博客</a>
+			<a>蜀ICP备11002373号-1</a>
+		</p>
+	</footer>
+	<a href="#" class="cd-top">Top</a>
+	
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/commAction.js"></script>
+	<script type="text/javascript" src="js/common.js"></script>
+	<script type="text/javascript">
+		ajax('get', 'index/index', null, function(res) {
+			document.querySelector('.about_me ul p').innerHTML =  res.userInfo.description;
+			var ul_r_box = document.querySelector(".r_box .wenzhanglie>ul");
+			res.articleList.forEach(function(articleInfo) {
+				var html = '<li>'+
+					'<i><img src="'+ articleInfo.thumb_path +'"></i>'+
+					'<h3><a href="/articlelist.html?article_id='+ articleInfo.article_id +'">'+ articleInfo.title +'</a></h3>'+
+					'<p>'+ articleInfo.description +'</p>'+
+				'</li>';
+				ul_r_box.innerHTML += html;
+			});
+			var ul_fenlei = document.querySelector('.fenlei>ul');
+			res.articleTypeList.forEach(function(typeInfo) {
+				ul_fenlei.innerHTML += '<li><a href="/articlelist.html?type_id='+ typeInfo.type_id +'">'+ typeInfo.type +'（'+ typeInfo.article_num +'）</a></li>';
+			});
+			var ul_tuijian = document.querySelector('.tuijian>ul');
+			res.articleRecommendList.forEach(function(articleInfo) {
+				ul_tuijian.innerHTML += '<li><a href="/articlelist.html?article_id='+ articleInfo.article_id +'">'+ articleInfo.title +'</a></li>';
+			});
+			var ul_wdxc = document.querySelector('.wdxc>ul');
+			res.albumRecommendList.forEach(function(albumInfo) {
+				ul_wdxc.innerHTML += '<li><a href="albumList.html?album_id='+ albumInfo.album_id +'"><img title="'+ albumInfo.title +'" src="'+ albumInfo.thumb_path +'"></a></li>';
+			});
+		});
+	</script>
+</body>
+</html>
