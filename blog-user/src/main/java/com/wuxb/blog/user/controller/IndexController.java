@@ -1,4 +1,4 @@
-package com.wuxb.blog.controller;
+package com.wuxb.blog.user.controller;
 
 import java.sql.SQLException;
 import java.util.HashMap;

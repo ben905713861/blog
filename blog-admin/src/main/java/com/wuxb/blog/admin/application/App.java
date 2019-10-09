@@ -1,4 +1,4 @@
-package com.wuxb.blog.user.application;
+package com.wuxb.blog.admin.application;
 
 import com.wuxb.httpServer.Run;
 
