@@ -19,6 +19,12 @@
 			<artifactId>httpServer</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<!-- 图片验证码 -->
+	    <dependency>
+            <groupId>com.github.penggle</groupId>
+            <artifactId>kaptcha</artifactId>
+            <version>2.3.2</version>
+        </dependency>
 	</dependencies>
 
 	<modules>

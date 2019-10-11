@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>电影专资管理员后台-首页</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="../css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+<link href="../css/toastr.min.css" rel="stylesheet">
+<link href="../js/plugins/jquery.messager/jquery.messager.css" rel="stylesheet">
+<link href="../css/font-awesome.css?v=4.4.0" rel="stylesheet">
+<link href="../css/animate.css" rel="stylesheet">
+<link href="../css/style.css?v=4.1.0" rel="stylesheet">
+</head>
+<body class="fixed-sidebar full-height-layout gray-bg" style="overflow:hidden">
+
+<div id="wrapper">
+	<!--左侧导航开始-->
+	<nav class="navbar-default navbar-static-side" role="navigation">
+		<div class="sidebar-collapse">
+			<ul class="nav" id="side-menu">
+				<li class="nav-header">
+					<div class="dropdown profile-element">
+						<span>
+							<img alt="image" class="img-circle" src="../img/manager_head.png" />
+						</span>
+						<span class="clear">
+							<span class="block m-t-xs" style="color: #fff;">
+								<strong id="manager_name" class="font-bold"></strong>
+							</span>
+							<span class="text-muted text-xs block" style="color: #fff;">
+								<span id="manager_level">管理员</span>
+								<a href="javascript:UserInfo.openModal()">[修改资料]</a>
+							</span>
+						</span>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</nav>
+	<!--左侧导航结束-->
+	
+	<!--右侧部分开始-->
+	<div id="page-wrapper" class="gray-bg dashbard-1">
+		<div class="row content-tabs">
+			<button class="roll-nav roll-left J_tabLeft"><i class="fa fa-backward"></i></button>
+			<nav class="page-tabs J_menuTabs">
+				<div class="page-tabs-content">
+					<a href="javascript:;" class="active J_menuTab" data-id="welcome.html">首页</a>
+				</div>
+			</nav>
+			<button class="roll-nav roll-right J_tabRight"><i class="fa fa-forward"></i></button>
+			<div class="btn-group roll-nav roll-right">
+				<button class="dropdown J_tabClose" data-toggle="dropdown">关闭操作<span class="caret"></span></button>
+				<ul role="menu" class="dropdown-menu dropdown-menu-right">
+					<li class="J_tabShowActive">
+						<a>定位当前选项卡</a>
+					</li>
+					<li class="divider"></li>
+					<li class="J_tabCloseAll">
+						<a>关闭全部选项卡</a>
+					</li>
+					<li class="J_tabCloseOther">
+						<a>关闭其他选项卡</a>
+					</li>
+				</ul>
+			</div>
+			<a href="javascript:logout()" class="roll-nav roll-right J_tabExit"><i class="fa fa fa-sign-out"></i> 退出</a>
+		</div>
+		<div class="row J_mainContent" id="content-main" style="height: calc(100% - 78px);">
+			<iframe class="J_iframe" name="iframe" width="100%" height="100%" src="welcome.html" frameborder="0" data-id="welcome.html" seamless></iframe>
+		</div>
+		<div class="footer">
+			<div class="pull-right">&copy; 2019
+				<a href="#">广州市交互式信息网络有限公司</a>
+			</div>
+		</div>
+	</div>
+	<!--右侧部分结束-->
+</div>
+
+
+<!-- 修改用户资料模态框 -->
+<div class="modal fade" id="userinfo-update-modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog">
+		<form class="modal-content" onsubmit="return UserInfo.update(this)">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title">用户资料修改</h4>
+			</div>
+			<div class="modal-body">
+				<table class="table table-bordered">
+					<tr>
+						<td>管理员名：</td>
+						<td><span name="name"></span></td>
+					</tr>
+					<tr>
+						<td>密码（为空不修改）：</td>
+						<td><input type="text" pattern=".{6,20}" title="6-20字符" class="form-control" name="password" /></td>
+					</tr>
+					<tr>
+						<td>真实姓名：</td>
+						<td><input type="text" pattern=".{2,20}" class="form-control" name="real_name" /></td>
+					</tr>
+					<tr>
+						<td>电话：</td>
+						<td><input type="tel" pattern="[\d\-]{6,20}" class="form-control" name="phone" /></td>
+					</tr>
+					<tr>
+						<td>邮箱：</td>
+						<td><input type="email" class="form-control" name="email" /></td>
+					</tr>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button type="submit" class="btn btn-primary">修改</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+
+<script src="../js/jquery.min.js?v=2.1.4"></script>
+<script src="../js/bootstrap.min.js?v=3.3.6"></script>
+<script src="../js/plugins/layer/layer.min.js"></script>
+<!--菜单导航-->
+<script src="../js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="../js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<!--右上角提示框插件-->
+<script src="../js/toastr.min.js"></script>
+<!--右下角悬浮窗-->
+<script src="../js/plugins/jquery.messager/jquery.messager.js"></script>
+<!--自定义公共函数-->
+<script src="../js/common.js"></script>
+<script type="text/javascript">
+	window.onload = function() {
+		//登录检查
+		var managerName = sessionStorage.getItem('manager_name');
+		if(!managerName) {
+			window.location.href = 'login.html';
+		}
+		//左导航用户名称渲染
+		document.querySelector('strong#manager_name').innerText = managerName;
+		document.querySelector('span#manager_level').innerText = sessionStorage.getItem('manager_level');
+		//左侧导航菜单渲染
+		getMenu();
+		//悬浮窗信息提示
+		applyMessage();
+	}
+	
+	//iframe中打开指定页面
+	function openIframe(href) {
+		hrefs = href.split('#');
+		document.querySelector('nav a.J_menuItem[href="'+ hrefs[0] +'"]').click();
+		if(hrefs.length > 1) {
+			document.querySelector('iframe.J_iframe[data-id="'+ hrefs[0] +'"]').src = href;
+		}
+	}
+	
+	function getMenu() {
+		ajax('get', 'manager/index/getMenu', null, function(res) {
+			var ul = document.querySelector('ul#side-menu');
+			res.forEach(function(menu) {
+				if(typeof menu.children_menu == 'undefined') {
+					var html = '';
+					html += Number(menu.hide) ? '<li style="display: none;">' : '<li>';
+					html += '<a class="J_menuItem" href="'+ menu.href +'" ><span class="nav-label">'+ menu.name +'</span></a></li>';
+					ul.innerHTML += html;
+				} else {
+					var html = '<li>'
+	                	+'<a href="#">'
+	                        +'<span class="nav-label">'+ menu.name +'</span>'
+	                        +'<span class="fa arrow"></span>'
+	                    +'</a>'
+	                    +'<ul class="nav nav-second-level">';
+	                menu.children_menu.forEach(function(children_menu) {
+	                	html += Number(children_menu.hide) ? '<li style="display: none;">' : '<li>';
+	                	html += '<a class="J_menuItem" href="'+ children_menu.href +'">'+ children_menu.name +'</a></li>';
+	                });
+	                html +=  '</ul>'
+	                +'</li>';
+	                ul.innerHTML += html;
+				}
+			});
+			loadScript('../js/hplus.js?v=4.1.0', function() {
+				loadScript('../js/contabs.js', openLastHref);
+			});
+		});
+		//动态加载js
+		function loadScript(url, callback) {
+			var script = document.createElement('script');
+			script.src = url;
+			document.body.appendChild(script);
+			if(callback) {
+				script.onload = callback;
+			}
+		}
+		//加载最后一次打开的面板
+		function openLastHref() {
+			var lastManagerHref = localStorage.getItem('lastManagerHref');
+			if(lastManagerHref) {
+				openIframe(lastManagerHref);
+			}
+		}
+	}
+	
+	function applyMessage() {
+		if(typeof WebSocket != 'undefined') {
+			ws();
+		} else {
+			loop();
+			setInterval(loop, 5000);
+		}
+		function ws() {
+			var ping;
+			var socket = new WebSocket('ws://'+ document.domain +'/index.php/manager/socket');
+			socket.onopen = function() {
+				ping = setInterval(function() {
+					socket.send('ping');
+				}, 58*1000);
+			}
+			socket.onmessage = function(event) {
+				var res = JSON.parse(event.data);
+				display(res);
+			}
+			socket.onclose = function() {
+				console.log('ws断开 close');
+				clearInterval(ping);
+				delete ping;
+				delete socket;
+				setTimeout(ws, 30000);
+			}
+			socket.onerror = null;
+		}
+		function loop() {
+			ajax('get', 'manager/index/getApplyMessage', null, function(res) {
+				if(res.new_apply_num <= 0) {
+					return;
+				}
+				display(res);
+			});
+		}
+		function display(res) {
+			$.messager.show('消息提示', '您有'+ res.new_apply_num +'条新增的申请信息等待处理 <a href="javascript:openIframe(\'projectList.html#\')" onclick="document.body.removeChild(this.parentNode.parentNode.parentNode)">点击进入</a>');
+		}
+	}
+	
+	var UserInfo = {
+		openModal: function() {
+			document.querySelector('#userinfo-update-modal form').reset();
+			ajax('get', 'manager/Index/getManagerInfo', null, function(res) {
+				formload(document.querySelector('#userinfo-update-modal form'), res);
+				$('#userinfo-update-modal').modal();
+			});
+		},
+		update: function(form) {
+			var submitBtn = form.querySelector('[type="submit"]');
+			submitBtn.disabled = true;
+			ajax('post', 'manager/Index/updateManagerInfo', getFormObj(form), function(res) {
+				$('#userinfo-update-modal').modal('hide');
+			}, null, function end() {
+				submitBtn.disabled = false;
+			});
+			return false;
+		},
+	}
+	
+	function logout() {
+		ajax('get', 'manager/login/logout', null, function() {
+			sessionStorage.removeItem('manager_name');
+			sessionStorage.removeItem('manager_level');
+			window.location.href = 'login.html';
+		});
+	}
+	
+	//关闭窗口前的触发事件
+	window.onbeforeunload = function(e) {
+		//保存最后打开的选项卡
+		(function savelastManagerHref() {
+			var iframes = document.querySelectorAll('#content-main iframe.J_iframe');
+			for(index=0; index<iframes.length; index++) {
+				var iframe = iframes[index];
+				if(iframe.name!='iframe' && (iframe.style==undefined || iframe.style.display!='none')) {
+					var href = iframe.contentWindow.location.href;
+					href = href.substr(href.lastIndexOf('/')+1);
+					localStorage.setItem('lastManagerHref', href);
+					break;
+				}
+				localStorage.removeItem('lastManagerHref');
+			}
+		})();
+	}
+</script>
+</body>
+</html>
