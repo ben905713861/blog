@@ -13,12 +13,16 @@ import javax.imageio.ImageIO;
 import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.google.code.kaptcha.util.Config;
+import com.wuxb.blog.admin.util.Tools;
+import com.wuxb.blog.admin.validate.LoginValidate;
 import com.wuxb.httpServer.HttpServletRequest;
 import com.wuxb.httpServer.HttpServletResponse;
+import com.wuxb.httpServer.Validate;
 import com.wuxb.httpServer.annotation.PostParam;
 import com.wuxb.httpServer.annotation.RequestMapping;
 import com.wuxb.httpServer.annotation.RestController;
 import com.wuxb.httpServer.db.Db;
+import com.wuxb.httpServer.params.RequestMethod;
 import com.wuxb.httpServer.util.Encrypt;
 
 @RestController
@@ -65,35 +69,41 @@ public class LoginController {
 		return jpegOutputStream.toByteArray();
 	}
 	
-	@RequestMapping("/login")
+	@RequestMapping(value="/login", method=RequestMethod.POST)
 	public Map<String, Object> login(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @PostParam Map<String, Object> postMap) throws SQLException {
 		Map<String, Object> res = new HashMap<String, Object>();
+		Validate validate = new LoginValidate();
+		if(!validate.check(postMap)) {
+			return Tools.returnErr(validate.getError());
+		}
 		//验证码检验
 		String real_vrfCode = (String) httpServletRequest.getSession().get(Constants.KAPTCHA_SESSION_KEY);
-		String vrfCode = (String) postMap.get("vrfCode");
+		String vrfCode = (String) postMap.get("vrf_code");
 		if(!vrfCode.equals(real_vrfCode)) {
-			res.put("status", false);
-			res.put("msg", "验证码错误");
-			return res;
+			return Tools.returnErr("验证码错误");
 		}
 		Map<String, Object> managerInfo = Db.table("manager")
-			.field("manager_id,password")
+			.field("manager_id,name,password")
 			.where("name", postMap.get("name"))
 			.find();
 		if(managerInfo == null) {
-			res.put("status", false);
-			res.put("msg", "用户名不存在");
-			return res;
+			return Tools.returnErr("用户名不存在");
 		}
 		String password = (String) postMap.get("password");
 		if(!managerInfo.get("password").equals(Encrypt.md5(password))) {
-			res.put("status", false);
-			res.put("msg", "密码错误");
-			return res;
+			return Tools.returnErr("密码错误");
 		}
 		//成功
+		httpServletRequest.getSession().set("manager_id", managerInfo.get("manager_id"));
 		res.put("status", true);
+		res.put("name", managerInfo.get("name"));
 		return res;
+	}
+	
+	@RequestMapping("/logout")
+	public String logout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws SQLException {
+		httpServletRequest.getSession().destory();
+		return "[]";
 	}
 	
 }
