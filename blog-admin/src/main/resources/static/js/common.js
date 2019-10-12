@@ -95,8 +95,8 @@ function ajax(method, url, data, truefun, falsefun, endfun) {
 			data = formData;
 		}
 		else if(method == 'post') {
-			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-			data = urlencode(data);
+			xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+			data = JSON.stringify(data);
 		}
 		else {
 			throw new Error('method只支持get、post、file三种传值');
@@ -282,6 +282,9 @@ function getFormObj(form, chb_split) {
 		}
 		else if(input.type == 'file') {
 			continue;
+		}
+		else if(input.type == 'number') {
+			data[input.name] = Number(input.value);
 		}
 		else {
 			data[input.name] = input.value;

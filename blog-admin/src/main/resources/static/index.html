@@ -4,12 +4,11 @@
 <title>电影专资管理员后台-首页</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="../css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
-<link href="../css/toastr.min.css" rel="stylesheet">
-<link href="../js/plugins/jquery.messager/jquery.messager.css" rel="stylesheet">
-<link href="../css/font-awesome.css?v=4.4.0" rel="stylesheet">
-<link href="../css/animate.css" rel="stylesheet">
-<link href="../css/style.css?v=4.1.0" rel="stylesheet">
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/toastr.min.css" rel="stylesheet">
+<!--<link href="css/font-awesome.css" rel="stylesheet">-->
+<link href="css/animate.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
 </head>
 <body class="fixed-sidebar full-height-layout gray-bg" style="overflow:hidden">
 
@@ -21,7 +20,7 @@
 				<li class="nav-header">
 					<div class="dropdown profile-element">
 						<span>
-							<img alt="image" class="img-circle" src="../img/manager_head.png" />
+							<img alt="image" class="img-circle" src="img/manager_head.png" />
 						</span>
 						<span class="clear">
 							<span class="block m-t-xs" style="color: #fff;">
@@ -34,6 +33,15 @@
 						</span>
 					</div>
 				</li>
+				<li>
+					<a class="J_menuItem" href="articleList.html" data-index="0">
+					<span class="nav-label">文章管理</span></a>
+				</li>
+				<li>
+					<a class="J_menuItem" href="albumList.html" data-index="0">
+					<span class="nav-label">相册管理</span></a>
+				</li>
+				
 			</ul>
 		</div>
 	</nav>
@@ -71,7 +79,7 @@
 		</div>
 		<div class="footer">
 			<div class="pull-right">&copy; 2019
-				<a href="#">广州市交互式信息网络有限公司</a>
+				<a href="#">wuxb</a>
 			</div>
 		</div>
 	</div>
@@ -120,18 +128,16 @@
 </div>
 
 
-<script src="../js/jquery.min.js?v=2.1.4"></script>
-<script src="../js/bootstrap.min.js?v=3.3.6"></script>
-<script src="../js/plugins/layer/layer.min.js"></script>
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/plugins/layer/layer.min.js"></script>
 <!--菜单导航-->
-<script src="../js/plugins/metisMenu/jquery.metisMenu.js"></script>
-<script src="../js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
 <!--右上角提示框插件-->
-<script src="../js/toastr.min.js"></script>
-<!--右下角悬浮窗-->
-<script src="../js/plugins/jquery.messager/jquery.messager.js"></script>
+<script src="js/toastr.min.js"></script>
 <!--自定义公共函数-->
-<script src="../js/common.js"></script>
+<script src="js/common.js"></script>
 <script type="text/javascript">
 	window.onload = function() {
 		//登录检查
@@ -141,11 +147,8 @@
 		}
 		//左导航用户名称渲染
 		document.querySelector('strong#manager_name').innerText = managerName;
-		document.querySelector('span#manager_level').innerText = sessionStorage.getItem('manager_level');
-		//左侧导航菜单渲染
-		getMenu();
-		//悬浮窗信息提示
-		applyMessage();
+		//加载最后一次打开的面板
+		openLastHref();
 	}
 	
 	//iframe中打开指定页面
@@ -157,98 +160,18 @@
 		}
 	}
 	
-	function getMenu() {
-		ajax('get', 'manager/index/getMenu', null, function(res) {
-			var ul = document.querySelector('ul#side-menu');
-			res.forEach(function(menu) {
-				if(typeof menu.children_menu == 'undefined') {
-					var html = '';
-					html += Number(menu.hide) ? '<li style="display: none;">' : '<li>';
-					html += '<a class="J_menuItem" href="'+ menu.href +'" ><span class="nav-label">'+ menu.name +'</span></a></li>';
-					ul.innerHTML += html;
-				} else {
-					var html = '<li>'
-	                	+'<a href="#">'
-	                        +'<span class="nav-label">'+ menu.name +'</span>'
-	                        +'<span class="fa arrow"></span>'
-	                    +'</a>'
-	                    +'<ul class="nav nav-second-level">';
-	                menu.children_menu.forEach(function(children_menu) {
-	                	html += Number(children_menu.hide) ? '<li style="display: none;">' : '<li>';
-	                	html += '<a class="J_menuItem" href="'+ children_menu.href +'">'+ children_menu.name +'</a></li>';
-	                });
-	                html +=  '</ul>'
-	                +'</li>';
-	                ul.innerHTML += html;
-				}
-			});
-			loadScript('../js/hplus.js?v=4.1.0', function() {
-				loadScript('../js/contabs.js', openLastHref);
-			});
-		});
-		//动态加载js
-		function loadScript(url, callback) {
-			var script = document.createElement('script');
-			script.src = url;
-			document.body.appendChild(script);
-			if(callback) {
-				script.onload = callback;
-			}
-		}
-		//加载最后一次打开的面板
-		function openLastHref() {
-			var lastManagerHref = localStorage.getItem('lastManagerHref');
-			if(lastManagerHref) {
-				openIframe(lastManagerHref);
-			}
-		}
-	}
-	
-	function applyMessage() {
-		if(typeof WebSocket != 'undefined') {
-			ws();
-		} else {
-			loop();
-			setInterval(loop, 5000);
-		}
-		function ws() {
-			var ping;
-			var socket = new WebSocket('ws://'+ document.domain +'/index.php/manager/socket');
-			socket.onopen = function() {
-				ping = setInterval(function() {
-					socket.send('ping');
-				}, 58*1000);
-			}
-			socket.onmessage = function(event) {
-				var res = JSON.parse(event.data);
-				display(res);
-			}
-			socket.onclose = function() {
-				console.log('ws断开 close');
-				clearInterval(ping);
-				delete ping;
-				delete socket;
-				setTimeout(ws, 30000);
-			}
-			socket.onerror = null;
-		}
-		function loop() {
-			ajax('get', 'manager/index/getApplyMessage', null, function(res) {
-				if(res.new_apply_num <= 0) {
-					return;
-				}
-				display(res);
-			});
-		}
-		function display(res) {
-			$.messager.show('消息提示', '您有'+ res.new_apply_num +'条新增的申请信息等待处理 <a href="javascript:openIframe(\'projectList.html#\')" onclick="document.body.removeChild(this.parentNode.parentNode.parentNode)">点击进入</a>');
+	//加载最后一次打开的面板
+	function openLastHref() {
+		var lastManagerHref = localStorage.getItem('lastManagerHref');
+		if(lastManagerHref) {
+			openIframe(lastManagerHref);
 		}
 	}
 	
 	var UserInfo = {
 		openModal: function() {
 			document.querySelector('#userinfo-update-modal form').reset();
-			ajax('get', 'manager/Index/getManagerInfo', null, function(res) {
+			ajax('get', '/index/getManagerInfo', null, function(res) {
 				formload(document.querySelector('#userinfo-update-modal form'), res);
 				$('#userinfo-update-modal').modal();
 			});
@@ -256,7 +179,7 @@
 		update: function(form) {
 			var submitBtn = form.querySelector('[type="submit"]');
 			submitBtn.disabled = true;
-			ajax('post', 'manager/Index/updateManagerInfo', getFormObj(form), function(res) {
+			ajax('post', '/index/updateManagerInfo', getFormObj(form), function(res) {
 				$('#userinfo-update-modal').modal('hide');
 			}, null, function end() {
 				submitBtn.disabled = false;
@@ -266,9 +189,8 @@
 	}
 	
 	function logout() {
-		ajax('get', 'manager/login/logout', null, function() {
+		ajax('get', '/login/logout', null, function() {
 			sessionStorage.removeItem('manager_name');
-			sessionStorage.removeItem('manager_level');
 			window.location.href = 'login.html';
 		});
 	}

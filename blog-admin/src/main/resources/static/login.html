@@ -46,9 +46,8 @@
 		var data = getFormObj(form);
 		var submitBtn = form.querySelector('[type="submit"]');
 		submitBtn.disabled = true;
-		ajax('post', 'login/login', data, function(res) {
+		ajax('post', '/login/login', data, function(res) {
 			sessionStorage.setItem('manager_name', res.name);
-			sessionStorage.setItem('manager_level', res.level_name);
 			window.location.href = 'index.html';
 		}, function() {
 			refersh_vrfCode();
