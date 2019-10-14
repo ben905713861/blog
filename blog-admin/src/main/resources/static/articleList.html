@@ -20,10 +20,15 @@
 		</div>
 		<div class="form-group">
 			<select name="type_id" class="form-control input-sm" style="padding: 3px 12px;">
-				<option value="">全部文章类型</option>
+				<option value="">全部文章分类</option>
 				
 			</select>
 			<input type="text" class="form-control input-sm" name="title" placeholder="文章标题" />
+		</div>
+		<div class="form-group">
+			<span>发布时间</span>
+			<input type="date" class="form-control input-sm" name="start_date" /> 至
+			<input type="date" class="form-control input-sm" name="end_date" />
 		</div>
 		<div class="form-group">
 			<button type="submit" class="btn btn-sm btn-info"><i class="fa fa-search"></i> 搜索</button>
@@ -45,8 +50,26 @@
 			<div class="modal-body">
 				<table class="table table-bordered">
 					<tr>
+						<td>*分类：</td>
+						<td>
+							<select name="type_id" class="form-control input-sm" style="padding: 3px 12px;">
+								
+							</select>
+						</td>
+					</tr>
+					<tr>
 						<td>*附件标题：</td>
 						<td><input type="text" pattern=".{1,50}" title="50字符以内" required="" class="form-control" name="title" /></td>
+					</tr>
+					<tr>
+						<td>关键词：</td>
+						<td><input type="text" pattern=".{1,100}" title="100字符以内" class="form-control" name="key_words" /></td>
+					</tr>
+					<tr>
+						<td>描述：</td>
+						<td>
+							<textarea name="description" class="form-control" maxlength="255"></textarea>
+						</td>
 					</tr>
 					<tr>
 						<td style="width: 180px;">*内容：</td>
@@ -55,10 +78,10 @@
 						</td>
 					</tr>
 					<tr>
-						<td>*是否发短信提醒用户：</td>
+						<td>*是否推荐：</td>
 						<td>
-							<label><input type="radio" name="is_calluser" value="1" />是</label>
-							<label><input type="radio" name="is_calluser" value="0" checked="" />否</label>
+							<label><input type="radio" name="is_recommend" value="1" />是 </label>
+							<label><input type="radio" name="is_recommend" value="0" checked="" />否 </label>
 						</td>
 					</tr>
 				</table>
@@ -77,12 +100,14 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-				<h4 class="modal-title">附件详情</h4>
+				<h4 class="modal-title">文章详情</h4>
 			</div>
 			<div class="modal-body">
 				<div style="padding:0 20px;">
 					<h2 id="title" style="text-align: center;"></h2>
 					<h5 id="add_time" style="text-align: center;padding: 20px 0 10px;"></h5>
+					<h5 id="key_words" style="padding-top: 20px;"></h5>
+					<p id="description"></p>
 					<hr>
 					<div id="content"></div>
 				</div>
@@ -104,15 +129,40 @@
 			</div>
 			<div class="modal-body">
 				<table class="table table-bordered">
-					<input type="hidden" name="attachment_id" />
+					<input type="hidden" name="article_id" />
+					<tr>
+						<td>*分类：</td>
+						<td>
+							<select name="type_id" class="form-control input-sm" style="padding: 3px 12px;">
+								
+							</select>
+						</td>
+					</tr>
 					<tr>
 						<td>*附件标题：</td>
 						<td><input type="text" pattern=".{1,50}" title="50字符以内" required="" class="form-control" name="title" /></td>
 					</tr>
 					<tr>
+						<td>关键词：</td>
+						<td><input type="text" pattern=".{1,100}" title="100字符以内" class="form-control" name="key_words" /></td>
+					</tr>
+					<tr>
+						<td>描述：</td>
+						<td>
+							<textarea name="description" class="form-control" maxlength="255"></textarea>
+						</td>
+					</tr>
+					<tr>
 						<td style="width: 180px;">*内容：</td>
 						<td>
 							<script id="editor_update" name="content" type="text/plain" style="width:100%;"></script>
+						</td>
+					</tr>
+					<tr>
+						<td>*是否推荐：</td>
+						<td>
+							<label><input type="radio" name="is_recommend" value="1" />是 </label>
+							<label><input type="radio" name="is_recommend" value="0" />否 </label>
 						</td>
 					</tr>
 				</table>
@@ -138,11 +188,15 @@
 <script src="js/common.js"></script>
 <script type="text/javascript">
 	(function() {
-		var select_type = document.querySelector('#searchForm select[name="type_id"]');
+		var select_types = document.querySelectorAll('form select[name="type_id"]');
 		ajax('get', '/article/init', null, function(res) {
+			var html = '';
 			res.forEach(function(row) {
-				select_type.innerHTML += '<option value="'+ row.type_id +'">'+ row.type +'</option>';
+				html += '<option value="'+ row.type_id +'">'+ row.type +'</option>';
 			});
+			for(var i = 0; i < select_types.length; i++) {
+				select_types[i].innerHTML += html;
+			}
 		});
 	})();
 	
@@ -197,7 +251,15 @@
 				}
 			},
 			{
-				field: 'attachment_id',
+				field: 'is_recommend',
+				title: '是否推荐',
+				align: 'center',
+				formatter: function(value) {
+					return value ? '是' : '否';
+				},
+			},
+			{
+				field: 'article_id',
 				title: '操作',
 				align: 'center',
 				formatter:function(value,row,index){
@@ -218,26 +280,28 @@
 	
 	//模态框打开事件
 	var modalOpen = {
-		add: function(attachment_id) {
+		add: function(article_id) {
 			Ueditor.clear('add');
 			document.querySelector('#add-modal form').reset();
 			$('#add-modal').modal();
 		},
-		show: function(attachment_id) {
-			ajax('get', 'manager/attachment/getOne', {
-				attachment_id: attachment_id
+		show: function(article_id) {
+			ajax('get', '/article/getOne', {
+				article_id: article_id
 			}, function(res) {
 				document.querySelector('#detail-modal #title').innerText = res.title;
 				document.querySelector('#detail-modal #add_time').innerText = timestampToStr(res.add_time);
+				document.querySelector('#detail-modal #key_words').innerText = '关键词：'+ res.key_words;
+				document.querySelector('#detail-modal #description').innerText = '描述：'+ res.description;
 				document.querySelector('#detail-modal #content').innerHTML = res.content;
 			});
 			$('#detail-modal').modal();
 		},
-		update: function(attachment_id) {
+		update: function(article_id) {
 			Ueditor.clear('update');
 			document.querySelector('#update-modal form').reset();
-			ajax('get', 'manager/attachment/getOne', {
-				attachment_id: attachment_id
+			ajax('get', '/article/getOne', {
+				article_id: article_id
 			}, function(res) {
 				formload(document.querySelector('#update-modal form'), res);
 				$('#update-modal').modal();
@@ -256,7 +320,7 @@
 			}
 			var submitBtn = form.querySelector('[type="submit"]');
 			submitBtn.disabled = true;
-			ajax('post', 'manager/attachment/add', getFormObj(form), function(res) {
+			ajax('post', '/article/add', getFormObj(form), function(res) {
 				$('#add-modal').modal('hide');
 				refresh();
 			}, null, function end() {
@@ -271,7 +335,7 @@
 			}
 			var submitBtn = form.querySelector('[type="submit"]');
 			submitBtn.disabled = true;
-			ajax('post', 'manager/attachment/update', getFormObj(form), function(res) {
+			ajax('post', '/article/update', getFormObj(form), function(res) {
 				$('#update-modal').modal('hide');
 				refresh();
 			}, null, function end() {
@@ -279,11 +343,11 @@
 			});
 			return false;
 		},
-		delete: function(attachment_id) {
+		delete: function(article_id) {
 			layer.confirm('确定要删除吗？', function(index) {
 				layer.close(index);
-				ajax('post', 'manager/attachment/delete', {
-					attachment_id: attachment_id,
+				ajax('post', '/article/delete', {
+					article_id: article_id,
 				}, function(res) {
 					refresh();
 				});
@@ -296,7 +360,7 @@
 		editor_add: null,
 		editor_update: null,
 		init: function() {
-			window.UEDITOR_CONFIG.serverUrl = '/ueditor/index?type=attachment';//type决定上传到哪个目录
+			window.UEDITOR_CONFIG.serverUrl = '/ueditor/index?type=article';//type决定上传到哪个目录
 			var ueConfig = {
 //				initialFrameHeight: 200,
 				zIndex: 3000, //浮动层级

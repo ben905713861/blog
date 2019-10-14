@@ -14,7 +14,6 @@ import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.google.code.kaptcha.util.Config;
 import com.wuxb.blog.admin.config.KaptchaConfig;
-import com.wuxb.blog.admin.util.Tools;
 import com.wuxb.blog.admin.validate.LoginValidate;
 import com.wuxb.httpServer.HttpServletRequest;
 import com.wuxb.httpServer.HttpServletResponse;
@@ -25,6 +24,7 @@ import com.wuxb.httpServer.annotation.RestController;
 import com.wuxb.httpServer.db.Db;
 import com.wuxb.httpServer.params.RequestMethod;
 import com.wuxb.httpServer.util.Encrypt;
+import com.wuxb.httpServer.util.Tools;
 
 @RestController
 @RequestMapping("/login")
