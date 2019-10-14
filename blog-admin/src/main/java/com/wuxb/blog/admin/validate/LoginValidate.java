@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.wuxb.blog.admin.config.KaptchaConfig;
 import com.wuxb.httpServer.Validate;
+import com.wuxb.httpServer.util.HttpContextHolder;
 
 public class LoginValidate extends Validate {
 
@@ -16,7 +18,7 @@ public class LoginValidate extends Validate {
 	static {
 		rulesMap.put("name", "require|string|min:2|max:20");
 		rulesMap.put("password", "require|string|min:6|max:20");
-		rulesMap.put("vrf_code", "require|string|length:4");
+		rulesMap.put("vrf_code", "require|string|length:4|checkVrfCode");
 		
 		fieldNameList.put("name", "用户名");
 		fieldNameList.put("password", "密码");
@@ -47,7 +49,11 @@ public class LoginValidate extends Validate {
 	
 	protected boolean checkVrfCode(Object data) {
 		String _data = (String) data;
-		if(_data != "asdf") {
+		String realVrfCode = (String) HttpContextHolder.getHttpServletRequest().getSession().get(KaptchaConfig.SESSION_KEY);
+		if(realVrfCode == null || realVrfCode.isEmpty()) {
+			return false;
+		}
+		if(!_data.equals(realVrfCode)) {
 			return false;
 		}
 		return true;
