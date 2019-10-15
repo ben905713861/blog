@@ -38,6 +38,9 @@ public class UeditorController {
 	
 	private void uploadfile() {
 		List<FileInfo> fileList = httpServletRequest.getBody().getFileList();
+//		if(fileList.size()) {
+//			
+//		}
 		System.out.println(fileList);
 	}
 	

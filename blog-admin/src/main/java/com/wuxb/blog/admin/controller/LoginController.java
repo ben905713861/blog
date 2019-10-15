@@ -6,13 +6,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
-
 import javax.imageio.ImageIO;
 
-import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
-import com.google.code.kaptcha.util.Config;
 import com.wuxb.blog.admin.config.KaptchaConfig;
 import com.wuxb.blog.admin.validate.LoginValidate;
 import com.wuxb.httpServer.HttpServletRequest;

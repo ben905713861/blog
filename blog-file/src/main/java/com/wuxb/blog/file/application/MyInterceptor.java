@@ -8,6 +8,7 @@ import com.wuxb.httpServer.exception.HttpInterceptInterrupt;
 
 public class MyInterceptor implements Interceptor {
 
+	private static final String ALLOW_IP = "127.0.0.1";
 	private HttpServletRequest httpServletRequest;
 	private HttpServletResponse httpServletResponse;
 	
@@ -15,23 +16,15 @@ public class MyInterceptor implements Interceptor {
 	public void run(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse)  throws Exception {
 		this.httpServletRequest = httpServletRequest;
 		this.httpServletResponse = httpServletResponse;
+		checkPremission();
 		//静态资源处理-用户上传的文件
 		new UserStaticSource(httpServletRequest, httpServletResponse).action();
 	}
 	
-	private void checkLogin() throws HttpInterceptInterrupt {
-		String path = httpServletRequest.getPath();
-		if(path.length() >= 6 && path.substring(0, 6).equals("/login")) {
+	private void checkPremission() throws HttpInterceptInterrupt {
+		if(httpServletRequest.getIp().equals(ALLOW_IP)) {
 			return;
 		}
-		Integer manager_id = (Integer) httpServletRequest.getSession().get("manager_id");
-		if(manager_id == null) {
-			httpServletResponse.setResponseCode(401);
-			throw new HttpInterceptInterrupt("尚未登录");
-		}
-	}
-	
-	private void checkPremission() throws HttpInterceptInterrupt {
 		httpServletResponse.setResponseCode(403);
 		throw new HttpInterceptInterrupt("没有权限访问");
 	}
