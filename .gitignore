@@ -1,3 +1,5 @@
 /target/
 /blog-admin/target/
 /blog-user/target/
+/blog-file/target/
+/blog-file/upload/
