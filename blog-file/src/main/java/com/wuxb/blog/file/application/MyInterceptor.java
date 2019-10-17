@@ -22,6 +22,9 @@ public class MyInterceptor implements Interceptor {
 	}
 	
 	private void checkPremission() throws HttpInterceptInterrupt {
+		if(!httpServletRequest.getPath().equals("/")) {
+			return;
+		}
 		if(httpServletRequest.getIp().equals(ALLOW_IP)) {
 			return;
 		}
