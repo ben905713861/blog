@@ -30,5 +30,6 @@
 		<module>blog-user</module>
 		<module>blog-admin</module>
     <module>blog-file</module>
+    <module>blog-firewall</module>
   </modules>
 </project>
