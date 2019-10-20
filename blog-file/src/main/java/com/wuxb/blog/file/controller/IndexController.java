@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
-
 import com.wuxb.httpServer.HttpServletRequest;
 import com.wuxb.httpServer.HttpServletResponse;
 import com.wuxb.httpServer.annotation.PostParam;
@@ -51,13 +49,10 @@ public class IndexController {
 		if(fileList == null) {
 			return Tools.returnErr("文件列表不得为空");
 		}
-		if(!Pattern.matches("^[\\w\\-]{1,}$", (String)postMap.get("type"))) {
-			return Tools.returnErr("文件类型不得为空");
-		}
 		for(FileInfo fileInfo : fileList) {
 			Date date = new Date();
 			//存放路径-相对路径
-			String relativePath = "/" + postMap.get("type") + "/" + new SimpleDateFormat("yyyy/MMdd").format(date) + "/" + Encrypt.md5(date.getTime()+""+System.currentTimeMillis()) +"."+ fileInfo.extname;
+			String relativePath = "/" + fileInfo.key + "/" + new SimpleDateFormat("yyyy/MMdd").format(date) + "/" + Encrypt.md5(date.getTime()+""+System.currentTimeMillis()) +"."+ fileInfo.extname;
 			//存放路径-绝对路径
 			String newPath = FILE_BASE_DIR + relativePath;
 			File newFile = new File(newPath);
@@ -80,7 +75,7 @@ public class IndexController {
 			}
 			ReturnFileInfo returnFileInfo = new ReturnFileInfo();
 			returnFileInfo.name = fileInfo.filename;
-			returnFileInfo.size = file.length();
+			returnFileInfo.size = newFile.length();
 			returnFileInfo.url = relativePath;
 			returnFileInfoList.add(returnFileInfo);
 		}

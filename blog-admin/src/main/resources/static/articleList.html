@@ -72,6 +72,15 @@
 						</td>
 					</tr>
 					<tr>
+						<td>缩略图：</td>
+						<td>
+							<a onclick="modalSubmit.uploadThumb(this)">
+								<img style="max-height: 100px;" src="img/upload-thumb.png" title="点我上传" />
+								<input type="text" class="hidden" name="thumb_path" />
+							</a>
+						</td>
+					</tr>
+					<tr>
 						<td style="width: 180px;">*内容：</td>
 						<td>
 							<script id="editor_add" name="content" type="text/plain" style="width:100%;"></script>
@@ -150,6 +159,15 @@
 						<td>描述：</td>
 						<td>
 							<textarea name="description" class="form-control" maxlength="255"></textarea>
+						</td>
+					</tr>
+					<tr>
+						<td>缩略图：</td>
+						<td>
+							<a onclick="modalSubmit.uploadThumb(this)">
+								<img name="thumb_img" style="max-height: 100px;" src="" title="点我上传" />
+								<input type="text" class="hidden" name="thumb_path" />
+							</a>
 						</td>
 					</tr>
 					<tr>
@@ -303,6 +321,11 @@
 			ajax('get', '/article/getOne', {
 				article_id: article_id
 			}, function(res) {
+				if(res.thumb_path) {
+					res.thumb_img = res.thumb_path;
+				} else {
+					res.thumb_img = 'img/upload-thumb.png';
+				}
 				formload(document.querySelector('#update-modal form'), res);
 				$('#update-modal').modal();
 				setTimeout(function() {
@@ -313,6 +336,16 @@
 	}
 	
 	var modalSubmit = {
+		uploadThumb: function(btn) {
+			input_upload('img', false, function(file) {
+				ajax('file', '/article/uploadThumb', {
+					articleThumb: file,
+				}, function(res) {
+					btn.querySelector('input[name="thumb_path"]').value = res.url;
+					btn.querySelector('img').src = res.url;
+				});
+			});
+		},
 		add: function(form) {
 			if(!Ueditor.checkNull('add')) {
 				layer.alert('正文不得为空');
@@ -362,7 +395,7 @@
 		init: function() {
 			window.UEDITOR_CONFIG.serverUrl = '/ueditor/index?type=article';//type决定上传到哪个目录
 			var ueConfig = {
-//				initialFrameHeight: 200,
+				initialFrameHeight: 200,
 				zIndex: 3000, //浮动层级
 				autoFloatEnabled: false, //是否浮动工具栏
 				enableAutoSave: false, //自动保存(目前1.4版本无效)

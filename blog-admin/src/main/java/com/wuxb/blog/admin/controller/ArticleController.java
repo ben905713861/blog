@@ -5,13 +5,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.wuxb.blog.admin.component.UploadFile;
 import com.wuxb.blog.admin.validate.ArticleValidate;
+import com.wuxb.httpServer.HttpServletRequest;
 import com.wuxb.httpServer.Validate;
 import com.wuxb.httpServer.annotation.GetParam;
 import com.wuxb.httpServer.annotation.PostParam;
 import com.wuxb.httpServer.annotation.RequestMapping;
 import com.wuxb.httpServer.annotation.RestController;
 import com.wuxb.httpServer.db.Db;
+import com.wuxb.httpServer.params.FileInfo;
+import com.wuxb.httpServer.util.FormdataParamsEncode;
 import com.wuxb.httpServer.util.Tools;
 
 @RestController
@@ -72,6 +76,30 @@ public class ArticleController {
 			.field("a.*,c.content")
 			.where("a.article_id", getMap.get("article_id"))
 			.find();
+	}
+	
+	@RequestMapping("/uploadThumb")
+	public Map<String, Object> uploadThumb(HttpServletRequest httpServletRequest) {
+		Map<String, Object> resMap = new HashMap<String, Object>();
+		
+		List<FileInfo> fileList = httpServletRequest.getBody().getFileList();
+		if(fileList.size() == 0) {
+			return Tools.returnErr("上传文件不得为空");
+		}
+		FileInfo fileInfo = fileList.get(0);
+		
+		UploadFile uploadFile = new UploadFile();
+		FormdataParamsEncode formdata = uploadFile.getFormdataObject();
+		formdata.add("articleThumb", fileInfo);
+		if(!uploadFile.send(formdata)) {
+			return Tools.returnErr(uploadFile.getErrorMessage());
+		}
+		List<Map<String, Object>> fileResultList = uploadFile.getFileResultList();
+		Map<String, Object> fileResult = fileResultList.get(0);
+		
+		resMap.put("status", true);
+		resMap.put("url", fileResult.get("url"));
+		return resMap;
 	}
 	
 	@RequestMapping("/add")
