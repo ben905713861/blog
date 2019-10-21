@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>文章列表</title>
+<title>相册列表</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -10,6 +10,9 @@
 <link href="css/animate.css" rel="stylesheet">
 <link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
 <link href="css/style.css" rel="stylesheet">
+<style>
+	.thumb-table{max-height: 30px;max-width: 45px;}
+</style>
 </head>
 <body>
 
@@ -19,11 +22,7 @@
 			<button type="button" class="btn btn-sm btn-primary" onclick="modalOpen.add()"><i class="fa fa-plus"></i> 新增</button>
 		</div>
 		<div class="form-group">
-			<select name="type_id" class="form-control input-sm" style="padding: 3px 12px;">
-				<option value="">全部文章分类</option>
-				
-			</select>
-			<input type="text" class="form-control input-sm" name="title" placeholder="文章标题" />
+			<input type="text" class="form-control input-sm" name="title" placeholder="相册名" />
 		</div>
 		<div class="form-group">
 			<span>发布时间</span>
@@ -41,34 +40,22 @@
 
 <!-- 新增模态框 -->
 <div class="modal fade" id="add-modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
-	<div class="modal-dialog" style="width: 80%;">
+	<div class="modal-dialog">
 		<form class="modal-content" onsubmit="return modalSubmit.add(this)">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-				<h4 class="modal-title">附件新增</h4>
+				<h4 class="modal-title">相册新增</h4>
 			</div>
 			<div class="modal-body">
 				<table class="table table-bordered">
 					<tr>
-						<td>*分类：</td>
-						<td>
-							<select name="type_id" class="form-control input-sm" style="padding: 3px 12px;">
-								
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td>*附件标题：</td>
+						<td>*相册名：</td>
 						<td><input type="text" pattern=".{1,50}" title="50字符以内" required="" class="form-control" name="title" /></td>
-					</tr>
-					<tr>
-						<td>关键词：</td>
-						<td><input type="text" pattern=".{1,100}" title="100字符以内" class="form-control" name="key_words" /></td>
 					</tr>
 					<tr>
 						<td>描述：</td>
 						<td>
-							<textarea name="description" class="form-control" maxlength="255" placeholder="为空时自动拾取内容正文的前255个字符填充"></textarea>
+							<textarea name="description" class="form-control" maxlength="255" placeholder="可输入255个字符来描述"></textarea>
 						</td>
 					</tr>
 					<tr>
@@ -78,12 +65,6 @@
 								<img style="max-height: 100px;" src="img/upload-thumb.png" title="点我上传" />
 								<input type="text" class="hidden" name="thumb_path" />
 							</a>
-						</td>
-					</tr>
-					<tr>
-						<td style="width: 180px;">*内容：</td>
-						<td>
-							<script id="editor_add" name="content" type="text/plain" style="width:100%;"></script>
 						</td>
 					</tr>
 					<tr>
@@ -103,77 +84,34 @@
 	</div>
 </div>
 
-<!-- 查看模态框 -->
-<div class="modal fade" id="detail-modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
-	<div class="modal-dialog" style="width: 80%;">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-				<h4 class="modal-title">文章详情</h4>
-			</div>
-			<div class="modal-body">
-				<div style="padding:0 20px;">
-					<h2 id="title" style="text-align: center;"></h2>
-					<h5 id="add_time" style="text-align: center;padding: 20px 0 10px;"></h5>
-					<h5 id="key_words" style="padding-top: 20px;"></h5>
-					<p id="description"></p>
-					<hr>
-					<div id="content"></div>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-			</div>
-		</div>
-	</div>
-</div>
-
 <!-- 修改模态框 -->
 <div class="modal fade" id="update-modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
-	<div class="modal-dialog" style="width: 80%;">
+	<div class="modal-dialog">
 		<form class="modal-content" onsubmit="return modalSubmit.update(this)">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 				<h4 class="modal-title">附件修改</h4>
 			</div>
 			<div class="modal-body">
+				<input type="hidden" name="album_id" />
 				<table class="table table-bordered">
-					<input type="hidden" name="article_id" />
 					<tr>
-						<td>*分类：</td>
-						<td>
-							<select name="type_id" class="form-control input-sm" style="padding: 3px 12px;">
-								
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td>*附件标题：</td>
+						<td>*相册名：</td>
 						<td><input type="text" pattern=".{1,50}" title="50字符以内" required="" class="form-control" name="title" /></td>
-					</tr>
-					<tr>
-						<td>关键词：</td>
-						<td><input type="text" pattern=".{1,100}" title="100字符以内" class="form-control" name="key_words" /></td>
 					</tr>
 					<tr>
 						<td>描述：</td>
 						<td>
-							<textarea name="description" class="form-control" maxlength="255" placeholder="为空时自动拾取内容正文的前255个字符填充"></textarea>
+							<textarea name="description" class="form-control" maxlength="255" placeholder="可输入255个字符来描述"></textarea>
 						</td>
 					</tr>
 					<tr>
 						<td>缩略图：</td>
 						<td>
 							<a onclick="modalSubmit.uploadThumb(this)">
-								<img name="thumb_img" style="max-height: 100px;" src="" title="点我上传" />
+								<img name="thumb_img" style="max-height: 100px;" src="img/upload-thumb.png" title="点我上传" />
 								<input type="text" class="hidden" name="thumb_path" />
 							</a>
-						</td>
-					</tr>
-					<tr>
-						<td style="width: 180px;">*内容：</td>
-						<td>
-							<script id="editor_update" name="content" type="text/plain" style="width:100%;"></script>
 						</td>
 					</tr>
 					<tr>
@@ -200,31 +138,23 @@
 <script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 <!--右上角提示框插件-->
 <script src="js/toastr.min.js"></script>
-<!--ueditor编辑器-->
-<script src="js/plugins/ueditor/ueditor.config.js"></script>
-<script src="js/plugins/ueditor/ueditor.all.min.js"></script>
 <script src="js/common.js"></script>
 <script type="text/javascript">
-	(function() {
-		var select_types = document.querySelectorAll('form select[name="type_id"]');
-		ajax('get', '/article/init', null, function(res) {
-			var html = '';
-			res.forEach(function(row) {
-				html += '<option value="'+ row.type_id +'">'+ row.type +'</option>';
-			});
-			for(var i = 0; i < select_types.length; i++) {
-				select_types[i].innerHTML += html;
-			}
-		});
-	})();
-	
+	//记忆
+	var queryParams = sessionStorage.getItem(window.location.href +'_queryParams');
+	if(queryParams) {
+		queryParams = JSON.parse(queryParams);
+		formload(document.getElementById('searchForm'), queryParams.search);
+		queryParams.pageNumber = queryParams.offset/queryParams.limit + 1;
+		queryParams.pageSize = queryParams.limit;
+	}
 	$('#tableBox').bootstrapTable({
 		sortable: true,					 //是否启用排序
 		sortName: 'add_time',
 		sortOrder: 'desc',
 		ajax: function(params) {
 			params.data.search = getFormObj(document.getElementById('searchForm'));
-			ajax('get', '/article/getList', params.data, function(res) {
+			ajax('get', '/album/getList', params.data, function(res) {
 				if(res.total == 0) {
 					res.total = 1;
 				}
@@ -235,8 +165,8 @@
 		cache: false,					   //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
 		pagination: true,				   //是否显示分页（*）
 		sidePagination: 'server',		   //分页方式：client客户端分页，server服务端分页（*）
-		pageNumber:1,					   //初始化加载第一页，默认第一页
-		pageSize: 10,					   //每页的记录行数（*）
+		pageNumber: queryParams ? queryParams.pageNumber : 1,					   //初始化加载第一页，默认第一页
+		pageSize: queryParams ? queryParams.pageSize : 10,					   //每页的记录行数（*）
 		pageList: [10, 25, 50, 100],		//可供选择的每页的行数（*）
 		showRefresh: true,
 		showToggle: true,
@@ -245,19 +175,19 @@
 		toolbar: '#searchForm',
 		columns: [
 			{
-				field: 'type',
-				title: '文章分类',
-				align: 'center',
-			},
-			{
 				field: 'title',
-				title: '文章标题',
+				title: '相册名',
 				align: 'center',
 			},
 			{
-				field: 'key_words',
-				title: '关键词',
+				field: 'thumb_path',
+				title: '缩略图',
 				align: 'center',
+				formatter: function(value, row) {
+					if(value) {
+						return '<img src="'+ value +'" class="thumb-table" />';
+					}
+				},
 			},
 			{
 				field: 'add_time',
@@ -277,12 +207,12 @@
 				},
 			},
 			{
-				field: 'article_id',
+				field: 'album_id',
 				title: '操作',
 				align: 'center',
 				formatter:function(value,row,index){
-					return '<button class="btn btn-default btn-sm" onclick="modalOpen.show('+value+')"><i class="fa fa-list"></i> 查看</button>&nbsp;&nbsp;'
-						+ '<button class="btn btn-warning btn-sm" onclick="modalOpen.update('+value+')"><i class="fa fa-list"></i> 修改</button>&nbsp;&nbsp;'
+					return '<a class="btn btn-default btn-sm" href="albumDetail.html#'+ value +'"><i class="fa fa-list"></i> 照片管理</a> &nbsp;'
+						+ '<button class="btn btn-warning btn-sm" onclick="modalOpen.update('+value+')"><i class="fa fa-list"></i> 修改</button> &nbsp;'
 						+ '<button class="btn btn-danger btn-sm" onclick="modalSubmit.delete('+value+')"><i class="fa fa-remove"></i> 删除</button>';
 				}
 			},
@@ -298,28 +228,14 @@
 	
 	//模态框打开事件
 	var modalOpen = {
-		add: function(article_id) {
-			Ueditor.clear('add');
+		add: function(album_id) {
 			document.querySelector('#add-modal form').reset();
 			$('#add-modal').modal();
 		},
-		show: function(article_id) {
-			ajax('get', '/article/getOne', {
-				article_id: article_id
-			}, function(res) {
-				document.querySelector('#detail-modal #title').innerText = res.title;
-				document.querySelector('#detail-modal #add_time').innerText = timestampToStr(res.add_time);
-				document.querySelector('#detail-modal #key_words').innerText = '关键词：'+ res.key_words;
-				document.querySelector('#detail-modal #description').innerText = '描述：'+ res.description;
-				document.querySelector('#detail-modal #content').innerHTML = res.content;
-			});
-			$('#detail-modal').modal();
-		},
-		update: function(article_id) {
-			Ueditor.clear('update');
+		update: function(album_id) {
 			document.querySelector('#update-modal form').reset();
-			ajax('get', '/article/getOne', {
-				article_id: article_id
+			ajax('get', '/album/getOne', {
+				album_id: album_id
 			}, function(res) {
 				if(res.thumb_path) {
 					res.thumb_img = res.thumb_path;
@@ -328,9 +244,6 @@
 				}
 				formload(document.querySelector('#update-modal form'), res);
 				$('#update-modal').modal();
-				setTimeout(function() {
-					Ueditor.setUpdateContent(res.content);
-				}, 100);
 			});
 		},
 	}
@@ -338,8 +251,8 @@
 	var modalSubmit = {
 		uploadThumb: function(btn) {
 			input_upload('img', false, function(file) {
-				ajax('file', '/article/uploadThumb', {
-					articleThumb: file,
+				ajax('file', '/album/uploadThumb', {
+					albumThumb: file,
 				}, function(res) {
 					btn.querySelector('input[name="thumb_path"]').value = res.url;
 					btn.querySelector('img').src = res.url;
@@ -347,13 +260,9 @@
 			});
 		},
 		add: function(form) {
-			if(!Ueditor.checkNull('add')) {
-				layer.alert('正文不得为空');
-				return false;
-			}
 			var submitBtn = form.querySelector('[type="submit"]');
 			submitBtn.disabled = true;
-			ajax('post', '/article/add', getFormObj(form), function(res) {
+			ajax('post', '/album/add', getFormObj(form), function(res) {
 				$('#add-modal').modal('hide');
 				refresh();
 			}, null, function end() {
@@ -362,13 +271,9 @@
 			return false;
 		},
 		update: function(form) {
-			if(!Ueditor.checkNull('update')) {
-				layer.alert('正文不得为空');
-				return false;
-			}
 			var submitBtn = form.querySelector('[type="submit"]');
 			submitBtn.disabled = true;
-			ajax('post', '/article/update', getFormObj(form), function(res) {
+			ajax('post', '/album/update', getFormObj(form), function(res) {
 				$('#update-modal').modal('hide');
 				refresh();
 			}, null, function end() {
@@ -376,11 +281,11 @@
 			});
 			return false;
 		},
-		delete: function(article_id) {
+		delete: function(album_id) {
 			layer.confirm('确定要删除吗？', function(index) {
 				layer.close(index);
-				ajax('post', '/article/delete', {
-					article_id: article_id,
+				ajax('post', '/album/delete', {
+					album_id: album_id,
 				}, function(res) {
 					refresh();
 				});
@@ -388,33 +293,6 @@
 		},
 	}
 
-	//ueditor服务器上传路径
-	var Ueditor = {
-		editor_add: null,
-		editor_update: null,
-		init: function() {
-			window.UEDITOR_CONFIG.serverUrl = '/ueditor/index?type=article';//type决定上传到哪个目录
-			var ueConfig = {
-				initialFrameHeight: 200,
-				zIndex: 3000, //浮动层级
-				autoFloatEnabled: false, //是否浮动工具栏
-				enableAutoSave: false, //自动保存(目前1.4版本无效)
-			}
-			this.editor_add = UE.getEditor('editor_add', ueConfig);
-			this.editor_update = UE.getEditor('editor_update', ueConfig);
-		},
-		checkNull: function(method) {
-			return UE.getEditor('editor_'+method).hasContents();
-		},
-		setUpdateContent: function(content) {
-			this.editor_update.setContent(content);
-		},
-		clear: function(method) {
-			this['editor_'+method].execCommand('cleardoc');
-		},
-	}
-	Ueditor.init();
-	
 </script>
 </body>
 </html>

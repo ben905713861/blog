@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>相册详情</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/toastr.min.css" rel="stylesheet">
+<link href="css/font-awesome.min.css" rel="stylesheet">
+<link href="css/animate.css" rel="stylesheet">
+<link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<style>
+	.thumb-table{max-height: 30px;max-width: 45px;}
+</style>
+</head>
+<body>
+
+<div style="padding: 20px;">
+	<form id="searchForm" class="pull-left form-inline" style="padding-top: 15px;" onsubmit="return search()">
+		<div class="form-group">
+			<button type="button" class="btn btn-sm btn-primary" onclick="modalOpen.add()"><i class="fa fa-plus"></i> 新增</button>
+		</div>
+		<div class="form-group">
+			<input type="text" class="form-control input-sm" name="name" placeholder="照片名" />
+		</div>
+		<div class="form-group">
+			<button type="submit" class="btn btn-sm btn-info"><i class="fa fa-search"></i> 搜索</button>
+			<button type="reset" class="btn btn-sm btn-default"><i class="fa fa-recycle"></i> 重置</button>
+		</div>
+	</form>
+	<table id="tableBox" data-mobile-responsive="true"></table>
+</div>
+
+
+<!-- 新增模态框 -->
+<div class="modal fade" id="add-modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog">
+		<form class="modal-content" onsubmit="return modalSubmit.add(this)">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title">相册新增</h4>
+			</div>
+			<div class="modal-body">
+				
+			</div>
+			<div class="modal-footer">
+				<button type="submit" class="btn btn-primary">新增</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+<!-- 查看模态框 -->
+<div class="modal fade" id="show-modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title">照片查看</h4>
+			</div>
+			<div class="modal-body" style="text-align: center;padding: 20px 0;">
+				<img name="path" style="max-width: 80%;" />
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/plugins/layer/layer.min.js"></script>
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<!--右上角提示框插件-->
+<script src="js/toastr.min.js"></script>
+<script src="js/common.js"></script>
+<script type="text/javascript">
+	var hash = window.location.hash.split('#');
+	var album_id = hash[1];
+	
+	//记忆
+	var queryParams = sessionStorage.getItem(window.location.href +'_queryParams');
+	if(queryParams) {
+		queryParams = JSON.parse(queryParams);
+		formload(document.getElementById('searchForm'), queryParams.search);
+		queryParams.pageNumber = queryParams.offset/queryParams.limit + 1;
+		queryParams.pageSize = queryParams.limit;
+	}
+	$('#tableBox').bootstrapTable({
+		sortable: true,					 //是否启用排序
+		sortName: '',
+		sortOrder: '',
+		ajax: function(params) {
+			params.data.search = getFormObj(document.getElementById('searchForm'));
+			params.data.search.album_id = album_id;
+			ajax('get', '/albumDetail/getList', params.data, function(res) {
+				if(res.total == 0) {
+					res.total = 1;
+				}
+				params.success(res);
+			});
+		},
+		striped: true,					  //是否显示行间隔色
+		cache: false,					   //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+		pagination: true,				   //是否显示分页（*）
+		sidePagination: 'server',		   //分页方式：client客户端分页，server服务端分页（*）
+		pageNumber: queryParams ? queryParams.pageNumber : 1,					   //初始化加载第一页，默认第一页
+		pageSize: queryParams ? queryParams.pageSize : 10,					   //每页的记录行数（*）
+		pageList: [10, 25, 50, 100],		//可供选择的每页的行数（*）
+		showRefresh: true,
+		showToggle: true,
+		showColumns: true,
+		iconSize: 'outline',
+		toolbar: '#searchForm',
+		columns: [
+			{
+				field: 'name',
+				title: '照片名',
+				align: 'center',
+			},
+			{
+				field: 'path',
+				title: '缩略图',
+				align: 'center',
+				formatter: function(value, row) {
+					return '<img src="'+ value +'" class="thumb-table" />';
+				},
+			},
+			{
+				field: 'path',
+				title: 'url',
+				align: 'center',
+			},
+			{
+				field: 'img_id',
+				title: '操作',
+				align: 'center',
+				formatter:function(value,row,index){
+					return '<button class="btn btn-default btn-sm" onclick="modalOpen.show(\''+ row.path +'\')"><i class="fa fa-list"></i> 查看</button> &nbsp;'
+						+ '<button class="btn btn-danger btn-sm" onclick="modalSubmit.delete('+ value +')"><i class="fa fa-remove"></i> 删除</button>';
+				}
+			},
+		],
+	});
+	function search() {
+		$('#tableBox').bootstrapTable('selectPage', 1);
+		return false;
+	}
+	function refresh() {
+		$('#tableBox').bootstrapTable('refresh');
+	}
+	
+	//模态框打开事件
+	var modalOpen = {
+		show: function(url) {
+			document.querySelector('#show-modal img[name="path"]').src = url;
+			$('#show-modal').modal();
+		},
+		add: function(album_id) {
+			document.querySelector('#add-modal form').reset();
+			$('#add-modal').modal();
+		},
+	}
+	
+	var modalSubmit = {
+		uploadThumb: function(btn) {
+			input_upload('img', false, function(file) {
+				ajax('file', '/album/uploadThumb', {
+					albumThumb: file,
+				}, function(res) {
+					btn.querySelector('input[name="thumb_path"]').value = res.url;
+					btn.querySelector('img').src = res.url;
+				});
+			});
+		},
+		add: function(form) {
+			var submitBtn = form.querySelector('[type="submit"]');
+			submitBtn.disabled = true;
+			ajax('post', '/album/add', getFormObj(form), function(res) {
+				$('#add-modal').modal('hide');
+				refresh();
+			}, null, function end() {
+				submitBtn.disabled = false;
+			});
+			return false;
+		},
+		update: function(form) {
+			var submitBtn = form.querySelector('[type="submit"]');
+			submitBtn.disabled = true;
+			ajax('post', '/album/update', getFormObj(form), function(res) {
+				$('#update-modal').modal('hide');
+				refresh();
+			}, null, function end() {
+				submitBtn.disabled = false;
+			});
+			return false;
+		},
+		delete: function(album_id) {
+			layer.confirm('确定要删除吗？', function(index) {
+				layer.close(index);
+				ajax('post', '/album/delete', {
+					album_id: album_id,
+				}, function(res) {
+					refresh();
+				});
+			});
+		},
+	}
+
+</script>
+</body>
+</html>
