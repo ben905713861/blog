@@ -16,6 +16,7 @@ import com.wuxb.httpServer.annotation.RestController;
 import com.wuxb.httpServer.db.Db;
 import com.wuxb.httpServer.params.FileInfo;
 import com.wuxb.httpServer.util.FormdataParamsEncode;
+import com.wuxb.httpServer.util.HtmlFilter;
 import com.wuxb.httpServer.util.Tools;
 
 @RestController
@@ -30,6 +31,7 @@ public class ArticleController {
 	@RequestMapping("/getList")
 	public Map<String, Object> getList(@GetParam Map<String, Object> getMap) throws SQLException {
 		Map<String, Object> res = new HashMap<String, Object>();
+		
 		HashMap<String, Object> where = new HashMap<String, Object>();
 		@SuppressWarnings("unchecked")
 		Map<String, Object> search = (Map<String, Object>) getMap.get("search");
@@ -47,11 +49,11 @@ public class ArticleController {
 		String start_date = (String) search.get("start_date");
 		String end_date = (String) search.get("end_date");
 		if(start_date != null && end_date == null) {
-			where.put("add_time", new Object[] {">=", Tools.dateStr2time(start_date)});
+			where.put("a.add_time", new Object[] {">=", Tools.dateStr2time(start_date)});
 		} else if(start_date == null && end_date != null) {
-			where.put("add_time", new Object[] {"<=", Tools.dateStr2time(end_date)+24*3600-1});
+			where.put("a.add_time", new Object[] {"<=", Tools.dateStr2time(end_date)+24*3600-1});
 		} else if(start_date != null && end_date != null) {
-			where.put("add_time", new Object[] {"BETWEEN", new Object[]{Tools.dateStr2time(start_date), Tools.dateStr2time(end_date)+24*3600-1}});
+			where.put("a.add_time", new Object[] {"BETWEEN", new Object[]{Tools.dateStr2time(start_date), Tools.dateStr2time(end_date)+24*3600-1}});
 		}
 		
 		List<Map<String, Object>> rows = Db.table("article a")
@@ -115,15 +117,26 @@ public class ArticleController {
 			data1.put("title", postMap.get("title"));
 			data1.put("type_id", postMap.get("type_id"));
 			data1.put("key_words", postMap.get("key_words"));
-			data1.put("description", postMap.get("description"));
 			data1.put("is_recommend", postMap.get("is_recommend"));
 			data1.put("thumb_path", postMap.get("thumb_path"));
 			data1.put("add_time", Tools.time());
+			String content = (String) postMap.get("content");
+			if(((String) postMap.get("description")).isEmpty()) {
+				int contentLen = content.length();
+				String description = content.substring(0, contentLen>255 ? 255 : contentLen);
+				//过滤html标签
+				description = HtmlFilter.stripTags(description);
+				data1.put("description", description);
+			} else {
+				String description = (String) postMap.get("description");
+				description = HtmlFilter.stripTags(description);
+				data1.put("description", description);
+			}
 			int article_id = Db.table("article").insert(data1);
 			
 			Map<String, Object> data2 = new HashMap<String, Object>();
 			data2.put("article_id", article_id);
-			data2.put("content", postMap.get("content"));
+			data2.put("content", content);
 			Db.table("article_content").insert(data2);
 			
 			Db.commit();
@@ -147,16 +160,27 @@ public class ArticleController {
 			data1.put("title", postMap.get("title"));
 			data1.put("type_id", postMap.get("type_id"));
 			data1.put("key_words", postMap.get("key_words"));
-			data1.put("description", postMap.get("description"));
 			data1.put("is_recommend", postMap.get("is_recommend"));
 			data1.put("thumb_path", postMap.get("thumb_path"));
+			String content = (String) postMap.get("content");
+			if(((String) postMap.get("description")).isEmpty()) {
+				int contentLen = content.length();
+				String description = content.substring(0, contentLen>255 ? 255 : contentLen);
+				//过滤html标签
+				description = HtmlFilter.stripTags(description);
+				data1.put("description", description);
+			} else {
+				String description = (String) postMap.get("description");
+				description = HtmlFilter.stripTags(description);
+				data1.put("description", description);
+			}
 			Db.table("article")
 				.where("article_id", postMap.get("article_id"))
 				.limit(1)
 				.update(data1);
 			
 			Map<String, Object> data2 = new HashMap<String, Object>();
-			data2.put("content", postMap.get("content"));
+			data2.put("content", content);
 			Db.table("article_content")
 				.where("article_id", postMap.get("article_id"))
 				.limit(1)
