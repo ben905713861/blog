@@ -1,17 +1,18 @@
 ﻿<!doctype html>
 <html>
 <head>
-	<meta charset="gbk">
-	<title>首页_小彬个人博客 - 后端技术员个人博客网站</title>
-	<meta name="keywords" content="个人博客,小彬个人博客，程序员" />
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link href="css/base.css" rel="stylesheet">
-	<link href="css/index.css" rel="stylesheet">
-	<link href="css/m.css" rel="stylesheet">
+<meta charset="gbk">
+<title>首页_小彬个人博客 - 后端技术员个人博客网站</title>
+<meta name="keywords" content="个人博客,小彬个人博客，程序员" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="css/base.css" rel="stylesheet">
+<link href="css/index.css" rel="stylesheet">
+<link href="css/m.css" rel="stylesheet">
+<script type="text/javascript" src="js/vue.js"></script>
 </head>
-
 <body>
+	
 	<header class="header-navigation" id="header">
 		<nav>
 			<div class="logo">
@@ -43,6 +44,7 @@
 			</ul>
 		</nav>
 	</header>
+	
 	<article>
 		<aside>
 			<div class="l_box" id="stickMe">
@@ -51,6 +53,29 @@
 					<ul>
 						<i><img src="images/4.jpg"></i>
 						<p><b>杨青</b>，一个80后草根女站长！09年入行。一直潜心研究web前端技术，一边工作一边积累经验，分享一些个人博客模板，以及SEO优化等心得。</p>
+					</ul>
+				</div>
+				<div class="wdxc">
+					<h2>我的相册</h2>
+					<ul>
+						<li>
+							<a href="/"><img src="images/7.jpg"></a>
+						</li>
+						<li>
+							<a href="/"><img src="images/8.jpg"></a>
+						</li>
+						<li>
+							<a href="/"><img src="images/9.jpg"></a>
+						</li>
+						<li>
+							<a href="/"><img src="images/10.jpg"></a>
+						</li>
+						<li>
+							<a href="/"><img src="images/11.jpg"></a>
+						</li>
+						<li>
+							<a href="/"><img src="images/12.jpg"></a>
+						</li>
 					</ul>
 				</div>
 				<div class="search">
@@ -90,18 +115,15 @@
 			</div>
 		</aside>
 		<div class="r_box">
-			<div class="wenzhanglie">
-				<h2>文章列表</h2>
-				<ul>
-					
-				</ul>
-			</div>
-			<div class="wdxc">
-				<h2>我的相册</h2>
-				<ul>
-					
-				</ul>
-			</div>
+			<ul id="articleList_ul">
+				<li v-for="articleInfo in articleList">
+					<i>
+						<a :href="'article.html#'+ articleInfo.article_id"><img :src="articleInfo.thumb_path" style="width: 150px;height: 100px;"></a>
+					</i>
+					<h3><a :href="'article.html#'+ articleInfo.article_id">{{ articleInfo.title }}</a></h3>
+					<p>{{ articleInfo.description }}</p>
+				</li>
+			</ul>
 		</div>
 	</article>
 	<footer>
@@ -116,17 +138,25 @@
 	<script type="text/javascript" src="js/commAction.js"></script>
 	<script type="text/javascript" src="js/common.js"></script>
 	<script type="text/javascript">
+		var articleList_ul = new Vue({
+			el: '#articleList_ul',
+			data: {
+				articleList: null,
+			},
+		});
+		
 		ajax('get', 'index/index', null, function(res) {
 			document.querySelector('.about_me ul p').innerHTML =  res.userInfo.description;
-			var ul_r_box = document.querySelector(".r_box .wenzhanglie>ul");
-			res.articleList.forEach(function(articleInfo) {
-				var html = '<li>'+
-					'<i><img src="'+ articleInfo.thumb_path +'"></i>'+
-					'<h3><a href="/articlelist.html?article_id='+ articleInfo.article_id +'">'+ articleInfo.title +'</a></h3>'+
-					'<p>'+ articleInfo.description +'</p>'+
-				'</li>';
-				ul_r_box.innerHTML += html;
-			});
+			articleList_ul.articleList = res.articleList;
+//			var ul_r_box = document.querySelector(".r_box ul.wenzhanglie");
+//			res.articleList.forEach(function(articleInfo) {
+//				var html = '<li>'+
+//					'<i><img src="'+ articleInfo.thumb_path +'"></i>'+
+//					'<h3><a href="/articlelist.html?article_id='+ articleInfo.article_id +'">'+ articleInfo.title +'</a></h3>'+
+//					'<p>'+ articleInfo.description +'</p>'+
+//				'</li>';
+//				ul_r_box.innerHTML += html;
+//			});
 			var ul_fenlei = document.querySelector('.fenlei>ul');
 			res.articleTypeList.forEach(function(typeInfo) {
 				ul_fenlei.innerHTML += '<li><a href="/articlelist.html?type_id='+ typeInfo.type_id +'">'+ typeInfo.type +'（'+ typeInfo.article_num +'）</a></li>';
