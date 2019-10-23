@@ -1,5 +1,6 @@
 package com.wuxb.blog.admin.controller;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,19 +20,24 @@ public class UeditorController {
 
 	private HttpServletRequest httpServletRequest;
 	private HttpServletResponse httpServletResponse;
+	private static final String[] ALLOW_TYPE = new String[] {
+		"article", "album",
+	};
+			
 	
 	@RequestMapping("/index")
-	public void index(@GetParam Map<String, Object> map, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
+	public void index(@GetParam Map<String, Object> getMap, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
 		this.httpServletRequest = httpServletRequest;
 		this.httpServletResponse = httpServletResponse;
-		if(map.get("action").equals("config")) {
+		if(getMap.get("action").equals("config")) {
 			config();
 		}
-		else if(map.get("action").equals("listfile")) {
+		else if(getMap.get("action").equals("listfile")) {
 //			listfile();
 		}
 		else {
-			httpServletResponse.setResponse(uploadfile());
+			String type = (String) getMap.get("type");
+			httpServletResponse.setResponse(uploadfile(type));
 		}
 	}
 	
@@ -39,12 +45,17 @@ public class UeditorController {
 		httpServletResponse.location("/static/js/plugins/ueditor/ueditorConfig.json");
 	}
 	
-	private Map<String, Object> uploadfile() {
+	private Map<String, Object> uploadfile(String type) {
 		Map<String, Object> resMap = new HashMap<String, Object>();
+		
+		if(type == null || !Arrays.asList(ALLOW_TYPE).contains(type)) {
+			resMap.put("state", "type类型不合法");
+			return resMap;
+		}
 		
 		FormdataParamsEncode formdata = new FormdataParamsEncode();
 		List<FileInfo> fileList = httpServletRequest.getBody().getFileList();
-		formdata.add("article", fileList.get(0));
+		formdata.add(type, fileList.get(0));
 		
 		UploadFile uploadFile = new UploadFile();
 		if(!uploadFile.send(formdata)) {

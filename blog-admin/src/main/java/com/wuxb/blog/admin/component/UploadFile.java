@@ -49,8 +49,8 @@ public class UploadFile {
 		}
 		
 		for(Map<String, Object> fileResult : fileResultList) {
-			String url = FILE_SERVER_DOMAIN + fileResult.get("url");
-			fileResult.replace("url", url);
+			String url = FILE_SERVER_DOMAIN + fileResult.get("path");
+			fileResult.put("url", url);
 		}
 		return true;
 	}

@@ -15,6 +15,7 @@ import com.wuxb.httpServer.annotation.RequestMapping;
 import com.wuxb.httpServer.annotation.RestController;
 import com.wuxb.httpServer.db.Db;
 import com.wuxb.httpServer.params.FileInfo;
+import com.wuxb.httpServer.params.RequestMethod;
 import com.wuxb.httpServer.util.FormdataParamsEncode;
 import com.wuxb.httpServer.util.HtmlFilter;
 import com.wuxb.httpServer.util.Tools;
@@ -25,7 +26,9 @@ public class ArticleController {
 
 	@RequestMapping("/init")
 	public List<Map<String, Object>> init() throws SQLException {
-		return Db.table("article_type").select();
+		return Db.table("article_type")
+			.order("sort", "ASC")
+			.select();
 	}
 	
 	@RequestMapping("/getList")
@@ -80,7 +83,7 @@ public class ArticleController {
 			.find();
 	}
 	
-	@RequestMapping("/uploadThumb")
+	@RequestMapping(value="/uploadThumb", method=RequestMethod.POST)
 	public Map<String, Object> uploadThumb(HttpServletRequest httpServletRequest) {
 		Map<String, Object> resMap = new HashMap<String, Object>();
 		
@@ -104,7 +107,7 @@ public class ArticleController {
 		return resMap;
 	}
 	
-	@RequestMapping("/add")
+	@RequestMapping(value="/add", method=RequestMethod.POST)
 	public Map<String, Object> add(@PostParam Map<String, Object> postMap) throws SQLException {
 		Validate validate = new ArticleValidate();
 		if(!validate.scene("add").check(postMap)) {
@@ -147,7 +150,7 @@ public class ArticleController {
 		return Tools.returnSucc();
 	}
 	
-	@RequestMapping("/update")
+	@RequestMapping(value="/update", method=RequestMethod.POST)
 	public Map<String, Object> update(@PostParam Map<String, Object> postMap) throws SQLException {
 		Validate validate = new ArticleValidate();
 		if(!validate.scene("update").check(postMap)) {
@@ -194,7 +197,7 @@ public class ArticleController {
 		return Tools.returnSucc();
 	}
 	
-	@RequestMapping("/delete")
+	@RequestMapping(value="/delete", method=RequestMethod.POST)
 	public Map<String, Object> delete(@PostParam Map<String, Object> postMap) throws SQLException {
 		try {
 			Db.begin();

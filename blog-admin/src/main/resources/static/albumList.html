@@ -159,6 +159,8 @@
 					res.total = 1;
 				}
 				params.success(res);
+				//记录搜索条件用于返回
+				sessionStorage.setItem(window.location.href +'_queryParams', JSON.stringify(params.data));
 			});
 		},
 		striped: true,					  //是否显示行间隔色
@@ -228,7 +230,7 @@
 	
 	//模态框打开事件
 	var modalOpen = {
-		add: function(album_id) {
+		add: function() {
 			document.querySelector('#add-modal form').reset();
 			$('#add-modal').modal();
 		},

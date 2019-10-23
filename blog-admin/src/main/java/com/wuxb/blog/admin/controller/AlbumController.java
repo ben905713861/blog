@@ -15,6 +15,7 @@ import com.wuxb.httpServer.annotation.RequestMapping;
 import com.wuxb.httpServer.annotation.RestController;
 import com.wuxb.httpServer.db.Db;
 import com.wuxb.httpServer.params.FileInfo;
+import com.wuxb.httpServer.params.RequestMethod;
 import com.wuxb.httpServer.util.FormdataParamsEncode;
 import com.wuxb.httpServer.util.Tools;
 
@@ -65,7 +66,7 @@ public class AlbumController {
 			.find();
 	}
 	
-	@RequestMapping("/uploadThumb")
+	@RequestMapping(value="/uploadThumb", method=RequestMethod.POST)
 	public Map<String, Object> uploadThumb(HttpServletRequest httpServletRequest) {
 		Map<String, Object> resMap = new HashMap<String, Object>();
 		
@@ -89,7 +90,7 @@ public class AlbumController {
 		return resMap;
 	}
 	
-	@RequestMapping("/add")
+	@RequestMapping(value="/add", method=RequestMethod.POST)
 	public Map<String, Object> add(@PostParam Map<String, Object> postMap) throws SQLException {
 		Validate validate = new AlbumValidate();
 		if(!validate.scene("add").check(postMap)) {
@@ -105,7 +106,7 @@ public class AlbumController {
 		return Tools.returnSucc();
 	}
 	
-	@RequestMapping("/update")
+	@RequestMapping(value="/update", method=RequestMethod.POST)
 	public Map<String, Object> update(@PostParam Map<String, Object> postMap) throws SQLException {
 		Validate validate = new AlbumValidate();
 		if(!validate.scene("update").check(postMap)) {
@@ -123,7 +124,7 @@ public class AlbumController {
 		return Tools.returnSucc();
 	}
 	
-	@RequestMapping("/delete")
+	@RequestMapping(value="/delete", method=RequestMethod.POST)
 	public Map<String, Object> delete(@PostParam Map<String, Object> postMap) throws SQLException {
 		try {
 			Db.begin();

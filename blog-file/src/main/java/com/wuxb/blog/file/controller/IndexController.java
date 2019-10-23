@@ -24,15 +24,15 @@ public class IndexController {
 	
 	private class ReturnFileInfo {
 		String name;
-		String url;
+		String path;
 		long size;
 		@SuppressWarnings("unused")
 		public String getName() {
 			return name;
 		}
 		@SuppressWarnings("unused")
-		public String getUrl() {
-			return url;
+		public String getPath() {
+			return path;
 		}
 		@SuppressWarnings("unused")
 		public long getSize() {
@@ -76,7 +76,7 @@ public class IndexController {
 			ReturnFileInfo returnFileInfo = new ReturnFileInfo();
 			returnFileInfo.name = fileInfo.filename;
 			returnFileInfo.size = newFile.length();
-			returnFileInfo.url = relativePath;
+			returnFileInfo.path = relativePath;
 			returnFileInfoList.add(returnFileInfo);
 		}
 		Map<String, Object> resMap = Tools.returnSucc();
