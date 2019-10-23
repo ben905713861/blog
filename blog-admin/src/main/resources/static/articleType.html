@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>文章分类</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/toastr.min.css" rel="stylesheet">
+<link href="css/font-awesome.min.css" rel="stylesheet">
+<link href="css/animate.css" rel="stylesheet">
+<link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<style>
+	.thumb-table{max-height: 30px;max-width: 45px;}
+</style>
+</head>
+<body>
+
+<div style="padding: 20px;">
+	<form id="searchForm" class="pull-left form-inline" style="padding-top: 15px;" onsubmit="return search()">
+		<div class="form-group">
+			<button type="button" class="btn btn-sm btn-primary" onclick="modalOpen.add()"><i class="fa fa-plus"></i> 新增</button>
+		</div>
+		<div class="form-group">
+			<input type="text" class="form-control input-sm" name="type" placeholder="分类名" />
+		</div>
+		<div class="form-group">
+			<button type="submit" class="btn btn-sm btn-info"><i class="fa fa-search"></i> 搜索</button>
+			<button type="reset" class="btn btn-sm btn-default"><i class="fa fa-recycle"></i> 重置</button>
+		</div>
+	</form>
+	<table id="tableBox" data-mobile-responsive="true"></table>
+</div>
+
+
+<!-- 新增模态框 -->
+<div class="modal fade" id="add-modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog">
+		<form class="modal-content" onsubmit="return modalSubmit.add(this)">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title">文章分类新增</h4>
+			</div>
+			<div class="modal-body">
+				<table class="table table-bordered">
+					<tr>
+						<td>*分类名：</td>
+						<td><input type="text" pattern=".{1,20}" title="20字符以内" required="" class="form-control" name="type" /></td>
+					</tr>
+					<tr>
+						<td>*顺序：</td>
+						<td><input type="number" name="sort" required="" min="0" max="255" class="form-control" value="10" /></td>
+					</tr>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button type="submit" class="btn btn-primary">新增</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+<!-- 修改模态框 -->
+<div class="modal fade" id="update-modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog">
+		<form class="modal-content" onsubmit="return modalSubmit.update(this)">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h4 class="modal-title">文章分类修改</h4>
+			</div>
+			<div class="modal-body">
+				<input type="hidden" name="type_id" />
+				<table class="table table-bordered">
+					<tr>
+						<td>*分类名：</td>
+						<td><input type="text" pattern=".{1,20}" title="20字符以内" required="" class="form-control" name="type" /></td>
+					</tr>
+					<tr>
+						<td>*顺序：</td>
+						<td><input type="number" name="sort" required="" min="0" max="255" class="form-control" /></td>
+					</tr>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button type="submit" class="btn btn-primary">修改</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/plugins/layer/layer.min.js"></script>
+<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<!--右上角提示框插件-->
+<script src="js/toastr.min.js"></script>
+<script src="js/common.js"></script>
+<script type="text/javascript">
+	
+	$('#tableBox').bootstrapTable({
+		sortable: true,					 //是否启用排序
+		sortName: 'add_time',
+		sortOrder: 'desc',
+		ajax: function(params) {
+			params.data.search = getFormObj(document.getElementById('searchForm'));
+			ajax('get', '/articleType/getList', params.data, function(res) {
+				if(res.total == 0) {
+					res.total = 1;
+				}
+				params.success(res);
+			});
+		},
+		striped: true,					  //是否显示行间隔色
+		cache: false,					   //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+		pagination: true,				   //是否显示分页（*）
+		sidePagination: 'server',		   //分页方式：client客户端分页，server服务端分页（*）
+		pageNumber: 1,					   //初始化加载第一页，默认第一页
+		pageSize: 10,					   //每页的记录行数（*）
+		pageList: [10, 25, 50, 100],		//可供选择的每页的行数（*）
+		showRefresh: true,
+		showToggle: true,
+		showColumns: true,
+		iconSize: 'outline',
+		toolbar: '#searchForm',
+		columns: [
+			{
+				field: 'sort',
+				title: '序号',
+				align: 'center',
+			},
+			{
+				field: 'type',
+				title: '分类名',
+				align: 'center',
+			},
+			{
+				field: 'article_num',
+				title: '文章数量',
+				align: 'center',
+			},
+			{
+				field: 'type_id',
+				title: '操作',
+				align: 'center',
+				formatter:function(value,row,index){
+					return '<button class="btn btn-warning btn-sm" onclick="modalOpen.update('+ value +')"><i class="fa fa-list"></i> 修改</button> &nbsp;'
+						+ '<button class="btn btn-danger btn-sm" onclick="modalSubmit.delete('+ value +')"><i class="fa fa-remove"></i> 删除</button>';
+				}
+			},
+		],
+	});
+	function search() {
+		$('#tableBox').bootstrapTable('selectPage', 1);
+		return false;
+	}
+	function refresh() {
+		$('#tableBox').bootstrapTable('refresh');
+	}
+	
+	//模态框打开事件
+	var modalOpen = {
+		add: function() {
+			document.querySelector('#add-modal form').reset();
+			$('#add-modal').modal();
+		},
+		update: function(type_id) {
+			document.querySelector('#update-modal form').reset();
+			ajax('get', '/articleType/getOne', {
+				type_id: type_id,
+			}, function(res) {
+				formload(document.querySelector('#update-modal form'), res);
+				$('#update-modal').modal();
+			});
+		},
+	}
+	
+	var modalSubmit = {
+		add: function(form) {
+			var submitBtn = form.querySelector('[type="submit"]');
+			submitBtn.disabled = true;
+			ajax('post', '/articleType/add', getFormObj(form), function(res) {
+				$('#add-modal').modal('hide');
+				refresh();
+			}, null, function end() {
+				submitBtn.disabled = false;
+			});
+			return false;
+		},
+		update: function(form) {
+			var submitBtn = form.querySelector('[type="submit"]');
+			submitBtn.disabled = true;
+			ajax('post', '/articleType/update', getFormObj(form), function(res) {
+				$('#update-modal').modal('hide');
+				refresh();
+			}, null, function end() {
+				submitBtn.disabled = false;
+			});
+			return false;
+		},
+		delete: function(type_id) {
+			layer.confirm('确定要删除吗？', function(index) {
+				layer.close(index);
+				ajax('post', '/articleType/delete', {
+					type_id: type_id,
+				}, function(res) {
+					refresh();
+				});
+			});
+		},
+	}
+
+</script>
+</body>
+</html>
