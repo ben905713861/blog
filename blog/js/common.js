@@ -154,6 +154,28 @@ function ajax(method, url, data, truefun, falsefun, endfun) {
 	}
 }
 
+function loadHtml(url, f2) {
+	var xhr = new XMLHttpRequest;
+	xhr.open('GET', url);
+	xhr.onreadystatechange = function() {
+		if(xhr.readyState == 4 && xhr.status == 200) {
+			if(typeof f2 == 'function') {
+				f2(xhr.responseText);
+			}
+			else if(typeof f2 == 'object') {
+				f2.innerHTML = xhr.responseText;
+			}
+		}
+	}
+	xhr.send();
+}
+
+function loadJs(url) {
+	var script = document.createElement('script');
+	script.src = url;
+	document.body.appendChild(script);
+}
+
 //对象转url
 function urlencode(data, key) {
 	var res = '';
