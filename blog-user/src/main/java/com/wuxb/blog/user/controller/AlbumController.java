@@ -39,7 +39,7 @@ public class AlbumController {
 	public Map<String, Object> getList(@GetParam Map<String, Object> getMap) throws SQLException {
 		Map<String, Object> res = new HashMap<String, Object>();
 		List<Map<String, Object>> list = Db.table("album")
-			.order("add_time", "DESC")
+			.order("album_id", "DESC")
 			.page((long)getMap.get("page"), (long)getMap.get("limit"))
 			.select();
 		res.put("list", list);

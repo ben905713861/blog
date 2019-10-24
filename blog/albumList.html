@@ -96,10 +96,11 @@
 	});
 	
 	function search() {
-		ajax('get', 'album/getList', {
+		var query = {
 			page: page.page,
 			limit: page.limit,
-		}, function(res) {
+		}
+		ajax('get', 'album/getList', query, function(res) {
 			var albumList = res.list;
 			var newAlbumList = [
 				[],[],[],[]
@@ -113,12 +114,23 @@
 			vueDom.page.thisPage = page.page;
 			page.totalPage = Math.ceil(res.count/page.limit);
 			vueDom.page.totalPage = page.totalPage;
+			//保存查询条件
+			sessionStorage.setItem(window.location.pathname +'_query', JSON.stringify(query));
 		});
 	}
 	
 	var page = new Page(search);
-	page.limit = 8;
-	search();
+	
+	(function() {
+		page.limit = 8;
+		var query = sessionStorage.getItem(window.location.pathname +'_query');
+		if(query) {
+			query = JSON.parse(query);
+			page.page = query.page;
+			page.limit = query.limit;
+		}
+		search();
+	})();
 </script>
 </body>
 </html>

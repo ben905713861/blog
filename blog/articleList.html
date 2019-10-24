@@ -111,21 +111,36 @@
 		vueDom.articleRecommendList = res;
 	});
 	
+	
 	function search() {
-		ajax('get', 'article/getList', {
+		var query = {
 			page: page.page,
 			limit: page.limit,
-		}, function(res) {
+		}
+		ajax('get', 'article/getList', query, function(res) {
 			vueDom.articleList = res.list;
 			//页码填充
 			vueDom.page.thisPage = page.page;
 			page.totalPage = Math.ceil(res.count/page.limit);
 			vueDom.page.totalPage = page.totalPage;
+			//保存查询条件
+			sessionStorage.setItem(window.location.pathname +'_query', JSON.stringify(query));
 		});
 	}
 	
 	var page = new Page(search);
-	search();
+	
+	(function() {
+		page.limit = 3;
+		var query = sessionStorage.getItem(window.location.pathname +'_query');
+		if(query) {
+			query = JSON.parse(query);
+			page.page = query.page;
+			page.limit = query.limit;
+		}
+		search();
+	})();
+	
 </script>
 </body>
 </html>
