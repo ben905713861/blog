@@ -30,7 +30,9 @@ function Page(search) {
 	}
 	
 	this.lastPage = function() {
-		this.page = this.totalPage;
+		if(this.totalPage > 0) {
+			this.page = this.totalPage;
+		}
 		search();
 	}
 	

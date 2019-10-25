@@ -8,10 +8,10 @@
 			<a href="index.html">网站首页</a>
 		</li>
 		<li>
-			<a href="albumList.html">我的相册</a>
+			<a href="articleList.html#">我的文章</a>
 		</li>
 		<li>
-			<a href="articleList.html">我的日记</a>
+			<a href="albumList.html">我的相册</a>
 		</li>
 		<li>
 			<a href="about.html">关于我</a>
@@ -20,7 +20,7 @@
 			<a href="gbook.html">留言</a>
 		</li>
 		<li>
-			<a href="info.html">内容页</a>
+			<a href="article.html">内容页</a>
 		</li>
 		<li>
 			<a href="infopic.html">内容页</a>

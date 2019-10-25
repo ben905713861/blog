@@ -1,0 +1,158 @@
+﻿<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>文章页_小彬个人博客 - 后端技术员个人博客网站</title>
+	<meta name="keywords" content="个人博客,小彬个人博客，程序员" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="css/base.css" rel="stylesheet">
+	<link href="css/index.css" rel="stylesheet">
+	<link href="css/article.css" rel="stylesheet">
+	<link href="css/m.css" rel="stylesheet">
+	<script type="text/javascript" src="js/vue.js"></script>
+</head>
+<body>
+	
+<header class="header-navigation">
+	
+</header>
+
+<article>
+	<aside>
+		<div class="l_box">
+			<div class="search">
+				<form action="/e/search/index.php" method="post" name="searchform" id="searchform">
+					<input name="keyboard" id="keyboard" class="input_text" value="请输入关键字词" style="color: rgb(153, 153, 153);" onfocus="if(value=='请输入关键字词'){this.style.color='#000';value=''}" onblur="if(value==''){this.style.color='#999';value='请输入关键字词'}" type="text">
+					<input name="show" value="title" type="hidden">
+					<input name="tempid" value="1" type="hidden">
+					<input name="tbname" value="news" type="hidden">
+					<input name="Submit" class="input_submit" value="搜索" type="submit">
+				</form>
+			</div>
+			<div class="fenlei">
+				<h2>文章分类</h2>
+				<ul>
+					<li>
+						<a href="/">学无止境（33）</a>
+					</li>
+					<li>
+						<a href="/">日记（19）</a>
+					</li>
+					<li>
+						<a href="/">慢生活（520）</a>
+					</li>
+					<li>
+						<a href="/">美文欣赏（40）</a>
+					</li>
+				</ul>
+			</div>
+			<div class="tuijian">
+				<h2>站长推荐</h2>
+				<ul>
+					<li>
+						<a href="/">你是什么人便会遇上什么人</a>
+					</li>
+					<li>
+						<a href="/">帝国cms 列表页调用子栏目，没有则不显示栏目名称</a>
+					</li>
+					<li>
+						<a href="/">第二届 优秀个人博客模板比赛参选活动</a>
+					</li>
+					<li>
+						<a href="/">个人博客模板《绅士》后台管理</a>
+					</li>
+					<li>
+						<a href="/">你是什么人便会遇上什么人</a>
+					</li>
+					<li>
+						<a href="/">帝国cms 列表页调用子栏目，没有则不显示栏目名称</a>
+					</li>
+					<li>
+						<a href="/">第二届 优秀个人博客模板比赛参选活动</a>
+					</li>
+					<li>
+						<a href="/">个人博客模板《绅士》后台管理</a>
+					</li>
+				</ul>
+			</div>
+			<div class="guanzhu">
+				<h2>关注我 么么哒</h2>
+				<ul>
+					<img src="images/wx.jpg">
+				</ul>
+			</div>
+		</div>
+	</aside>
+	
+	<div class="infosbox">
+		<div class="newsview">
+			<h3 class="news_title">个人博客，属于我的小世界！</h3>
+			<div class="bloginfo">
+				<ul>
+					<li class="author">
+						关键字：{{ article.key_words }}
+					</li>
+					<li class="timer">时间：{{ article.add_time }}</li>
+				</ul>
+			</div>
+			<div class="tags">
+				<a href="/" target="_blank">个人博客</a> &nbsp;
+				<a href="/" target="_blank">小世界</a>
+			</div>
+			<div class="news_about">
+				<span v-html="article.description"></span>
+			</div>
+			<div class="news_con">
+				<span v-html="article.content"></span>
+			</div>
+		</div>
+		<div class="share">
+			<p class="diggit">
+				<a href="JavaScript:void()"> 很赞哦！ (<b id="diggnum">13</b>)</a>
+			</p>
+		</div>
+		<div class="nextinfo">
+			<p>上一篇：
+				<a href="/news/life/2018-03-13/804.html">作为一个设计师,如果遭到质疑你是否能恪守自己的原则?</a>
+			</p>
+			<p>下一篇：
+				<a href="/news/life/">返回列表</a>
+			</p>
+		</div>
+		<div class="news_pl">
+			<h2>文章评论</h2>
+			<ul>
+				<div class="gbko"></div>
+			</ul>
+		</div>
+	</div>
+</article>
+
+<footer>
+	
+</footer>
+
+<script type="text/javascript" src="js/commAction.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript">
+	loadHtml('tpl/header.tpl', document.querySelector('header'));
+	loadHtml('tpl/footer.tpl', document.querySelector('footer'));
+	
+	var vueDom = new Vue({
+		el: 'article',
+		data: {
+			article: {},
+		},
+	});
+	
+	var hash = window.location.hash.split('#');
+	var article_id = hash[1] ? hash[1] : '';
+	
+	ajax('get', '/article/getOne', {
+		article_id: article_id,
+	}, function(res) {
+		vueDom.article = res;
+	});
+</script>
+</body>
+</html>

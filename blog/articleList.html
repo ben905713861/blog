@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>首页_小彬个人博客 - 后端技术员个人博客网站</title>
+	<title>文章列表页_小彬个人博客 - 后端技术员个人博客网站</title>
 	<meta name="keywords" content="个人博客,小彬个人博客，程序员" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link href="css/base.css" rel="stylesheet">
@@ -20,19 +20,20 @@
 	<aside>
 		<div class="l_box">
 			<div class="search">
-				<form action="/e/search/index.php" method="post" name="searchform" id="searchform">
-					<input name="keyboard" id="keyboard" class="input_text" value="请输入关键字词" style="color: rgb(153, 153, 153);" onfocus="if(value=='请输入关键字词'){this.style.color='#000';value=''}" onblur="if(value==''){this.style.color='#999';value='请输入关键字词'}" type="text">
-					<input name="show" value="title" type="hidden">
-					<input name="tempid" value="1" type="hidden">
-					<input name="tbname" value="news" type="hidden">
-					<input name="Submit" class="input_submit" value="搜索" type="submit">
+				<form id="search-form">
+					<input type="text" name="title" class="input_text" placeholder="请输入关键字查询相关文章">
+					<input type="hidden" name="type_id">
+					<input type="submit" class="input_submit" value="搜索">
 				</form>
 			</div>
 			<div class="fenlei">
 				<h2>文章分类</h2>
 				<ul>
+					<li>
+						<a href="articleList.html#">全部（{{ articleCount }}）</a>
+					</li>
 					<li v-for="typeInfo in articleTypeList">
-						<a :href="'articlelist.html#'+ typeInfo.type_id">{{ typeInfo.type }}（{{ typeInfo.article_num }}）</a>
+						<a :href="'articleList.html#'+ typeInfo.type_id">{{ typeInfo.type }}（{{ typeInfo.article_num }}）</a>
 					</li>
 				</ul>
 			</div>
@@ -40,7 +41,7 @@
 				<h2>站长推荐</h2>
 				<ul>
 					<li v-for="articleInfo in articleRecommendList">
-						<a :href="'articlelist.html#'+ articleInfo.article_id">{{ articleInfo.title }}</a>
+						<a :href="'article.html#'+ articleInfo.article_id">{{ articleInfo.title }}</a>
 					</li>
 				</ul>
 			</div>
@@ -58,15 +59,22 @@
 			</div>
 		</div>
 	</aside>
+	
 	<div class="r_box">
+		<h4 style="margin-bottom: 15px;background: #fff;padding: 5px 12px;">文章分类： {{ articleType }}，共{{ typeArticleCount }}篇</h4>
 		<ul>
-			<li v-for="articleInfo in articleList">
-				<i>
-					<a :href="'article.html#'+ articleInfo.article_id"><img :src="articleInfo.thumb_path" style="width: 150px;height: 100px;"></a>
-				</i>
-				<h3><a :href="'article.html#'+ articleInfo.article_id">{{ articleInfo.title }}</a></h3>
-				<p>{{ articleInfo.description }}</p>
-			</li>
+			<template v-if="articleList.length > 0">
+				<li v-for="articleInfo in articleList">
+					<i>
+						<a :href="'article.html#'+ articleInfo.article_id"><img :src="articleInfo.thumb_path" style="width: 150px;height: 100px;"></a>
+					</i>
+					<h3><a :href="'article.html#'+ articleInfo.article_id">{{ articleInfo.title }}</a></h3>
+					<p>{{ articleInfo.description }}</p>
+				</li>
+			</template>
+			<template v-else="">
+				<li>空</li>
+			</template>
 		</ul>
 		<div class="pagelist">
 			<span class="thispage">{{ page.thisPage }}</span> &nbsp;
@@ -93,7 +101,10 @@
 	var vueDom = new Vue({
 		el: 'article',
 		data: {
+			articleType: '',
 			articleTypeList: [],
+			articleCount: 0,
+			typeArticleCount: 0,
 			articleRecommendList: [],
 			articleList: [],
 			page: {
@@ -106,41 +117,65 @@
 	
 	ajax('get', 'article/getTypes', null, function(res) {
 		vueDom.articleTypeList = res;
+		var articleCount = 0;
+		res.forEach(function(info) {
+			articleCount += info.article_num;
+		});
+		vueDom.articleCount = articleCount;
 	});
 	ajax('get', 'article/getRecommend', null, function(res) {
 		vueDom.articleRecommendList = res;
 	});
 	
+	//搜索框搜索事件
+	document.getElementById('search-form').onsubmit = function() {
+		page.page = 1;
+		search();
+		return false;
+	}
 	
 	function search() {
-		var query = {
-			page: page.page,
-			limit: page.limit,
-		}
+		var query = getFormObj(document.querySelector('form#search-form'));
+		query.page = page.page;
+		query.limit = page.limit;
+		
 		ajax('get', 'article/getList', query, function(res) {
 			vueDom.articleList = res.list;
+			vueDom.articleType = res.type;
+			vueDom.typeArticleCount = res.count;
 			//页码填充
 			vueDom.page.thisPage = page.page;
 			page.totalPage = Math.ceil(res.count/page.limit);
 			vueDom.page.totalPage = page.totalPage;
 			//保存查询条件
-			sessionStorage.setItem(window.location.pathname +'_query', JSON.stringify(query));
+			sessionStorage.setItem(window.location.toString() +'_query', JSON.stringify(query));
 		});
 	}
 	
 	var page = new Page(search);
 	
-	(function() {
+	function init() {
+		//页面显示数量
 		page.limit = 3;
-		var query = sessionStorage.getItem(window.location.pathname +'_query');
+		//类型
+		var hash = window.location.hash.split('#');
+		var type_id = hash[1] ? hash[1] : '';
+		var title = hash[2] ? hash[2] : '';
+		document.querySelector('#search-form input[name="type_id"]').value = type_id;
+		document.querySelector('#search-form input[name="title"]').value = title;
+		var query = sessionStorage.getItem(window.location.toString() +'_query');
 		if(query) {
 			query = JSON.parse(query);
 			page.page = query.page;
 			page.limit = query.limit;
 		}
 		search();
-	})();
+	}
+	init();
 	
+	window.addEventListener('hashchange', function() {
+		init();
+	});
 </script>
 </body>
 </html>

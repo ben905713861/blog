@@ -39,7 +39,27 @@ public class ArticleController {
 	@RequestMapping("/getList")
 	public Map<String, Object> getList(@GetParam Map<String, Object> getMap) throws SQLException {
 		Map<String, Object> res = new HashMap<String, Object>();
+		
+		Map<String, Object> where = new HashMap<String, Object>();
+		Object _title = getMap.get("title");
+		if(_title != null) {
+			String title;
+			if(_title instanceof String) {
+				title = (String) _title;
+			} else {
+				title = _title.toString();
+			}
+			if(title != null && !title.isBlank()) {
+				where.put("title", new Object[] {"LIKE", "%"+title.trim()+"%"});
+			}
+		}
+		Long type_id = (Long) getMap.get("type_id");
+		if(type_id != null) {
+			where.put("type_id", type_id);
+		}
+		
 		List<Map<String, Object>> list = Db.table("article")
+			.where(where)
 			.order("add_time", "DESC")
 			.page((long)getMap.getOrDefault("page", 1l), (long)getMap.getOrDefault("limit", 10l))
 			.select();
@@ -51,17 +71,33 @@ public class ArticleController {
 			}
 		}
 		res.put("list", list);
-		int count = Db.table("article").count();
+		
+		int count = Db.table("article")
+			.where(where)
+			.count();
 		res.put("count", count);
+		
+		String type;
+		if(type_id != null) {
+			type = (String) Db.table("article_type")
+				.where("type_id", type_id)
+				.limit(1)
+				.value("type");
+		} else {
+			type = "全部";
+		}
+		res.put("type", type);
+		
 		return res;
 	}
 	
-	@RequestMapping("/getDetail")
-	public List<Map<String, Object>> getDetail(@GetParam Map<String, Object> getMap) throws SQLException {
-		List<Map<String, Object>> list = Db.table("album_img")
-			.where("album_id", getMap.get("album_id"))
-			.select();
-		return list;
+	@RequestMapping("/getOne")
+	public Map<String, Object> getOne(@GetParam Map<String, Object> getMap) throws SQLException {
+		Map<String, Object> res = Db.table("article a")
+			.join("article_content t", "t.article_id=a.article_id", "LEFT")
+			.where("a.article_id", getMap.get("article_id"))
+			.find();
+		return res;
 	}
 	
 }
