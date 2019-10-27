@@ -41,6 +41,7 @@ public class ArticleTypeController {
 			.limit((long)getMap.get("offset"), (long)getMap.get("limit"))
 			.select();
 		res.put("rows", rows);
+		
 		int total = Db.table("article_type at")
 			.where(where)
 			.count();

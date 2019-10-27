@@ -16,6 +16,7 @@ import com.wuxb.httpServer.annotation.RestController;
 import com.wuxb.httpServer.db.Db;
 import com.wuxb.httpServer.params.FileInfo;
 import com.wuxb.httpServer.params.RequestMethod;
+import com.wuxb.httpServer.util.Config;
 import com.wuxb.httpServer.util.FormdataParamsEncode;
 import com.wuxb.httpServer.util.Tools;
 
@@ -23,6 +24,8 @@ import com.wuxb.httpServer.util.Tools;
 @RequestMapping("/album")
 public class AlbumController {
 
+	private static final String FILE_SERVER_DOMAIN = Config.get("FILE_SERVER_DOMAIN");
+	
 	@RequestMapping("/getList")
 	public Map<String, Object> getList(@GetParam Map<String, Object> getMap) throws SQLException {
 		Map<String, Object> res = new HashMap<String, Object>();
@@ -51,19 +54,28 @@ public class AlbumController {
 			.order("add_time", "DESC")
 			.limit((long)getMap.get("offset"), (long)getMap.get("limit"))
 			.select();
+		for(Map<String, Object> row : rows) {
+			String thumb_path = (String) row.get("thumb_path");
+			row.put("thumb_url", FILE_SERVER_DOMAIN + thumb_path);
+		}
 		res.put("rows", rows);
+		
 		int total = Db.table("album a")
 			.where(where)
 			.count();
 		res.put("total", total);
+		
 		return res;
 	}
 	
 	@RequestMapping("/getOne")
 	public Map<String, Object> getOne(@GetParam Map<String, Object> getMap) throws SQLException {
-		return Db.table("album")
+		Map<String, Object> info = Db.table("album")
 			.where("album_id", getMap.get("album_id"))
 			.find();
+		String thumb_path = (String) info.get("thumb_path");
+		info.put("thumb_url", FILE_SERVER_DOMAIN + thumb_path);
+		return info;
 	}
 	
 	@RequestMapping(value="/uploadThumb", method=RequestMethod.POST)
@@ -86,7 +98,8 @@ public class AlbumController {
 		Map<String, Object> fileResult = fileResultList.get(0);
 		
 		resMap.put("status", true);
-		resMap.put("url", fileResult.get("url"));
+		resMap.put("thumb_path", fileResult.get("path"));
+		resMap.put("thumb_url", fileResult.get("url"));
 		return resMap;
 	}
 	

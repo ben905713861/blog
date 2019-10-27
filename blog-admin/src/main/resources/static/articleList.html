@@ -75,7 +75,7 @@
 						<td>缩略图：</td>
 						<td>
 							<a onclick="modalSubmit.uploadThumb(this)">
-								<img style="max-height: 100px;" src="img/upload-thumb.png" title="点我上传" />
+								<img name="thumb_url" style="max-height: 100px;" src="img/upload-thumb.png" title="点我上传" />
 								<input type="text" class="hidden" name="thumb_path" />
 							</a>
 						</td>
@@ -165,7 +165,7 @@
 						<td>缩略图：</td>
 						<td>
 							<a onclick="modalSubmit.uploadThumb(this)">
-								<img name="thumb_img" style="max-height: 100px;" src="" title="点我上传" />
+								<img name="thumb_url" style="max-height: 100px;" src="" title="点我上传" />
 								<input type="text" class="hidden" name="thumb_path" />
 							</a>
 						</td>
@@ -281,8 +281,8 @@
 				title: '操作',
 				align: 'center',
 				formatter:function(value,row,index){
-					return '<button class="btn btn-default btn-sm" onclick="modalOpen.show('+value+')"><i class="fa fa-list"></i> 查看</button>&nbsp;&nbsp;'
-						+ '<button class="btn btn-warning btn-sm" onclick="modalOpen.update('+value+')"><i class="fa fa-list"></i> 修改</button>&nbsp;&nbsp;'
+					return '<button class="btn btn-default btn-sm" onclick="modalOpen.show('+value+')"><i class="fa fa-list"></i> 查看</button> &nbsp;'
+						+ '<button class="btn btn-warning btn-sm" onclick="modalOpen.update('+value+')"><i class="fa fa-list"></i> 修改</button> &nbsp;'
 						+ '<button class="btn btn-danger btn-sm" onclick="modalSubmit.delete('+value+')"><i class="fa fa-remove"></i> 删除</button>';
 				}
 			},
@@ -321,10 +321,8 @@
 			ajax('get', '/article/getOne', {
 				article_id: article_id
 			}, function(res) {
-				if(res.thumb_path) {
-					res.thumb_img = res.thumb_path;
-				} else {
-					res.thumb_img = 'img/upload-thumb.png';
+				if(!res.thumb_path) {
+					res.thumb_url = 'img/upload-thumb.png';
 				}
 				formload(document.querySelector('#update-modal form'), res);
 				$('#update-modal').modal();
@@ -341,8 +339,7 @@
 				ajax('file', '/article/uploadThumb', {
 					articleThumb: file,
 				}, function(res) {
-					btn.querySelector('input[name="thumb_path"]').value = res.url;
-					btn.querySelector('img').src = res.url;
+					formload(btn, res);
 				});
 			});
 		},

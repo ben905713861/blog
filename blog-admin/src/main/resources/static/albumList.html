@@ -62,7 +62,7 @@
 						<td>缩略图：</td>
 						<td>
 							<a onclick="modalSubmit.uploadThumb(this)">
-								<img style="max-height: 100px;" src="img/upload-thumb.png" title="点我上传" />
+								<img name="thumb_url" style="max-height: 100px;" src="img/upload-thumb.png" title="点我上传" />
 								<input type="text" class="hidden" name="thumb_path" />
 							</a>
 						</td>
@@ -109,7 +109,7 @@
 						<td>缩略图：</td>
 						<td>
 							<a onclick="modalSubmit.uploadThumb(this)">
-								<img name="thumb_img" style="max-height: 100px;" src="img/upload-thumb.png" title="点我上传" />
+								<img name="thumb_url" style="max-height: 100px;" src="img/upload-thumb.png" title="点我上传" />
 								<input type="text" class="hidden" name="thumb_path" />
 							</a>
 						</td>
@@ -182,11 +182,11 @@
 				align: 'center',
 			},
 			{
-				field: 'thumb_path',
+				field: 'thumb_url',
 				title: '缩略图',
 				align: 'center',
 				formatter: function(value, row) {
-					if(value) {
+					if(row.thumb_path) {
 						return '<img src="'+ value +'" class="thumb-table" />';
 					}
 				},
@@ -239,10 +239,8 @@
 			ajax('get', '/album/getOne', {
 				album_id: album_id
 			}, function(res) {
-				if(res.thumb_path) {
-					res.thumb_img = res.thumb_path;
-				} else {
-					res.thumb_img = 'img/upload-thumb.png';
+				if(!res.thumb_path) {
+					res.thumb_url = 'img/upload-thumb.png';
 				}
 				formload(document.querySelector('#update-modal form'), res);
 				$('#update-modal').modal();
@@ -256,8 +254,7 @@
 				ajax('file', '/album/uploadThumb', {
 					albumThumb: file,
 				}, function(res) {
-					btn.querySelector('input[name="thumb_path"]').value = res.url;
-					btn.querySelector('img').src = res.url;
+					formload(btn, res);
 				});
 			});
 		},

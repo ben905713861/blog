@@ -1,0 +1,4 @@
+//1938行
+//吴小彬 2019.3.7 预防重放
+g.headers.time = (new Date).getTime();
+g.headers.random = Math.random();

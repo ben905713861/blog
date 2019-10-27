@@ -21,64 +21,35 @@
 	<aside>
 		<div class="l_box">
 			<div class="search">
-				<form action="/e/search/index.php" method="post" name="searchform" id="searchform">
-					<input name="keyboard" id="keyboard" class="input_text" value="请输入关键字词" style="color: rgb(153, 153, 153);" onfocus="if(value=='请输入关键字词'){this.style.color='#000';value=''}" onblur="if(value==''){this.style.color='#999';value='请输入关键字词'}" type="text">
-					<input name="show" value="title" type="hidden">
-					<input name="tempid" value="1" type="hidden">
-					<input name="tbname" value="news" type="hidden">
-					<input name="Submit" class="input_submit" value="搜索" type="submit">
+				<form id="search-form">
+					<input type="text" name="title" class="input_text" placeholder="请输入关键字查询相关文章">
+					<input type="hidden" name="type_id">
+					<input type="submit" class="input_submit" value="搜索">
 				</form>
 			</div>
 			<div class="fenlei">
 				<h2>文章分类</h2>
 				<ul>
 					<li>
-						<a href="/">学无止境（33）</a>
+						<a href="articleList.html#">全部（{{ articleCount }}）</a>
 					</li>
-					<li>
-						<a href="/">日记（19）</a>
-					</li>
-					<li>
-						<a href="/">慢生活（520）</a>
-					</li>
-					<li>
-						<a href="/">美文欣赏（40）</a>
+					<li v-for="typeInfo in articleTypeList">
+						<a :href="'articleList.html#'+ typeInfo.type_id">{{ typeInfo.type }}（{{ typeInfo.article_num }}）</a>
 					</li>
 				</ul>
 			</div>
 			<div class="tuijian">
 				<h2>站长推荐</h2>
 				<ul>
-					<li>
-						<a href="/">你是什么人便会遇上什么人</a>
-					</li>
-					<li>
-						<a href="/">帝国cms 列表页调用子栏目，没有则不显示栏目名称</a>
-					</li>
-					<li>
-						<a href="/">第二届 优秀个人博客模板比赛参选活动</a>
-					</li>
-					<li>
-						<a href="/">个人博客模板《绅士》后台管理</a>
-					</li>
-					<li>
-						<a href="/">你是什么人便会遇上什么人</a>
-					</li>
-					<li>
-						<a href="/">帝国cms 列表页调用子栏目，没有则不显示栏目名称</a>
-					</li>
-					<li>
-						<a href="/">第二届 优秀个人博客模板比赛参选活动</a>
-					</li>
-					<li>
-						<a href="/">个人博客模板《绅士》后台管理</a>
+					<li v-for="articleInfo in articleRecommendList">
+						<a :href="'article.html#'+ articleInfo.article_id">{{ articleInfo.title }}</a>
 					</li>
 				</ul>
 			</div>
 			<div class="guanzhu">
 				<h2>关注我 么么哒</h2>
 				<ul>
-					<img src="images/wx.jpg">
+					<img :src="userInfo.share_code_img_url">
 				</ul>
 			</div>
 		</div>
@@ -86,44 +57,85 @@
 	
 	<div class="infosbox">
 		<div class="newsview">
-			<h3 class="news_title">个人博客，属于我的小世界！</h3>
+			<h3 class="news_title">{{ articleInfo.title }}</h3>
 			<div class="bloginfo">
 				<ul>
-					<li class="author">
-						关键字：{{ article.key_words }}
-					</li>
-					<li class="timer">时间：{{ article.add_time }}</li>
+					<li class="timer">分类：<a :href="'articleList.html#'+ articleInfo.type_id" style="text-decoration: underline;">{{ articleInfo.type }}</a></li>
+					<li class="timer">发表时间：{{ articleInfo.add_time | timestampToStr }}</li>
+					<li class="author">置顶：{{ articleInfo.is_recommend ? '是' : '否' }}</li>
 				</ul>
 			</div>
 			<div class="tags">
-				<a href="/" target="_blank">个人博客</a> &nbsp;
-				<a href="/" target="_blank">小世界</a>
+				<template v-if="articleInfo.key_words">
+					<template v-for="key_word in articleInfo.key_words.split(' ')">
+						<a>{{ key_word }}</a>
+					</template>
+				</template>
 			</div>
 			<div class="news_about">
-				<span v-html="article.description"></span>
+				{{ articleInfo.description }}
 			</div>
 			<div class="news_con">
-				<span v-html="article.content"></span>
+				<span v-html="articleInfo.content"></span>
 			</div>
 		</div>
 		<div class="share">
 			<p class="diggit">
-				<a href="JavaScript:void()"> 很赞哦！ (<b id="diggnum">13</b>)</a>
+				<a href="javascript:void(0)" onclick="like()"> 很赞哦！ (<b id="diggnum">{{ articleInfo.like_num }}</b>)</a>
 			</p>
 		</div>
 		<div class="nextinfo">
-			<p>上一篇：
-				<a href="/news/life/2018-03-13/804.html">作为一个设计师,如果遭到质疑你是否能恪守自己的原则?</a>
+			<p>
+				<template v-if="lastArticleInfo != null">
+					<a :href="'article.html#'+ lastArticleInfo.article_id">上一篇：{{ lastArticleInfo.title }}</a>
+				</template>
+				<template v-else="">
+					<a>上一篇：【已经是第一篇】</a>
+				</template>
 			</p>
-			<p>下一篇：
-				<a href="/news/life/">返回列表</a>
+			<p>
+				<template v-if="nextArticleInfo != null">
+					<a :href="'article.html#'+ nextArticleInfo.article_id">下一篇：{{ nextArticleInfo.title }}</a>
+				</template>
+				<template v-else="">
+					<a>下一篇：【已经是最后一篇】</a>
+				</template>
 			</p>
 		</div>
 		<div class="news_pl">
-			<h2>文章评论</h2>
+			<h2>文章评论（{{ commentNum }}）</h2>
+			<form style="padding: 20px;" onsubmit="return addComment(this)">
+				<div class="baseinfo-box">
+					<label>您的名称：<input type="text" name="name" pattern=".{0,20}" title="20字以内" placeholder="选填" class="input" /></label> &nbsp;&nbsp;&nbsp;
+					<label>联系方式：<input type="text" name="connection" max=".{0,50}" title="50字以内" placeholder="选填" class="input" /></label>
+				</div>
+				<script id="editor_add" name="content" type="text/plain" style="width:100%;height: 135px;"></script>
+				<div class="btn-box">
+					<input type="submit" class="submit" value="评论" />
+				</div>
+			</form>
 			<ul>
-				<div class="gbko"></div>
+				<template v-if="commentList.length > 0">
+					<li v-for="comment in commentList">
+						<img class="head" src="images/comment_user.png">
+						<div class="comment-box">
+							<div class="content">
+								<span v-html="comment.content"></span>
+							</div>
+							<div class="info">
+								<span>{{ comment.name=='' ? '匿名' : comment.name }}[{{ comment.connection=='' ? '无' : comment.connection }}]</span>&nbsp;
+								<span>评论于{{ comment.add_time | timestampToStr }}</span>
+							</div>
+						</div>
+					</li>
+				</template>
+				<template v-else="">
+					<li style="text-align: center;">暂无评论，快来坐沙发吧~</li>
+				</template>
 			</ul>
+			<div class="more">
+				<button v-if="commentList.length > 0" class="btn" onclick="page.addPage()">加载更多</button>
+			</div>
 		</div>
 	</div>
 </article>
@@ -134,6 +146,10 @@
 
 <script type="text/javascript" src="js/commAction.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/Page.js"></script>
+<!--ueditor编辑器-->
+<script src="plugins/ueditor/ueditor.config.js"></script>
+<script src="plugins/ueditor/ueditor.all.min.js"></script>
 <script type="text/javascript">
 	loadHtml('tpl/header.tpl', document.querySelector('header'));
 	loadHtml('tpl/footer.tpl', document.querySelector('footer'));
@@ -141,17 +157,123 @@
 	var vueDom = new Vue({
 		el: 'article',
 		data: {
-			article: {},
+			userInfo: {},
+			articleTypeList: [],
+			articleCount: 0,
+			typeArticleCount: 0,
+			articleRecommendList: [],
+			articleInfo: {},
+			lastArticleInfo: {},
+			nextArticleInfo: {},
+			commentList: [],
+			commentNum: 0,
+		},
+		filters: {
+			timestampToStr: function(value) {
+				return timestampToStr(value);
+			},
 		},
 	});
 	
-	var hash = window.location.hash.split('#');
-	var article_id = hash[1] ? hash[1] : '';
+	var article_id;
+	function init() {
+		var hash = window.location.hash.split('#');
+		article_id = hash[1] ? hash[1] : '';
+		ajax('get', '/article/getOne', {
+			article_id: article_id,
+		}, function(res) {
+			vueDom.articleInfo = res.articleInfo;
+			vueDom.lastArticleInfo = res.lastArticleInfo;
+			vueDom.nextArticleInfo = res.nextArticleInfo;
+		});
+		vueDom.commentList = [];
+		page.page = 1;
+		getComment();
+	}
 	
-	ajax('get', '/article/getOne', {
-		article_id: article_id,
-	}, function(res) {
-		vueDom.article = res;
+	//评论列表
+	function getComment() {
+		ajax('get', '/articleComment/getList', {
+			article_id: article_id,
+			page: page.page,
+			limit: page.limit,
+		}, function(res) {
+			res.list.forEach(function(row) {
+				vueDom.commentList.push(row);
+			});
+			page.totalPage = Math.ceil(res.count/page.limit);
+			vueDom.commentNum = res.count;
+		});
+	}
+	//评论分页
+	var page = new Page(getComment);
+	page.limit = 2;
+	
+	init();
+	ajax('get', 'article/getTypes', null, function(res) {
+		vueDom.articleTypeList = res;
+		var articleCount = 0;
+		res.forEach(function(info) {
+			articleCount += info.article_num;
+		});
+		vueDom.articleCount = articleCount;
+	});
+	ajax('get', 'article/getRecommend', null, function(res) {
+		vueDom.articleRecommendList = res;
+	});
+	ajax('get', 'index/index', null, function(res) {
+		vueDom.userInfo = res.userInfo;
+	});
+	
+	//文本编辑器
+	//实例化编辑器
+	window.UEDITOR_CONFIG.serverUrl = '/api/ueditor/index?type=article_comment';//type决定上传到哪个目录
+	var editor_add = UE.getEditor('editor_add');
+	
+	document.querySelector('form#search-form').onsubmit = function() {
+		var queryParams = getFormObj(this);
+		window.location.href = 'articleList.html##'+ queryParams.title;
+		return false;
+	}
+	
+	//点赞
+	function like() {
+		var is_like = localStorage.getItem('article_like_'+ article_id);
+		if(is_like) {
+			alert('您已经为本文章点过赞');
+			return;
+		}
+		ajax('post', '/article/like', {
+			article_id: article_id,
+		}, function(res) {
+			vueDom.articleInfo.like_num += 1;
+			localStorage.setItem('article_like_'+ article_id, 1);
+		});
+	}
+	
+	//发表评论
+	function addComment(form) {
+		var data = getFormObj(form);
+		data.article_id = article_id;
+		if(!editor_add.hasContents()) {
+			alert('留言内容不得为空');
+			return false;
+		}
+		var submitBtn = form.querySelector('[type="submit"]');
+		submitBtn.disabled = true;
+		ajax('post', '/articleComment/add', data, function(res) {
+			editor_add.execCommand('cleardoc');
+			vueDom.commentList = [];
+			page.page = 1;
+			getComment();
+		}, null, function end() {
+			submitBtn.disabled = false;
+		});
+		return false;
+	}
+	
+	window.addEventListener('hashchange', function() {
+		init();
 	});
 </script>
 </body>

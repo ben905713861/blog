@@ -6,10 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.wuxb.httpServer.annotation.GetParam;
+import com.wuxb.httpServer.annotation.PostParam;
 import com.wuxb.httpServer.annotation.RequestMapping;
 import com.wuxb.httpServer.annotation.RestController;
 import com.wuxb.httpServer.db.Db;
+import com.wuxb.httpServer.params.RequestMethod;
 import com.wuxb.httpServer.util.Config;
+import com.wuxb.httpServer.util.Tools;
 
 @RestController
 @RequestMapping("/album")
@@ -19,30 +22,41 @@ public class AlbumController {
 	
 	@RequestMapping("/getRecommend")
 	public List<Map<String, Object>> getRecommend(@GetParam Map<String, Object> getMap) throws SQLException {
-		List<Map<String, Object>> albumRecommendList = Db.table("album")
+		List<Map<String, Object>> list = Db.table("album")
 			.field("album_id,title,thumb_path")
 			.where("is_recommend", 1)
 			.order("add_time", "DESC")
 			.limit(6)
 			.select();
-		for(Map<String, Object> map : albumRecommendList) {
+		for(Map<String, Object> map : list) {
 			String thumb_path = (String) map.get("thumb_path");
 			if(thumb_path == null || thumb_path.isEmpty()) {
-				thumb_path = "images/default_thumb_264x176.jpg";
-				map.replace("thumb_path", thumb_path);
+				map.put("thumb_url", "images/default_thumb_264x176.jpg");
+			} else {
+				map.put("thumb_url", FILE_SERVER_DOMAIN + thumb_path);
 			}
 		}
-		return albumRecommendList;
+		return list;
 	}
 	
 	@RequestMapping("/getList")
 	public Map<String, Object> getList(@GetParam Map<String, Object> getMap) throws SQLException {
 		Map<String, Object> res = new HashMap<String, Object>();
+		
 		List<Map<String, Object>> list = Db.table("album")
 			.order("album_id", "DESC")
 			.page((long)getMap.get("page"), (long)getMap.get("limit"))
 			.select();
+		for(Map<String, Object> map : list) {
+			String thumb_path = (String) map.get("thumb_path");
+			if(thumb_path == null || thumb_path.isEmpty()) {
+				map.put("thumb_url", "images/default_thumb_264x176.jpg");
+			} else {
+				map.put("thumb_url", FILE_SERVER_DOMAIN + thumb_path);
+			}
+		}
 		res.put("list", list);
+		
 		int count = Db.table("album").count();
 		res.put("count", count);
 		return res;
@@ -68,6 +82,15 @@ public class AlbumController {
 		res.put("imgList", list);
 		
 		return res;
+	}
+	
+	@RequestMapping(value="/like", method=RequestMethod.POST)
+	public Map<String, Object> like(@PostParam Map<String, Object> postMap) throws SQLException {
+		Db.table("album")
+			.where("album_id", postMap.get("album_id"))
+			.limit(1)
+			.setInc("like_num", 1);
+		return Tools.returnSucc();
 	}
 	
 }

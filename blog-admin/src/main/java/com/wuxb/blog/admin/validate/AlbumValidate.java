@@ -18,7 +18,7 @@ public class AlbumValidate extends Validate {
 		rulesMap.put("title", "require|string|max:50");
 		rulesMap.put("description", "string|max:255");
 		rulesMap.put("is_recommend", "require|bool");
-		rulesMap.put("thumb_path", "url");
+		rulesMap.put("thumb_path", "max:100");
 		
 		fieldNameList.put("title", "相册名");
 		fieldNameList.put("description", "描述");

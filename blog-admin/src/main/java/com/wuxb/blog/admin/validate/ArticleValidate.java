@@ -20,7 +20,7 @@ public class ArticleValidate extends Validate {
 		rulesMap.put("key_words", "string|max:100");
 		rulesMap.put("description", "string|max:255");
 		rulesMap.put("is_recommend", "require|bool");
-		rulesMap.put("thumb_path", "url");
+		rulesMap.put("thumb_path", "max:100");
 		rulesMap.put("content", "require|max:65535");
 		
 		fieldNameList.put("type_id", "分类");

@@ -16,6 +16,7 @@ import com.wuxb.httpServer.annotation.RestController;
 import com.wuxb.httpServer.db.Db;
 import com.wuxb.httpServer.params.FileInfo;
 import com.wuxb.httpServer.params.RequestMethod;
+import com.wuxb.httpServer.util.Config;
 import com.wuxb.httpServer.util.FormdataParamsEncode;
 import com.wuxb.httpServer.util.HtmlFilter;
 import com.wuxb.httpServer.util.Tools;
@@ -24,6 +25,8 @@ import com.wuxb.httpServer.util.Tools;
 @RequestMapping("/article")
 public class ArticleController {
 
+	private static final String FILE_SERVER_DOMAIN = Config.get("FILE_SERVER_DOMAIN");
+	
 	@RequestMapping("/init")
 	public List<Map<String, Object>> init() throws SQLException {
 		return Db.table("article_type")
@@ -76,11 +79,14 @@ public class ArticleController {
 	
 	@RequestMapping("/getOne")
 	public Map<String, Object> getOne(@GetParam Map<String, Object> getMap) throws SQLException {
-		return Db.table("article a")
+		Map<String, Object> info = Db.table("article a")
 			.join("article_content c", "c.article_id=a.article_id", "LEFT")
 			.field("a.*,c.content")
 			.where("a.article_id", getMap.get("article_id"))
 			.find();
+		String thumb_path = (String) info.get("thumb_path");
+		info.put("thumb_url", FILE_SERVER_DOMAIN + thumb_path);
+		return info;
 	}
 	
 	@RequestMapping(value="/uploadThumb", method=RequestMethod.POST)
@@ -103,7 +109,8 @@ public class ArticleController {
 		Map<String, Object> fileResult = fileResultList.get(0);
 		
 		resMap.put("status", true);
-		resMap.put("url", fileResult.get("url"));
+		resMap.put("thumb_path", fileResult.get("path"));
+		resMap.put("thumb_url", fileResult.get("url"));
 		return resMap;
 	}
 	

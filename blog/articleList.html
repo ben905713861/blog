@@ -54,7 +54,7 @@
 			<div class="guanzhu">
 				<h2>关注我 么么哒</h2>
 				<ul>
-					<img src="images/wx.jpg">
+					<img :src="userInfo.share_code_img_url">
 				</ul>
 			</div>
 		</div>
@@ -66,7 +66,7 @@
 			<template v-if="articleList.length > 0">
 				<li v-for="articleInfo in articleList">
 					<i>
-						<a :href="'article.html#'+ articleInfo.article_id"><img :src="articleInfo.thumb_path" style="width: 150px;height: 100px;"></a>
+						<a :href="'article.html#'+ articleInfo.article_id"><img :src="articleInfo.thumb_url" style="width: 150px;height: 100px;"></a>
 					</i>
 					<h3><a :href="'article.html#'+ articleInfo.article_id">{{ articleInfo.title }}</a></h3>
 					<p>{{ articleInfo.description }}</p>
@@ -101,6 +101,7 @@
 	var vueDom = new Vue({
 		el: 'article',
 		data: {
+			userInfo: {},
 			articleType: '',
 			articleTypeList: [],
 			articleCount: 0,
@@ -114,7 +115,9 @@
 		},
 	});
 	
-	
+	ajax('get', 'index/index', null, function(res) {
+		vueDom.userInfo = res.userInfo;
+	});
 	ajax('get', 'article/getTypes', null, function(res) {
 		vueDom.articleTypeList = res;
 		var articleCount = 0;

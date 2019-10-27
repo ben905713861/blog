@@ -21,7 +21,7 @@
 		<ul>
 			<li v-for="albumInfo in albumList[0]" data-scroll-reveal="enter bottom over 1s">
 				<a :href="'album.html#'+ albumInfo.album_id">
-					<i><img :src="albumInfo.thumb_path"></i>
+					<i><img :src="albumInfo.thumb_url"></i>
 					<div class="picinfo">
 						<h3>{{ albumInfo.title }}</h3>
 						<span>{{ albumInfo.description }}</span>
@@ -32,7 +32,7 @@
 		<ul>
 			<li v-for="albumInfo in albumList[1]" data-scroll-reveal="enter bottom over 1s">
 				<a :href="'album.html#'+ albumInfo.album_id">
-					<i><img :src="albumInfo.thumb_path"></i>
+					<i><img :src="albumInfo.thumb_url"></i>
 					<div class="picinfo">
 						<h3>{{ albumInfo.title }}</h3>
 						<span>{{ albumInfo.description }}</span>
@@ -43,7 +43,7 @@
 		<ul>
 			<li v-for="albumInfo in albumList[2]" data-scroll-reveal="enter bottom over 1s">
 				<a :href="'album.html#'+ albumInfo.album_id">
-					<i><img :src="albumInfo.thumb_path"></i>
+					<i><img :src="albumInfo.thumb_url"></i>
 					<div class="picinfo">
 						<h3>{{ albumInfo.title }}</h3>
 						<span>{{ albumInfo.description }}</span>
@@ -54,7 +54,7 @@
 		<ul>
 			<li v-for="albumInfo in albumList[3]" data-scroll-reveal="enter bottom over 1s">
 				<a :href="'album.html#'+ albumInfo.album_id">
-					<i><img :src="albumInfo.thumb_path"></i>
+					<i><img :src="albumInfo.thumb_url"></i>
 					<div class="picinfo">
 						<h3>{{ albumInfo.title }}</h3>
 						<span>{{ albumInfo.description }}</span>

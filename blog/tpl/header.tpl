@@ -14,16 +14,10 @@
 			<a href="albumList.html">我的相册</a>
 		</li>
 		<li>
-			<a href="about.html">关于我</a>
-		</li>
-		<li>
 			<a href="gbook.html">留言</a>
 		</li>
 		<li>
-			<a href="article.html">内容页</a>
-		</li>
-		<li>
-			<a href="infopic.html">内容页</a>
+			<a href="about.html">关于我</a>
 		</li>
 	</ul>
 </nav>

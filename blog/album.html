@@ -8,7 +8,7 @@
 	<link href="css/base.css" rel="stylesheet">
 	<link href="css/index.css" rel="stylesheet">
 	<!--相册专用-->
-	<link href="css/infopic.css" rel="stylesheet">
+	<link href="css/album.css" rel="stylesheet">
 	<link href="css/m.css" rel="stylesheet">
 	<script type="text/javascript" src="js/vue.js"></script>
 <body>
@@ -23,14 +23,14 @@
 				<h2>我的相册</h2>
 				<ul>
 					<li v-for="albumInfo in albumRecommendList">
-						<a :href="'album.html#'+ albumInfo.album_id"><img :title="albumInfo.title" :src="albumInfo.thumb_path"></a>
+						<a :href="'album.html#'+ albumInfo.album_id"><img :title="albumInfo.title" :src="albumInfo.thumb_url"></a>
 					</li>
 				</ul>
 			</div>
 			<div class="guanzhu">
 				<h2>关注我 么么哒</h2>
 				<ul>
-					<img src="images/wx.jpg">
+					<img :src="userInfo.share_code_img_url">
 				</ul>
 			</div>
 		</div>
@@ -130,8 +130,44 @@
 		</div>
 		<div class="share">
 			<p class="diggit">
-				<a href="JavaScript:void()"> 很赞哦！ (<b id="diggnum">13</b>)</a>
+				<a href="JavaScript:void(0)" onclick="like()"> 很赞哦！ (<b id="diggnum">{{ albumInfo.like_num }}</b>)</a>
 			</p>
+		</div>
+		
+		<div class="news_pl">
+			<h2>文章评论（{{ commentNum }}）</h2>
+			<form style="padding: 20px;" onsubmit="return addComment(this)">
+				<div class="baseinfo-box">
+					<label>您的名称：<input type="text" name="name" pattern=".{0,20}" title="20字以内" placeholder="选填" class="input" /></label> &nbsp;&nbsp;&nbsp;
+					<label>联系方式：<input type="text" name="connection" max=".{0,50}" title="50字以内" placeholder="选填" class="input" /></label>
+				</div>
+				<script id="editor_add" name="content" type="text/plain" style="width:100%;height: 135px;"></script>
+				<div class="btn-box">
+					<input type="submit" class="submit" value="评论" />
+				</div>
+			</form>
+			<ul>
+				<template v-if="commentList.length > 0">
+					<li v-for="comment in commentList">
+						<img class="head" src="images/comment_user.png">
+						<div class="comment-box">
+							<div class="content">
+								<span v-html="comment.content"></span>
+							</div>
+							<div class="info">
+								<span>{{ comment.name=='' ? '匿名' : comment.name }}[{{ comment.connection=='' ? '无' : comment.connection }}]</span>&nbsp;
+								<span>评论于{{ comment.add_time | timestampToStr }}</span>
+							</div>
+						</div>
+					</li>
+				</template>
+				<template v-else="">
+					<li style="text-align: center;">暂无评论，快来坐沙发吧~</li>
+				</template>
+			</ul>
+			<div class="more">
+				<button v-if="commentList.length > 0" class="btn" onclick="page.addPage()">加载更多</button>
+			</div>
 		</div>
 	</div>
 </article>
@@ -143,33 +179,114 @@
 <script type="text/javascript" src="js/jquery.min.js"></script>
 <script type="text/javascript" src="js/commAction.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/Page.js"></script>
+<!--ueditor编辑器-->
+<script src="plugins/ueditor/ueditor.config.js"></script>
+<script src="plugins/ueditor/ueditor.all.min.js"></script>
 <script type="text/javascript">
 	loadHtml('tpl/header.tpl', document.querySelector('header'));
 	loadHtml('tpl/footer.tpl', document.querySelector('footer'));
 	
-	var hash = window.location.hash.split('#');
-	var album_id = hash[1];
-	
 	var vueDom = new Vue({
 		el: 'article',
 		data: {
+			userInfo: {},
 			albumInfo: {},
 			albumRecommendList: [],
 			imgList: [],
+			commentList: [],
+			commentNum: 0,
+		},
+		filters: {
+			timestampToStr: function(value) {
+				return timestampToStr(value);
+			},
 		},
 	});
 	
+	ajax('get', 'index/index', null, function(res) {
+		vueDom.userInfo = res.userInfo;
+	});
 	ajax('get', 'album/getRecommend', null, function(res) {
 		vueDom.albumRecommendList = res;
 	});
 	
-	ajax('get', 'album/getDetail', {
-		album_id: album_id,
-	}, function(res) {
-		vueDom.albumInfo = res.albumInfo;
-		vueDom.imgList = res.imgList;
-		loadJs('js/piccontent.min.js');
-	});
+	var album_id;
+	function init() {
+		var hash = window.location.hash.split('#');
+		album_id = hash[1];
+		ajax('get', 'album/getDetail', {
+			album_id: album_id,
+		}, function(res) {
+			vueDom.albumInfo = res.albumInfo;
+			vueDom.imgList = res.imgList;
+			loadJs('js/piccontent.min.js');
+		});
+		vueDom.commentList = [];
+		page.page = 1;
+		getComment();
+	}
+	
+	//评论列表
+	function getComment() {
+		ajax('get', 'albumComment/getList', {
+			album_id: album_id,
+			page: page.page,
+			limit: page.limit,
+		}, function(res) {
+			res.list.forEach(function(row) {
+				vueDom.commentList.push(row);
+			});
+			page.totalPage = Math.ceil(res.count/page.limit);
+			vueDom.commentNum = res.count;
+		});
+	}
+	//评论分页
+	var page = new Page(getComment);
+	page.limit = 2;
+	
+	init();
+	
+	//文本编辑器
+	//实例化编辑器
+	window.UEDITOR_CONFIG.serverUrl = '/api/ueditor/index?type=album_comment';//type决定上传到哪个目录
+	var editor_add = UE.getEditor('editor_add');
+	
+	//点赞
+	function like() {
+		var is_like = localStorage.getItem('album_like_'+ album_id);
+		if(is_like) {
+			alert('您已经为本相册点过赞');
+			return;
+		}
+		ajax('post', '/album/like', {
+			album_id: album_id,
+		}, function(res) {
+			vueDom.albumInfo.like_num += 1;
+			localStorage.setItem('album_like_'+ album_id, 1);
+		});
+	}
+	
+	//发表评论
+	function addComment(form) {
+		var data = getFormObj(form);
+		data.album_id = album_id;
+		if(!editor_add.hasContents()) {
+			alert('留言内容不得为空');
+			return false;
+		}
+		var submitBtn = form.querySelector('[type="submit"]');
+		submitBtn.disabled = true;
+		ajax('post', '/albumComment/add', data, function(res) {
+			editor_add.execCommand('cleardoc');
+			vueDom.commentList = [];
+			page.page = 1;
+			getComment();
+		}, null, function end() {
+			submitBtn.disabled = false;
+		});
+		return false;
+	}
 	
 	window.addEventListener('hashchange', function() {
 		window.location.reload();

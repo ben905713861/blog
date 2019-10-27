@@ -22,7 +22,7 @@
 			<div class="about_me">
 				<h2>关于我</h2>
 				<ul>
-					<i><img src="images/4.jpg"></i>
+					<i><img :src="userInfo.head_img_url"></i>
 					<p>{{ userInfo.description }}</p>
 				</ul>
 			</div>
@@ -30,7 +30,7 @@
 				<h2>我的相册</h2>
 				<ul>
 					<li v-for="albumInfo in albumRecommendList">
-						<a :href="'album.html#'+ albumInfo.album_id"><img :title="albumInfo.title" :src="albumInfo.thumb_path"></a>
+						<a :href="'album.html#'+ albumInfo.album_id"><img :title="albumInfo.title" :src="albumInfo.thumb_url"></a>
 					</li>
 				</ul>
 			</div>
@@ -67,7 +67,7 @@
 			<div class="guanzhu">
 				<h2>关注我 么么哒</h2>
 				<ul>
-					<img src="images/wx.jpg">
+					<img :src="userInfo.share_code_img_url">
 				</ul>
 			</div>
 		</div>
@@ -76,7 +76,7 @@
 		<ul id="articleList_ul">
 			<li v-for="articleInfo in articleList">
 				<i>
-					<a :href="'article.html#'+ articleInfo.article_id"><img :src="articleInfo.thumb_path" style="width: 150px;height: 100px;"></a>
+					<a :href="'article.html#'+ articleInfo.article_id"><img :src="articleInfo.thumb_url" style="width: 150px;height: 100px;"></a>
 				</i>
 				<h3><a :href="'article.html#'+ articleInfo.article_id">{{ articleInfo.title }}</a></h3>
 				<p>{{ articleInfo.description }}</p>

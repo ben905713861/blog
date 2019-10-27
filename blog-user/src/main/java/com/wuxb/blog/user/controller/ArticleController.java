@@ -6,14 +6,20 @@ import java.util.List;
 import java.util.Map;
 
 import com.wuxb.httpServer.annotation.GetParam;
+import com.wuxb.httpServer.annotation.PostParam;
 import com.wuxb.httpServer.annotation.RequestMapping;
 import com.wuxb.httpServer.annotation.RestController;
 import com.wuxb.httpServer.db.Db;
+import com.wuxb.httpServer.params.RequestMethod;
+import com.wuxb.httpServer.util.Config;
+import com.wuxb.httpServer.util.Tools;
 
 @RestController
 @RequestMapping("/article")
 public class ArticleController {
 
+	private static final String FILE_SERVER_DOMAIN = Config.get("FILE_SERVER_DOMAIN");
+	
 	@RequestMapping("/getTypes")
 	public List<Map<String, Object>> getTypes(@GetParam Map<String, Object> getMap) throws SQLException {
 		List<Map<String, Object>> articleTypeList = Db.table("article_type at")
@@ -66,8 +72,9 @@ public class ArticleController {
 		for(Map<String, Object> map : list) {
 			String thumb_path = (String) map.get("thumb_path");
 			if(thumb_path == null || thumb_path.isEmpty()) {
-				thumb_path = "images/default_thumb_264x176.jpg";
-				map.replace("thumb_path", thumb_path);
+				map.put("thumb_url", "images/default_thumb_264x176.jpg");
+			} else {
+				map.put("thumb_url", FILE_SERVER_DOMAIN + thumb_path);
 			}
 		}
 		res.put("list", list);
@@ -93,11 +100,40 @@ public class ArticleController {
 	
 	@RequestMapping("/getOne")
 	public Map<String, Object> getOne(@GetParam Map<String, Object> getMap) throws SQLException {
-		Map<String, Object> res = Db.table("article a")
-			.join("article_content t", "t.article_id=a.article_id", "LEFT")
+		Map<String, Object> res = new HashMap<String, Object>();
+		
+		Map<String, Object> articleInfo = Db.table("article a")
+			.field("a.*,t.type,c.content")
+			.join("article_content c", "c.article_id=a.article_id", "LEFT")
+			.join("article_type t", "t.type_id=a.type_id", "LEFT")
 			.where("a.article_id", getMap.get("article_id"))
 			.find();
+		res.put("articleInfo", articleInfo);
+		
+		Map<String, Object> nextArticleInfo = Db.table("article")
+			.field("article_id,title")
+			.where("article_id", ">", getMap.get("article_id"))
+			.order("article_id", "ASC")
+			.find();
+		res.put("nextArticleInfo", nextArticleInfo);
+		
+		Map<String, Object> lastArticleInfo = Db.table("article")
+			.field("article_id,title")
+			.where("article_id", "<", getMap.get("article_id"))
+			.order("article_id", "DESC")
+			.find();
+		res.put("lastArticleInfo", lastArticleInfo);
+		
 		return res;
+	}
+	
+	@RequestMapping(value="/like", method=RequestMethod.POST)
+	public Map<String, Object> like(@PostParam Map<String, Object> postMap) throws SQLException {
+		Db.table("article")
+			.where("article_id", postMap.get("article_id"))
+			.limit(1)
+			.setInc("like_num", 1);
+		return Tools.returnSucc();
 	}
 	
 }
