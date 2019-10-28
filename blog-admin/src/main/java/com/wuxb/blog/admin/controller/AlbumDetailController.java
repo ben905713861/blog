@@ -49,10 +49,18 @@ public class AlbumDetailController {
 			 map.remove("path");
 		}
 		res.put("rows", rows);
+		
 		int total = Db.table("album_img")
 			.where(where)
 			.count();
 		res.put("total", total);
+		
+		Map<String, Object> albumInfo = Db.table("album")
+			.field("title")
+			.where("album_id", search.get("album_id"))
+			.find();
+		res.put("albumInfo", albumInfo);
+		
 		return res;
 	}
 	

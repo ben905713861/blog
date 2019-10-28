@@ -17,8 +17,10 @@
 <body>
 
 <div style="padding: 20px;">
+	<h4 id="album_title"></h4>
 	<form id="searchForm" class="pull-left form-inline" style="padding-top: 15px;" onsubmit="return search()">
 		<div class="form-group">
+			<a href="albumList.html" class="btn btn-default btn-sm"><i class=" fa fa-reply"></i>返回</a>
 			<button type="button" class="btn btn-sm btn-primary" onclick="modalOpen.add()"><i class="fa fa-plus"></i> 上传图片</button>
 		</div>
 		<div class="form-group">
@@ -107,6 +109,7 @@
 					res.total = 1;
 				}
 				params.success(res);
+				document.querySelector('#album_title').innerText = res.albumInfo.title;
 				//记录搜索条件用于返回
 				sessionStorage.setItem(window.location.href +'_queryParams', JSON.stringify(params.data));
 			});

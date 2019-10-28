@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.wuxb.blog.admin.component.UeditorFileDomainFilter;
 import com.wuxb.blog.admin.component.UploadFile;
 import com.wuxb.blog.admin.validate.ArticleValidate;
 import com.wuxb.httpServer.HttpServletRequest;
@@ -86,6 +87,9 @@ public class ArticleController {
 			.find();
 		String thumb_path = (String) info.get("thumb_path");
 		info.put("thumb_url", FILE_SERVER_DOMAIN + thumb_path);
+		//还原文件网址前缀
+		String content = (String) info.get("content");
+		info.replace("content", UeditorFileDomainFilter.replay(content));
 		return info;
 	}
 	
@@ -130,12 +134,14 @@ public class ArticleController {
 			data1.put("is_recommend", postMap.get("is_recommend"));
 			data1.put("thumb_path", postMap.get("thumb_path"));
 			data1.put("add_time", Tools.time());
+			
 			String content = (String) postMap.get("content");
 			if(((String) postMap.get("description")).isEmpty()) {
-				int contentLen = content.length();
-				String description = content.substring(0, contentLen>255 ? 255 : contentLen);
 				//过滤html标签
-				description = HtmlFilter.stripTags(description);
+				String description = HtmlFilter.stripTags(content);
+				description = HtmlFilter.htmlspecialcharsDecode(description);
+				int contentLen = description.length();
+				description = description.substring(0, contentLen>255 ? 255 : contentLen);
 				data1.put("description", description);
 			} else {
 				String description = (String) postMap.get("description");
@@ -146,7 +152,8 @@ public class ArticleController {
 			
 			Map<String, Object> data2 = new HashMap<String, Object>();
 			data2.put("article_id", article_id);
-			data2.put("content", content);
+			//将正文中的上传文件url的网址前缀去掉
+			data2.put("content", UeditorFileDomainFilter.filter(content));
 			Db.table("article_content").insert(data2);
 			
 			Db.commit();
@@ -172,12 +179,14 @@ public class ArticleController {
 			data1.put("key_words", postMap.get("key_words"));
 			data1.put("is_recommend", postMap.get("is_recommend"));
 			data1.put("thumb_path", postMap.get("thumb_path"));
+			
 			String content = (String) postMap.get("content");
 			if(((String) postMap.get("description")).isEmpty()) {
-				int contentLen = content.length();
-				String description = content.substring(0, contentLen>255 ? 255 : contentLen);
 				//过滤html标签
-				description = HtmlFilter.stripTags(description);
+				String description = HtmlFilter.stripTags(content);
+				description = HtmlFilter.htmlspecialcharsDecode(description);
+				int contentLen = description.length();
+				description = description.substring(0, contentLen>255 ? 255 : contentLen);
 				data1.put("description", description);
 			} else {
 				String description = (String) postMap.get("description");
@@ -190,7 +199,9 @@ public class ArticleController {
 				.update(data1);
 			
 			Map<String, Object> data2 = new HashMap<String, Object>();
-			data2.put("content", content);
+			//将正文中的上传文件url的网址前缀去掉
+			data2.put("content", UeditorFileDomainFilter.filter(content));
+			
 			Db.table("article_content")
 				.where("article_id", postMap.get("article_id"))
 				.limit(1)

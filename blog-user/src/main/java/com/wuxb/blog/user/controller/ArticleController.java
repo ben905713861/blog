@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.wuxb.blog.admin.component.UeditorFileDomainFilter;
 import com.wuxb.httpServer.annotation.GetParam;
 import com.wuxb.httpServer.annotation.PostParam;
 import com.wuxb.httpServer.annotation.RequestMapping;
@@ -68,6 +69,7 @@ public class ArticleController {
 			.where(where)
 			.order("add_time", "DESC")
 			.page((long)getMap.getOrDefault("page", 1l), (long)getMap.getOrDefault("limit", 10l))
+			.cache(1000)
 			.select();
 		for(Map<String, Object> map : list) {
 			String thumb_path = (String) map.get("thumb_path");
@@ -108,6 +110,9 @@ public class ArticleController {
 			.join("article_type t", "t.type_id=a.type_id", "LEFT")
 			.where("a.article_id", getMap.get("article_id"))
 			.find();
+		//还原文件网址前缀
+		String content = (String) articleInfo.get("content");
+		articleInfo.replace("content", UeditorFileDomainFilter.replay(content));
 		res.put("articleInfo", articleInfo);
 		
 		Map<String, Object> nextArticleInfo = Db.table("article")
