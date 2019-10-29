@@ -75,6 +75,9 @@
 		
 		ajax('get', '/website/getDetail', null, function(res) {
 			formload(document.querySelector('#update-form'), res);
+			setTimeout(function() {
+				editor_update.setContent(res.aboutme)
+			}, 100);
 		});
 		
 		var modalSubmit = {
