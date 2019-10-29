@@ -3,3 +3,4 @@
 /blog-user/target/
 /blog-file/target/
 /blog-file/upload/
+*.properties
