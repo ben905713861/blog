@@ -21,7 +21,7 @@ public class UeditorController {
 	private HttpServletRequest httpServletRequest;
 	private HttpServletResponse httpServletResponse;
 	private static final String[] ALLOW_TYPE = new String[] {
-		"article", "album",
+		"article", "album", "website"
 	};
 			
 	

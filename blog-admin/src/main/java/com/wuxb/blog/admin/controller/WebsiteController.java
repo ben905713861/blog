@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.wuxb.blog.admin.component.UeditorFileDomainFilter;
 import com.wuxb.blog.admin.component.UploadFile;
 import com.wuxb.httpServer.HttpServletRequest;
 import com.wuxb.httpServer.annotation.PostParam;
@@ -30,6 +31,9 @@ public class WebsiteController {
 		
 		String share_code_img_path = (String) info.get("share_code_img_path");
 		info.put("share_code_img_url", FILE_SERVER_DOMAIN + share_code_img_path);
+		
+		String aboutme = (String) info.get("aboutme");
+		info.replace("aboutme", UeditorFileDomainFilter.replay(aboutme));
 		
 		return info;
 	}
@@ -85,7 +89,10 @@ public class WebsiteController {
 		data.put("description", postMap.get("description"));
 		data.put("head_img_path", postMap.get("head_img_path"));
 		data.put("share_code_img_path", postMap.get("share_code_img_path"));
-		data.put("aboutme", postMap.get("aboutme"));
+		//html富文本替换文件baseurl
+		String aboutme = (String) postMap.get("aboutme");
+		data.put("aboutme", UeditorFileDomainFilter.filter(aboutme));
+		
 		Db.table("website")
 			.where("id", 1)
 			.limit(1)
