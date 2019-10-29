@@ -2,6 +2,7 @@
 /blog-admin/target/
 /blog-user/target/
 /blog-file/target/
-/blog-file/upload/
 *.properties
-*.sh
+/blog-admin/log/
+/blog-user/log/
+/blog-file/log/
