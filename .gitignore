@@ -4,3 +4,4 @@
 /blog-file/target/
 /blog-file/upload/
 *.properties
+*.sh
