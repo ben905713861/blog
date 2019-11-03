@@ -68,6 +68,7 @@ a.curPage { color: #19585d; font-weight: bold; }
 .news_pl>ul>li img.head{ display: block;height: 54px;width: 54px;position: absolute;border-radius: 2px; }
 .news_pl>ul>li .comment-box{ padding: 10px 15px;margin-left: 72px;border: 1px #eee solid; font-size: 1em; }
 .news_pl>ul>li .info{ text-align: right; font-size: 0.9em; padding-top: 8px; color: #bbb; }
+.news_pl>ul>li .info>span{ white-space: nowrap; }
 .news_pl .more{text-align: center; padding-bottom: 20px;}
 .news_pl .btn-box{padding-top: 10px;text-align: right;}
 button.btn{ padding: 10px 20px; background: #E2523A; color: #fff; border-radius: 3px; border: none; cursor: pointer;}
