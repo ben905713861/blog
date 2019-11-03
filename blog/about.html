@@ -31,7 +31,7 @@
 				<h2>我的相册</h2>
 				<ul>
 					<li v-for="albumInfo in albumRecommendList">
-						<a :href="'album.html#'+ albumInfo.album_id"><img :title="albumInfo.title" :src="albumInfo.thumb_path"></a>
+						<a :href="'album.html#'+ albumInfo.album_id"><img :title="albumInfo.title" :src="albumInfo.thumb_url"></a>
 					</li>
 				</ul>
 			</div>
