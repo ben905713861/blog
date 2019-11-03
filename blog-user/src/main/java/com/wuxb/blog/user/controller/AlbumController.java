@@ -27,6 +27,7 @@ public class AlbumController {
 			.where("is_recommend", 1)
 			.order("add_time", "DESC")
 			.limit(6)
+			.cache(10)
 			.select();
 		for(Map<String, Object> map : list) {
 			String thumb_path = (String) map.get("thumb_path");
@@ -46,6 +47,7 @@ public class AlbumController {
 		List<Map<String, Object>> list = Db.table("album")
 			.order("album_id", "DESC")
 			.page((long)getMap.get("page"), (long)getMap.get("limit"))
+			.cache(10)
 			.select();
 		for(Map<String, Object> map : list) {
 			String thumb_path = (String) map.get("thumb_path");
@@ -57,7 +59,9 @@ public class AlbumController {
 		}
 		res.put("list", list);
 		
-		int count = Db.table("album").count();
+		int count = Db.table("album")
+			.cache(10)
+			.count();
 		res.put("count", count);
 		return res;
 	}

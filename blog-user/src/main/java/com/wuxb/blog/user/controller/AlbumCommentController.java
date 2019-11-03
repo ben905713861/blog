@@ -26,6 +26,7 @@ public class AlbumCommentController {
 			.where("album_id", getMap.get("album_id"))
 			.order("add_time", "DESC")
 			.page((long)getMap.getOrDefault("page", 1l), (long)getMap.getOrDefault("limit", 10l))
+			.cache(1)
 			.select();
 		res.put("list", list);
 		

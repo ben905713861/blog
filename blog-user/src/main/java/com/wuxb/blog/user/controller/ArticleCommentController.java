@@ -26,6 +26,7 @@ public class ArticleCommentController {
 			.where("article_id", getMap.get("article_id"))
 			.order("add_time", "DESC")
 			.page((long)getMap.getOrDefault("page", 1l), (long)getMap.getOrDefault("limit", 10l))
+			.cache(1)
 			.select();
 		res.put("list", list);
 		

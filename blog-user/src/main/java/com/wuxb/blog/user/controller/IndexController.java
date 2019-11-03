@@ -21,6 +21,7 @@ public class IndexController {
 		
 		Map<String, Object> userInfo = Db.table("website")
 			.field("website_name,description,head_img_path,share_code_img_path")
+			.cache(10)
 			.find();
 		
 		String head_img_path = (String) userInfo.get("head_img_path");

@@ -28,6 +28,7 @@ public class ArticleController {
 			.join("article a", "a.type_id=at.type_id", "LEFT")
 			.group("at.type_id")
 			.order("at.sort", "ASC")
+			.cache(10)
 			.select();
 		return articleTypeList;
 	}
@@ -39,6 +40,7 @@ public class ArticleController {
 			.where("is_recommend", 1)
 			.order("add_time", "DESC")
 			.limit(10)
+			.cache(10)
 			.select();
 		return articleRecommendList;
 	}
@@ -69,7 +71,7 @@ public class ArticleController {
 			.where(where)
 			.order("add_time", "DESC")
 			.page((long)getMap.getOrDefault("page", 1l), (long)getMap.getOrDefault("limit", 10l))
-			.cache(1000)
+			.cache(10)
 			.select();
 		for(Map<String, Object> map : list) {
 			String thumb_path = (String) map.get("thumb_path");
@@ -83,6 +85,7 @@ public class ArticleController {
 		
 		int count = Db.table("article")
 			.where(where)
+			.cache(10)
 			.count();
 		res.put("count", count);
 		

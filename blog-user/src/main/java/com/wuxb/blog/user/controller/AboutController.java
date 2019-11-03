@@ -19,6 +19,7 @@ public class AboutController {
 		
 		Map<String, Object> userInfo = Db.table("website")
 			.field("aboutme")
+			.cache(10)
 			.find();
 		String aboutme = (String) userInfo.get("aboutme");
 		

@@ -25,6 +25,7 @@ public class CommentController {
 		List<Map<String, Object>> list = Db.table("comment")
 			.order("add_time", "DESC")
 			.page((long)getMap.getOrDefault("page", 1l), (long)getMap.getOrDefault("limit", 10l))
+			.cache(1)
 			.select();
 		res.put("list", list);
 		
