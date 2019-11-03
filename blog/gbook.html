@@ -114,7 +114,7 @@
 	
 	//评论列表
 	function getComment() {
-		ajax('get', 'comment/getList', {
+		ajax('get', '/comment/getList', {
 			page: page.page,
 			limit: page.limit,
 		}, function(res) {
@@ -133,13 +133,13 @@
 	
 	//文本编辑器
 	//实例化编辑器
-	window.UEDITOR_CONFIG.serverUrl = '/api/ueditor/index?type=comment';//type决定上传到哪个目录
+	window.UEDITOR_CONFIG.serverUrl = '/ueditor/index?type=comment';//type决定上传到哪个目录
 	var editor_add = UE.getEditor('editor_add');
 	
-	ajax('get', 'index/index', null, function(res) {
+	ajax('get', '/index/index', null, function(res) {
 		vueDom.userInfo = res.userInfo;
 	});
-	ajax('get', 'album/getRecommend', null, function(res) {
+	ajax('get', '/album/getRecommend', null, function(res) {
 		vueDom.albumRecommendList = res;
 	});
 	

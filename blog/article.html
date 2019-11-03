@@ -211,7 +211,7 @@
 	page.limit = 2;
 	
 	init();
-	ajax('get', 'article/getTypes', null, function(res) {
+	ajax('get', '/article/getTypes', null, function(res) {
 		vueDom.articleTypeList = res;
 		var articleCount = 0;
 		res.forEach(function(info) {
@@ -219,16 +219,16 @@
 		});
 		vueDom.articleCount = articleCount;
 	});
-	ajax('get', 'article/getRecommend', null, function(res) {
+	ajax('get', '/article/getRecommend', null, function(res) {
 		vueDom.articleRecommendList = res;
 	});
-	ajax('get', 'index/index', null, function(res) {
+	ajax('get', '/index/index', null, function(res) {
 		vueDom.userInfo = res.userInfo;
 	});
 	
 	//文本编辑器
 	//实例化编辑器
-	window.UEDITOR_CONFIG.serverUrl = '/api/ueditor/index?type=article_comment';//type决定上传到哪个目录
+	window.UEDITOR_CONFIG.serverUrl = '/ueditor/index?type=article_comment';//type决定上传到哪个目录
 	var editor_add = UE.getEditor('editor_add');
 	
 	document.querySelector('form#search-form').onsubmit = function() {

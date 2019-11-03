@@ -107,19 +107,19 @@
 		},
 	});
 	
-	ajax('get', 'index/index', null, function(res) {
+	ajax('get', '/index/index', null, function(res) {
 		vueDom.userInfo = res.userInfo;
 	});
-	ajax('get', 'album/getRecommend', null, function(res) {
+	ajax('get', '/album/getRecommend', null, function(res) {
 		vueDom.albumRecommendList = res;
 	});
-	ajax('get', 'article/getTypes', null, function(res) {
+	ajax('get', '/article/getTypes', null, function(res) {
 		vueDom.articleTypeList = res;
 	});
-	ajax('get', 'article/getRecommend', null, function(res) {
+	ajax('get', '/article/getRecommend', null, function(res) {
 		vueDom.articleRecommendList = res;
 	});
-	ajax('get', 'article/getList', null, function(res) {
+	ajax('get', '/article/getList', null, function(res) {
 		vueDom.articleList = res.list;
 	});
 	

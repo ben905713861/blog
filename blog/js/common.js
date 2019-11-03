@@ -2,7 +2,7 @@ function ajax(method, url, data, truefun, falsefun, endfun) {
 	var succfun;
 	var xhr = new XMLHttpRequest();
 	method = method.toLowerCase();
-	url = DOMAIN + '/' + url;
+	url = DOMAIN + url;
 	if(method == 'get') {
 		if(data) {
 			xhr.open('get', url +'?'+ urlencode(data));

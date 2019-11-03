@@ -101,7 +101,7 @@
 			page: page.page,
 			limit: page.limit,
 		}
-		ajax('get', 'album/getList', query, function(res) {
+		ajax('get', '/album/getList', query, function(res) {
 			var albumList = res.list;
 			var newAlbumList = [
 				[],[],[],[]

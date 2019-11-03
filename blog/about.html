@@ -69,13 +69,13 @@
 		},
 	});
 	
-	ajax('get', 'index/index', null, function(res) {
+	ajax('get', '/index/index', null, function(res) {
 		vueDom.userInfo = res.userInfo;
 	});
-	ajax('get', 'index/index', null, function(res) {
+	ajax('get', '/index/index', null, function(res) {
 		vueDom.userInfo = res.userInfo;
 	});
-	ajax('get', 'album/getRecommend', null, function(res) {
+	ajax('get', '/album/getRecommend', null, function(res) {
 		vueDom.albumRecommendList = res;
 	});
 </script>
