@@ -228,7 +228,7 @@
 	
 	//文本编辑器
 	//实例化编辑器
-	window.UEDITOR_CONFIG.serverUrl = '/ueditor/index?type=article_comment';//type决定上传到哪个目录
+	window.UEDITOR_CONFIG.serverUrl = DOMAIN + '/ueditor/index?type=article_comment';//type决定上传到哪个目录
 	var editor_add = UE.getEditor('editor_add');
 	
 	document.querySelector('form#search-form').onsubmit = function() {
