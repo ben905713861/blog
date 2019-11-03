@@ -76,7 +76,7 @@
 		<ul id="articleList_ul">
 			<li v-for="articleInfo in articleList">
 				<i>
-					<a :href="'article.html#'+ articleInfo.article_id"><img :src="articleInfo.thumb_url" style="width: 150px;height: 100px;"></a>
+					<a :href="'article.html#'+ articleInfo.article_id"><img :src="articleInfo.thumb_url"></a>
 				</i>
 				<h3><a :href="'article.html#'+ articleInfo.article_id">{{ articleInfo.title }}</a></h3>
 				<p>{{ articleInfo.description }}</p>
