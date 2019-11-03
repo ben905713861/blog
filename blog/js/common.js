@@ -2,12 +2,13 @@ function ajax(method, url, data, truefun, falsefun, endfun) {
 	var succfun;
 	var xhr = new XMLHttpRequest();
 	method = method.toLowerCase();
+	url = DOMAIN + '/' + url;
 	if(method == 'get') {
 		if(data) {
-			xhr.open('get', '/api/'+ url +'?'+ urlencode(data));
+			xhr.open('get', url +'?'+ urlencode(data));
 			data = null;
 		} else {
-			xhr.open('get', '/api/'+ url);
+			xhr.open('get', url);
 		}
 		succfun = truefun;
 	}
@@ -21,7 +22,7 @@ function ajax(method, url, data, truefun, falsefun, endfun) {
 				falsefun && falsefun();
 			}
 		}
-		xhr.open('post', '/api/'+ url);
+		xhr.open('post', url);
 		if(method == 'file') {
 			if(typeof FormData == 'undefined') {
 				alert('因您浏览器版本太旧，请在弹窗中重新上传一次');
@@ -29,7 +30,7 @@ function ajax(method, url, data, truefun, falsefun, endfun) {
 				iframe.name = 'iframe_upload';
 				//form
 				var form = document.createElement('form');
-				form.action = '/index.php/'+ url;
+				form.action = url;
 				form.target = iframe.name;
 				form.method = 'post';
 				form.enctype = 'multipart/form-data';
@@ -141,15 +142,7 @@ function ajax(method, url, data, truefun, falsefun, endfun) {
 	//未登录的处理
 	function noLogin() {
 		//清除本地登录标识
-		switch(url.substr(0, url.indexOf('/'))) {
-			case 'manager':
-				sessionStorage.removeItem('manager_name');
-				sessionStorage.removeItem('manager_level');
-				break;
-			case 'user':
-				sessionStorage.removeItem('user_name');
-				break;
-		}
+		sessionStorage.removeItem('user_name');
 		window.top.location.href = 'login.html';
 	}
 }

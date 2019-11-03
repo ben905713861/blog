@@ -3,6 +3,7 @@
 /blog-user/target/
 /blog-file/target/
 *.properties
+/blog/js/config.js
 /blog-admin/log/
 /blog-user/log/
 /blog-file/log/

@@ -17,6 +17,10 @@ public class MyInterceptor implements Interceptor {
 		this.httpServletResponse = httpServletResponse;
 		//静态资源处理
 		new StaticSource(httpServletRequest, httpServletResponse).action();
+		if(httpServletRequest.getPath().equals("/")) {
+			httpServletResponse.location("/static/index.html");
+			throw new HttpInterceptInterrupt();
+		}
 		//是否登录
 		checkLogin();
 		//是否有权限
