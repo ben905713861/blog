@@ -45,7 +45,7 @@
 	</aside>
 	<div class="r_box">
 		<ul class="about">
-			<span v-html="userInfo.aboutme"></span>
+			<span v-html="aboutme"></span>
 		</ul>
 	</div>
 </article>
@@ -66,17 +66,18 @@
 		data: {
 			userInfo: {},
 			albumRecommendList: [],
+			aboutme: '',
 		},
 	});
 	
 	ajax('get', '/index/index', null, function(res) {
 		vueDom.userInfo = res.userInfo;
 	});
-	ajax('get', '/index/index', null, function(res) {
-		vueDom.userInfo = res.userInfo;
-	});
 	ajax('get', '/album/getRecommend', null, function(res) {
 		vueDom.albumRecommendList = res;
+	});
+	ajax('get', '/about/index', null, function(res) {
+		vueDom.aboutme = res.aboutme;
 	});
 </script>
 </body>

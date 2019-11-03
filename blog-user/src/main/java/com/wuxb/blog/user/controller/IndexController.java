@@ -19,7 +19,9 @@ public class IndexController {
 	public Map<String, Object> index() throws SQLException {
 		Map<String, Object> res = new HashMap<String, Object>();
 		
-		Map<String, Object> userInfo = Db.table("website").find();
+		Map<String, Object> userInfo = Db.table("website")
+			.field("website_name,description,head_img_path,share_code_img_path")
+			.find();
 		
 		String head_img_path = (String) userInfo.get("head_img_path");
 		userInfo.put("head_img_url", FILE_SERVER_DOMAIN + head_img_path);
