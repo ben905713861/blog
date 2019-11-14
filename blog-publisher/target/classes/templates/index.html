@@ -1,0 +1,80 @@
+<#include "common/layout.html">
+
+<#macro head>
+
+</#macro>
+
+<#macro mainBody>
+<article>
+	<aside>
+		<div class="l_box" id="stickMe">
+			<div class="about_me">
+				<h2>关于我</h2>
+				<ul>
+					<i><img :src="userInfo.head_img_url"></i>
+					<p>{{ userInfo.description }}</p>
+				</ul>
+			</div>
+			<div class="wdxc">
+				<h2>我的相册</h2>
+				<ul>
+					<li v-for="albumInfo in albumRecommendList">
+						<a :href="'album.html#'+ albumInfo.album_id"><img :title="albumInfo.title" :src="albumInfo.thumb_url"></a>
+					</li>
+				</ul>
+			</div>
+			<div class="search">
+				<form id="search-form">
+					<input type="text" name="title" class="input_text" placeholder="请输入关键字查询相关文章">
+					<input type="hidden" name="type_id">
+					<input type="submit" class="input_submit" value="搜索">
+				</form>
+			</div>
+			<div class="fenlei">
+				<h2>文章分类</h2>
+				<ul>
+					<li v-for="typeInfo in articleTypeList">
+						<a :href="'articleList.html#'+ typeInfo.type_id">{{ typeInfo.type }}（{{ typeInfo.article_num }}）</a>
+					</li>
+				</ul>
+			</div>
+			<div class="tuijian">
+				<h2>站长推荐</h2>
+				<ul>
+					<li v-for="articleInfo in articleRecommendList">
+						<a :href="'article.html#'+ articleInfo.article_id">{{ articleInfo.title }}</a>
+					</li>
+				</ul>
+			</div>
+			<!--<div class="links">
+				<h2>友情链接</h2>
+				<ul>
+					<a href="http://www.yangqq.com">杨青个人博客</a>
+					<a href="http://www.yangqq.com">杨青博客</a>
+				</ul>
+			</div>-->
+			<div class="guanzhu">
+				<h2>关注我 么么哒</h2>
+				<ul>
+					<img :src="userInfo.share_code_img_url">
+				</ul>
+			</div>
+		</div>
+	</aside>
+	<div class="r_box">
+		<ul id="articleList_ul">
+			<li v-for="articleInfo in articleList">
+				<i>
+					<a :href="'article.html#'+ articleInfo.article_id"><img :src="articleInfo.thumb_url"></a>
+				</i>
+				<h3><a :href="'article.html#'+ articleInfo.article_id">{{ articleInfo.title }}</a></h3>
+				<p>{{ articleInfo.description }}</p>
+			</li>
+		</ul>
+	</div>
+</article>
+</#macro>
+
+<#macro js>
+	
+</#macro>
