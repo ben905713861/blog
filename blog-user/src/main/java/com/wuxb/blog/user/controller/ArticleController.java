@@ -76,7 +76,7 @@ public class ArticleController {
 		for(Map<String, Object> map : list) {
 			String thumb_path = (String) map.get("thumb_path");
 			if(thumb_path == null || thumb_path.isEmpty()) {
-				map.put("thumb_url", "images/default_thumb_264x176.jpg");
+//				map.put("thumb_url", "images/default_thumb_264x176.jpg");
 			} else {
 				map.put("thumb_url", FILE_SERVER_DOMAIN + thumb_path);
 			}
@@ -101,6 +101,11 @@ public class ArticleController {
 		res.put("type", type);
 		
 		return res;
+	}
+	
+	@RequestMapping("/getAllArticleId")
+	public List<Object> getAllArticleId() throws SQLException {
+		return Db.table("article").column("article_id");
 	}
 	
 	@RequestMapping("/getOne")
@@ -133,6 +138,14 @@ public class ArticleController {
 		res.put("lastArticleInfo", lastArticleInfo);
 		
 		return res;
+	}
+	
+	@RequestMapping("/getLikeNum")
+	public Map<String, Object> getLikeNum(@GetParam Map<String, Object> getMap) throws SQLException {
+		return Db.table("article")
+			.field("like_num")
+			.where("article_id", getMap.get("article_id"))
+			.find();
 	}
 	
 	@RequestMapping(value="/like", method=RequestMethod.POST)

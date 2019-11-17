@@ -1,0 +1,88 @@
+<#include "common/layout.html">
+
+<#macro head>
+
+</#macro>
+
+<#macro mainBody>
+<article>
+	<aside>
+		<div class="l_box" id="stickMe">
+			<div class="about_me">
+				<h2>关于我</h2>
+				<ul>
+					<i><img src="${ userInfo.head_img_url }"></i>
+					<p>${ userInfo.description }</p>
+				</ul>
+			</div>
+			<div class="wdxc">
+				<h2>我的相册</h2>
+				<ul>
+				<#list albumRecommendList as albumInfo>
+					<li>
+						<a href="album.html# ${ albumInfo.album_id }"><img title="${ albumInfo.title }" src="${ albumInfo.thumb_url ! STATIC_DOMAIN+'/images/default_thumb_264x176.jpg' }"></a>
+					</li>
+				</#list>
+				</ul>
+			</div>
+			<div class="search">
+				<form id="search-form">
+					<input type="text" name="title" class="input_text" placeholder="请输入关键字查询相关文章">
+					<input type="hidden" name="type_id">
+					<input type="submit" class="input_submit" value="搜索">
+				</form>
+			</div>
+			<div class="fenlei">
+				<h2>文章分类</h2>
+				<ul>
+				<#list articleTypeList as typeInfo>
+					<li>
+						<a href="/articleList/${ typeInfo.type_id }/1.html">${ typeInfo.type }（${ typeInfo.article_num }）</a>
+					</li>
+				</#list>
+				</ul>
+			</div>
+			<div class="tuijian">
+				<h2>站长推荐</h2>
+				<ul>
+				<#list articleRecommendList as articleInfo>
+					<li>
+						<a href="/article/${ articleInfo.article_id}.html">${ articleInfo.title }</a>
+					</li>
+				</#list>
+				</ul>
+			</div>
+			<!--<div class="links">
+				<h2>友情链接</h2>
+				<ul>
+					<a href="http://www.yangqq.com">杨青个人博客</a>
+					<a href="http://www.yangqq.com">杨青博客</a>
+				</ul>
+			</div>-->
+			<div class="guanzhu">
+				<h2>关注我 么么哒</h2>
+				<ul>
+					<img src="${ userInfo.share_code_img_url }">
+				</ul>
+			</div>
+		</div>
+	</aside>
+	<div class="r_box">
+		<ul id="articleList_ul">
+		<#list articleBox.list as articleInfo>
+			<li>
+				<i>
+					<a href="/article/${ articleInfo.article_id }.html"><img src="${ articleInfo.thumb_url ! STATIC_DOMAIN+'/images/default_thumb_264x176.jpg' }"></a>
+				</i>
+				<h3><a href="/article/${ articleInfo.article_id }.html">${ articleInfo.title }</a></h3>
+				<p>${ articleInfo.description }</p>
+			</li>
+		</#list>
+		</ul>
+	</div>
+</article>
+</#macro>
+
+<#macro js>
+	
+</#macro>

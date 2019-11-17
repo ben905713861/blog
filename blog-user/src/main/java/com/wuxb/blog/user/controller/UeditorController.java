@@ -7,13 +7,11 @@ import com.wuxb.httpServer.HttpServletResponse;
 import com.wuxb.httpServer.annotation.GetParam;
 import com.wuxb.httpServer.annotation.RequestMapping;
 import com.wuxb.httpServer.annotation.RestController;
-import com.wuxb.httpServer.util.Config;
 
 @RestController
 @RequestMapping("/ueditor")
 public class UeditorController {
 
-	private static final String USER_DOMAIN = Config.get("USER_DOMAIN");
 	private HttpServletResponse httpServletResponse;
 	
 	@RequestMapping("/index")
@@ -24,9 +22,8 @@ public class UeditorController {
 		}
 	}
 	
-	private void config() {
-		httpServletResponse.location(USER_DOMAIN +"/plugins/ueditor/ueditorConfig.json");
+	private void config() throws Exception {
+		httpServletResponse.setResponse("{}");
 	}
-	
 	
 }

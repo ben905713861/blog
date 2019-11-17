@@ -1,0 +1,228 @@
+﻿<#include "common/layout.html">
+
+<#macro head>
+<link href="${ STATIC_DOMAIN }/css/article.css" rel="stylesheet">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>
+</#macro>
+
+<#macro mainBody>
+<article>
+	<aside>
+		<div class="l_box">
+			<div class="search">
+				<form id="search-form">
+					<input type="text" name="title" class="input_text" placeholder="请输入关键字查询相关文章">
+					<input type="hidden" name="type_id">
+					<input type="submit" class="input_submit" value="搜索">
+				</form>
+			</div>
+			<div class="fenlei">
+				<h2>文章分类</h2>
+				<ul>
+					<#list articleTypeList as typeInfo>
+					<li>
+						<a href="/articleList/${ typeInfo.type_id }/1.html">${ typeInfo.type }（${ typeInfo.article_num }）</a>
+					</li>
+					</#list>
+				</ul>
+			</div>
+			<div class="tuijian">
+				<h2>站长推荐</h2>
+				<ul>
+				<#list articleRecommendList as articleInfo>
+					<li>
+						<a href="/article/${ articleInfo.article_id}.html">${ articleInfo.title }</a>
+					</li>
+				</#list>
+				</ul>
+			</div>
+			<div class="guanzhu">
+				<h2>关注我 么么哒</h2>
+				<ul>
+					<img src="${ userInfo.share_code_img_url }">
+				</ul>
+			</div>
+		</div>
+	</aside>
+	
+	<div class="infosbox">
+		<div class="newsview">
+			<h3 class="news_title">${ articleInfo.title }</h3>
+			<div class="bloginfo">
+				<ul>
+					<li class="timer">分类：<a href="/articleList/${ articleInfo.type_id }/1.html" style="text-decoration: underline;">${ articleInfo.type }</a></li>
+					<li class="timer">发表时间：${ articleInfo.add_time?number_to_datetime?string("yyyy-MM-dd hh:mm:ss")}</li>
+					<li class="author">置顶：${ articleInfo.is_recommend ? string("是", "否")}</li>
+				</ul>
+			</div>
+			<div class="tags">
+				<#if (articleInfo.key_words != "")>
+					<#list articleInfo.key_words?split(" ") as key_word>
+						<a>${ key_word }</a>
+					</#list>
+				</#if>
+			</div>
+			<div class="news_about">
+				${ articleInfo.description }
+			</div>
+			<div class="news_con">
+				${ articleInfo.content }
+			</div>
+		</div>
+		<div class="share">
+			<p class="diggit">
+				<a href="javascript:void(0)" onclick="like()"> 很赞哦！ (<b id="diggnum">{{ like_num }}</b>)</a>
+			</p>
+		</div>
+		<div class="nextinfo">
+			<p>
+				<#if lastArticleInfo??>
+					<a href="/article/${ lastArticleInfo.article_id }.html">上一篇：${ lastArticleInfo.title }</a>
+				<#else>
+					<a>上一篇：【已经是第一篇】</a>
+				</#if>
+			</p>
+			<p>
+				<#if nextArticleInfo??>
+					<a href="/article/${ nextArticleInfo.article_id }.html">上一篇：${ nextArticleInfo.title }</a>
+				<#else>
+					<a>上一篇：【已经是第一篇】</a>
+				</#if>
+			</p>
+		</div>
+		<div class="news_pl">
+			<h2>文章评论（{{ commentNum }}）</h2>
+			<form style="padding: 20px;" onsubmit="return addComment(this)">
+				<div class="baseinfo-box">
+					<label>您的名称：<input type="text" name="name" pattern=".{0,20}" title="20字以内" placeholder="选填" class="input" /></label> &nbsp;&nbsp;&nbsp;
+					<label>联系方式：<input type="text" name="connection" max=".{0,50}" title="50字以内" placeholder="选填" class="input" /></label>
+				</div>
+				<script id="editor_add" name="content" type="text/plain" style="width:100%;height: 135px;"></script>
+				<div class="btn-box">
+					<input type="submit" class="submit" value="评论" />
+				</div>
+			</form>
+			<ul>
+				<template v-if="commentList.length > 0">
+					<li v-for="comment in commentList">
+						<img class="head" src="${ STATIC_DOMAIN }/images/comment_user.png">
+						<div class="comment-box">
+							<div class="content">
+								<span v-html="comment.content"></span>
+							</div>
+							<div class="info">
+								<span>{{ comment.name=='' ? '匿名' : comment.name }}[{{ comment.connection=='' ? '无' : comment.connection }}]</span>&nbsp;
+								<span>评论于{{ comment.add_time | timestampToStr }}</span>
+							</div>
+						</div>
+					</li>
+				</template>
+				<template v-else="">
+					<li style="text-align: center;">暂无评论，快来坐沙发吧~</li>
+				</template>
+			</ul>
+			<div class="more">
+				<button v-if="commentList.length > 0" class="btn" onclick="page.addPage()">加载更多</button>
+			</div>
+		</div>
+	</div>
+</article>
+</#macro>
+
+<#macro js>
+<script src="${ STATIC_DOMAIN }/js/Page.js"></script>
+<!--ueditor编辑器-->
+<script src="${ STATIC_DOMAIN }/plugins/ueditor/ueditor.config.js"></script>
+<script src="http://www.gd-filmfund.cn/static/js/plugins/ueditor/ueditor.all.min.js"></script>
+<script type="text/javascript">
+	var article_id = ${ articleInfo.article_id};
+	
+	var vueDom = new Vue({
+		el: '.infosbox',
+		data: {
+			like_num: 0,
+			commentList: [],
+			commentNum: 0,
+		},
+		filters: {
+			timestampToStr: function(value) {
+				return timestampToStr(value);
+			},
+		},
+	});
+	
+	//点赞数
+	ajax('get', '/article/getLikeNum', {
+		article_id: article_id,
+	}, function(res) {
+		vueDom.like_num = res.like_num;
+	});
+	
+	//评论列表
+	function getComment() {
+		ajax('get', '/articleComment/getList', {
+			article_id: article_id,
+			page: page.page,
+			limit: page.limit,
+		}, function(res) {
+			res.list.forEach(function(row) {
+				vueDom.commentList.push(row);
+			});
+			page.totalPage = Math.ceil(res.count/page.limit);
+			vueDom.commentNum = res.count;
+		});
+	}
+	//评论分页
+	var page = new Page(getComment);
+	page.limit = 2;
+	
+	getComment();
+	
+	//文本编辑器
+	//实例化编辑器
+	window.UEDITOR_CONFIG.serverUrl = DOMAIN + '/ueditor/index?type=article_comment';//type决定上传到哪个目录
+	var editor_add = UE.getEditor('editor_add');
+	
+	document.querySelector('form#search-form').onsubmit = function() {
+		var queryParams = getFormObj(this);
+		window.location.href = 'articleList.html##'+ queryParams.title;
+		return false;
+	}
+	
+	//点赞
+	function like() {
+		var is_like = localStorage.getItem('article_like_'+ article_id);
+		if(is_like) {
+			alert('您已经为本文章点过赞');
+			return;
+		}
+		ajax('post', '/article/like', {
+			article_id: article_id,
+		}, function(res) {
+			vueDom.like_num += 1;
+			localStorage.setItem('article_like_'+ article_id, 1);
+		});
+	}
+	
+	//发表评论
+	function addComment(form) {
+		var data = getFormObj(form);
+		data.article_id = article_id;
+		if(!editor_add.hasContents()) {
+			alert('留言内容不得为空');
+			return false;
+		}
+		var submitBtn = form.querySelector('[type="submit"]');
+		submitBtn.disabled = true;
+		ajax('post', '/articleComment/add', data, function(res) {
+			editor_add.execCommand('cleardoc');
+			vueDom.commentList = [];
+			page.page = 1;
+			getComment();
+		}, null, function end() {
+			submitBtn.disabled = false;
+		});
+		return false;
+	}
+</script>
+</#macro>

@@ -32,7 +32,7 @@ public class AlbumController {
 		for(Map<String, Object> map : list) {
 			String thumb_path = (String) map.get("thumb_path");
 			if(thumb_path == null || thumb_path.isEmpty()) {
-				map.put("thumb_url", "images/default_thumb_264x176.jpg");
+//				map.put("thumb_url", "images/default_thumb_264x176.jpg");
 			} else {
 				map.put("thumb_url", FILE_SERVER_DOMAIN + thumb_path);
 			}
@@ -52,7 +52,7 @@ public class AlbumController {
 		for(Map<String, Object> map : list) {
 			String thumb_path = (String) map.get("thumb_path");
 			if(thumb_path == null || thumb_path.isEmpty()) {
-				map.put("thumb_url", "images/default_thumb_264x176.jpg");
+//				map.put("thumb_url", "images/default_thumb_264x176.jpg");
 			} else {
 				map.put("thumb_url", FILE_SERVER_DOMAIN + thumb_path);
 			}

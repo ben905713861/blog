@@ -2,8 +2,11 @@
 /blog-admin/target/
 /blog-user/target/
 /blog-file/target/
+/blog-publisher/target/
 *.properties
+.classpath
 /blog/js/config.js
 /blog-admin/log/
 /blog-user/log/
 /blog-file/log/
+/blog-publisher/log/
