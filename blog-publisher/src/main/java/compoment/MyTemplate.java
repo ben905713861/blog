@@ -9,6 +9,7 @@ import java.util.Map;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.wuxb.httpServer.util.Config;
 import com.wuxb.httpServer.util.Curl;
 
 import freemarker.template.Configuration;
@@ -17,10 +18,10 @@ import freemarker.template.TemplateException;
 
 public abstract class MyTemplate {
 	
-	private static final String TEMPLATE_DIR = "E:\\java\\blog\\frontend\\templates";
-	private static final String HTML_DIR = "E:\\java\\blog\\frontend\\html";
-	private static final String STATIC_DOMAIN = "http://static.blog.dev";
-	private static final String USER_DOMAIN = "http://127.0.0.1:8081";
+	private static final String TEMPLATE_DIR = Config.get("TEMPLATE_DIR");
+	private static final String HTML_DIR = Config.get("HTML_DIR");
+	private static final String STATIC_DOMAIN = Config.get("STATIC_DOMAIN");
+	private static final String USER_DOMAIN = Config.get("USER_DOMAIN");
 	private String templateName;
 	private Template template;
 	protected Map<String, Object> data = new HashMap<String, Object>();
