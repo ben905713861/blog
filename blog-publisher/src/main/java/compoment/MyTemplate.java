@@ -17,8 +17,8 @@ import freemarker.template.TemplateException;
 
 public abstract class MyTemplate {
 	
-	private static final String TEMPLATE_DIR = "D:/phpstudy/www/java/blog/frontend/templates";
-	private static final String HTML_DIR = "D:/phpstudy/www/java/blog/frontend/html";
+	private static final String TEMPLATE_DIR = "E:\\java\\blog\\frontend\\templates";
+	private static final String HTML_DIR = "E:\\java\\blog\\frontend\\html";
 	private static final String STATIC_DOMAIN = "http://static.blog.dev";
 	private static final String USER_DOMAIN = "http://127.0.0.1:8081";
 	private String templateName;
