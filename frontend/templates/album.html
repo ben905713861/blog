@@ -1,36 +1,28 @@
-﻿<!doctype html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<title>首页_小彬个人博客 - 后端技术员个人博客网站</title>
-	<meta name="keywords" content="个人博客,小彬个人博客，程序员" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<link href="css/base.css" rel="stylesheet">
-	<link href="css/index.css" rel="stylesheet">
-	<!--相册专用-->
-	<link href="css/album.css" rel="stylesheet">
-	<link href="css/m.css" rel="stylesheet">
-	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>
-<body>
-<header class="header-navigation">
-	
-</header>
+﻿<#include "common/layout.html">
 
+<#macro head>
+<link href="${ STATIC_DOMAIN }/css/album.css" rel="stylesheet">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>
+</#macro>
+
+<#macro mainBody>
 <article>
 	<aside>
 		<div class="l_box">
 			<div class="wdxc">
 				<h2>我的相册</h2>
 				<ul>
-					<li v-for="albumInfo in albumRecommendList">
-						<a :href="'album.html#'+ albumInfo.album_id"><img :title="albumInfo.title" :src="albumInfo.thumb_url || 'images/default_thumb_264x176.jpg'"></a>
+				<#list albumRecommendList as albumInfo>
+					<li>
+						<a href="/album/${ albumInfo.album_id }.html"><img title="${ albumInfo.title }" src="${ albumInfo.thumb_url ! STATIC_DOMAIN+'/images/default_thumb_264x176.jpg' }"></a>
 					</li>
+				</#list>
 				</ul>
 			</div>
 			<div class="guanzhu">
 				<h2>关注我 么么哒</h2>
 				<ul>
-					<img :src="userInfo.share_code_img_url">
+					<img src="${ userInfo.share_code_img_url }">
 				</ul>
 			</div>
 		</div>
@@ -69,9 +61,9 @@
 		<!--弹出层结束-->
 		<!--图片特效内容开始-->
 		<div class="piccontext">
-			<h2>{{ albumInfo.title }}</h2>
+			<h2>${ albumInfo.title }</h2>
 			<div class="source">
-				<div class="source_left"><span>{{ albumInfo.add_time }}</span></div>
+				<div class="source_left"><span>${ albumInfo.add_time }</span></div>
 				<div class="source_right">
 					<a href="javascript:;" class="list">列表查看</a>
 				</div>
@@ -87,7 +79,7 @@
 					<a id="nextArrow" href="javascript:void(0)" class="contextDiv" title="下一张"><span id="nextArrow_A"></span></a>
 				</div>
 				<div class="picshowtxt">
-					<div class="picshowtxt_left"><span>1</span>/<i>{{ imgList.length }}</i></div>
+					<div class="picshowtxt_left"><span>1</span>/<i>${ imgList?size }</i></div>
 					<div class="picshowtxt_right"></div>
 				</div>
 				<div class="picshowlist">
@@ -97,11 +89,13 @@
 						</div>
 						<div class="picmidmid">
 							<ul>
-								<li v-for="imgInfo in imgList">
+							<#list imgList as imgInfo>
+								<li>
 									<a href="javascript:void(0)">
-										<img :src="imgInfo.url" alt="" :bigimg="imgInfo.url" :text="imgInfo.name" />
+										<img src="${ imgInfo.url }" bigimg="${ imgInfo.url }" text="${ imgInfo.name }" />
 									</a>
 								</li>
+							</#list>
 							</ul>
 						</div>
 						<div class="picmidright">
@@ -114,23 +108,25 @@
 			<!--列表展示-->
 			<div class="piclistshow">
 				<ul>
-					<li v-for="(imgInfo,index) in imgList">
+				<#list imgList as imgInfo>
+					<li>
 						<div class="picimg">
-							<img :src="imgInfo.url" :alt="imgInfo.name" />
+							<img src="${ imgInfo.url }" alt="${ imgInfo.name }" />
 						</div>
 						<div class="pictxt">
-							<h3>{{ imgInfo.name }}({{ index+1 }}/{{ imgList.length }})</span></h3>
+							<h3>${ imgInfo.name }(${ imgInfo_index+1 }/${ imgList?size })</span></h3>
 						</div>
 					</li>
+				</#list>
 				</ul>
 			</div>
 		</div>
 		<div class="pictext">
-			<ul>{{ albumInfo.description }}</ul>
+			<ul>${ albumInfo.description }</ul>
 		</div>
 		<div class="share">
 			<p class="diggit">
-				<a href="JavaScript:void(0)" onclick="like()"> 很赞哦！ (<b id="diggnum">{{ albumInfo.like_num }}</b>)</a>
+				<a href="JavaScript:void(0)" onclick="like()"> 很赞哦！ (<b id="diggnum">{{ like_num }}</b>)</a>
 			</p>
 		</div>
 		
@@ -149,7 +145,7 @@
 			<ul>
 				<template v-if="commentList.length > 0">
 					<li v-for="comment in commentList">
-						<img class="head" src="images/comment_user.png">
+						<img class="head" src="${ STATIC_DOMAIN }/images/comment_user.png">
 						<div class="comment-box">
 							<div class="content">
 								<span v-html="comment.content"></span>
@@ -171,30 +167,23 @@
 		</div>
 	</div>
 </article>
+</#macro>
 
-<footer>
-	
-</footer>
-
+<#macro js>
+<!--相册特效-->
 <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
-<script type="text/javascript" src="js/commAction.js"></script>
-<script type="text/javascript" src="js/config.js"></script>
-<script type="text/javascript" src="js/common.js"></script>
-<script type="text/javascript" src="js/Page.js"></script>
+<script src="${ STATIC_DOMAIN }/js/piccontent.min.js"></script>
+<script src="${ STATIC_DOMAIN }/js/Page.js"></script>
 <!--ueditor编辑器-->
-<script src="plugins/ueditor/ueditor.config.js"></script>
+<script src="${ STATIC_DOMAIN }/plugins/ueditor/ueditor.config.js"></script>
 <script src="http://www.gd-filmfund.cn/static/js/plugins/ueditor/ueditor.all.min.js"></script>
 <script type="text/javascript">
-	loadHtml('tpl/header.tpl', document.querySelector('header'));
-	loadHtml('tpl/footer.tpl', document.querySelector('footer'));
+	var album_id = ${ albumInfo.album_id };
 	
 	var vueDom = new Vue({
-		el: 'article',
+		el: '.picsbox',
 		data: {
-			userInfo: {},
-			albumInfo: {},
-			albumRecommendList: [],
-			imgList: [],
+			like_num: 0,
 			commentList: [],
 			commentNum: 0,
 		},
@@ -205,28 +194,12 @@
 		},
 	});
 	
-	ajax('get', '/index/index', null, function(res) {
-		vueDom.userInfo = res.userInfo;
+	//点赞数
+	ajax('get', '/album/getLikeNum', {
+		album_id: album_id,
+	}, function(res) {
+		vueDom.like_num = res.like_num;
 	});
-	ajax('get', '/album/getRecommend', null, function(res) {
-		vueDom.albumRecommendList = res;
-	});
-	
-	var album_id;
-	function init() {
-		var hash = window.location.hash.split('#');
-		album_id = hash[1];
-		ajax('get', '/album/getDetail', {
-			album_id: album_id,
-		}, function(res) {
-			vueDom.albumInfo = res.albumInfo;
-			vueDom.imgList = res.imgList;
-			loadJs('js/piccontent.min.js');
-		});
-		vueDom.commentList = [];
-		page.page = 1;
-		getComment();
-	}
 	
 	//评论列表
 	function getComment() {
@@ -246,28 +219,27 @@
 	var page = new Page(getComment);
 	page.limit = 2;
 	
-	init();
-	
-	//文本编辑器
-	//实例化编辑器
-	window.UEDITOR_CONFIG.serverUrl = DOMAIN + '/ueditor/index?type=album_comment';//type决定上传到哪个目录
-	var editor_add = UE.getEditor('editor_add');
+	getComment();
 	
 	//点赞
 	function like() {
 		var is_like = localStorage.getItem('album_like_'+ album_id);
 		if(is_like) {
-			alert('您已经为本相册点过赞');
+			alert('您已经为本文章点过赞');
 			return;
 		}
 		ajax('post', '/album/like', {
 			album_id: album_id,
 		}, function(res) {
-			vueDom.albumInfo.like_num += 1;
+			vueDom.like_num += 1;
 			localStorage.setItem('album_like_'+ album_id, 1);
 		});
 	}
 	
+	//文本编辑器
+	//实例化编辑器
+	window.UEDITOR_CONFIG.serverUrl = DOMAIN + '/ueditor/index?type=album_comment';//type决定上传到哪个目录
+	var editor_add = UE.getEditor('editor_add');
 	//发表评论
 	function addComment(form) {
 		var data = getFormObj(form);
@@ -288,10 +260,5 @@
 		});
 		return false;
 	}
-	
-	window.addEventListener('hashchange', function() {
-		window.location.reload();
-	});
 </script>
-</body>
-</html>
+</#macro>

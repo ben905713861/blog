@@ -1,0 +1,48 @@
+﻿<#include "common/layout.html">
+
+<#macro head>
+<link href="${ STATIC_DOMAIN }/css/article.css" rel="stylesheet">
+</#macro>
+
+<#macro mainBody>
+<article>
+	<aside>
+		<div class="l_box">
+			<div class="about_me">
+				<h2>关于我</h2>
+				<ul>
+					<i><img src="${ userInfo.head_img_url }"></i>
+					<p>${ userInfo.description }</p>
+				</ul>
+			</div>
+			<div class="wdxc">
+				<h2>我的相册</h2>
+				<ul>
+				<#list albumRecommendList as albumInfo>
+					<li>
+						<a href="/album/${ albumInfo.album_id }.html"><img title="${ albumInfo.title }" src="${ albumInfo.thumb_url ! STATIC_DOMAIN+'/images/default_thumb_264x176.jpg' }"></a>
+					</li>
+				</#list>
+				</ul>
+			</div>
+			<div class="guanzhu">
+				<h2>关注我 么么哒</h2>
+				<ul>
+					<img src="${ userInfo.share_code_img_url }">
+				</ul>
+			</div>
+		</div>
+	</aside>
+	<div class="r_box">
+		<ul class="about">
+			<div>
+				${ aboutInfo.aboutme }
+			</div>
+		</ul>
+	</div>
+</article>
+</#macro>
+
+<#macro js>
+	
+</#macro>

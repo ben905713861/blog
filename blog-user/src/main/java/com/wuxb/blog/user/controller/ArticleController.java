@@ -103,11 +103,6 @@ public class ArticleController {
 		return res;
 	}
 	
-	@RequestMapping("/getAllArticleId")
-	public List<Object> getAllArticleId() throws SQLException {
-		return Db.table("article").column("article_id");
-	}
-	
 	@RequestMapping("/getOne")
 	public Map<String, Object> getOne(@GetParam Map<String, Object> getMap) throws SQLException {
 		Map<String, Object> res = new HashMap<String, Object>();

@@ -20,7 +20,7 @@
 				<ul>
 				<#list albumRecommendList as albumInfo>
 					<li>
-						<a href="album.html# ${ albumInfo.album_id }"><img title="${ albumInfo.title }" src="${ albumInfo.thumb_url ! STATIC_DOMAIN+'/images/default_thumb_264x176.jpg' }"></a>
+						<a href="/album/${ albumInfo.album_id }.html"><img title="${ albumInfo.title }" src="${ albumInfo.thumb_url ! STATIC_DOMAIN+'/images/default_thumb_264x176.jpg' }"></a>
 					</li>
 				</#list>
 				</ul>
@@ -84,5 +84,12 @@
 </#macro>
 
 <#macro js>
-	
+<script type="text/javascript">
+	//搜索框搜索事件
+	document.getElementById('search-form').onsubmit = function() {
+		var data = getFormObj(this);
+		window.location.href = '/articleSearch.html#'+ data.type_id +'#'+ data.title;
+		return false;
+	}
+</script>
 </#macro>

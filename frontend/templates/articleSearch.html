@@ -1,0 +1,155 @@
+﻿<#include "common/layout.html">
+
+<#macro head>
+<style type="text/css">
+	.search { border: 1px solid #000; background: #000; border-radius: 0 5px 5px 0; position: relative; }
+	.search form { overflow: hidden;}
+	.search input,.r_box .search select{ vertical-align: middle; box-sizing: border-box; float: left; border: none; line-height: 36px; height: 36px; padding-left: 10px; outline: none}
+	.search .input_submit { border: 0; background: none; color: #fff;cursor: pointer;}
+</style>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>
+</#macro>
+
+<#macro mainBody>
+<article>
+	<aside>
+		<div class="l_box">
+			<div class="fenlei">
+				<h2>文章分类</h2>
+				<ul>
+					<#list articleTypeList as typeInfo>
+					<li>
+						<a href="/articleList/${ typeInfo.type_id }/1.html">${ typeInfo.type }（${ typeInfo.article_num }）</a>
+					</li>
+					</#list>
+				</ul>
+			</div>
+			<div class="tuijian">
+				<h2>站长推荐</h2>
+				<ul>
+				<#list articleRecommendList as articleInfo>
+					<li>
+						<a href="/article/${ articleInfo.article_id}.html">${ articleInfo.title }</a>
+					</li>
+				</#list>
+				</ul>
+			</div>
+			<!--<div class="cloud">
+				<h2>标签云</h2>
+				<ul>
+					<a href="/">陌上花开</a>
+				</ul>
+			</div>-->
+			<div class="guanzhu">
+				<h2>关注我 么么哒</h2>
+				<ul>
+					<img src="${ userInfo.share_code_img_url }">
+				</ul>
+			</div>
+		</div>
+	</aside>
+	
+	<div class="r_box">
+		<div class="search" style="margin-bottom: 15px;">
+			<form id="search-form">
+				<select name="type_id" class="select_text" style="width: 20%;">
+					<option value="">全部分类</option>
+					<#list articleTypeList as typeInfo>
+						<option value="${ typeInfo.type_id }">${ typeInfo.type }</option>
+					</#list>
+				</select>
+				<input type="text" name="title" class="input_text" style="width: 60%;" placeholder="请输入关键字查询相关文章">
+				<input type="submit" class="input_submit" style="width: 20%;" value="搜索">
+			</form>
+		</div>
+		<h4 style="margin-bottom: 15px;background: #fff;padding: 5px 12px;">文章搜索结果：共{{ articleCount }}篇</h4>
+		<ul>
+			<template v-if="articleList.length > 0">
+				<li v-for="articleInfo in articleList">
+					<i>
+						<a :href="'article.html#'+ articleInfo.article_id"><img :src="articleInfo.thumb_url"></a>
+					</i>
+					<h3><a :href="'article.html#'+ articleInfo.article_id">{{ articleInfo.title }}</a></h3>
+					<p>{{ articleInfo.description }}</p>
+				</li>
+			</template>
+			<template v-else="">
+				<li>空</li>
+			</template>
+		</ul>
+		<div class="pagelist">
+			<span class="thispage">{{ page.thisPage }}</span> &nbsp;
+			<a href="javascript:page.firstPage()">首页</a>
+			<a href="javascript:page.subPage()">上一页</a>
+			<a href="javascript:page.addPage()">下一页</a>
+			<a href="javascript:page.lastPage()">末页</a> &nbsp;
+			<span class="allpage">一共<b>{{ page.totalPage }}</b>页</span>
+		</div>
+	</div>
+</article>
+</#macro>
+
+<#macro js>
+<script type="text/javascript" src="${ STATIC_DOMAIN }/js/Page.js"></script>
+<script type="text/javascript">
+	var vueDom = new Vue({
+		el: 'article',
+		data: {
+			articleList: [],
+			articleCount: 0,
+			page: {
+				thisPage: 1,
+				totalPage: 1,
+			},
+		},
+	});
+	
+	//搜索框搜索事件
+	document.getElementById('search-form').onsubmit = function() {
+		page.page = 1;
+		var data = getFormObj(this);
+		window.location.hash = '#'+ data.type_id +'#'+ data.title;
+		return false;
+	}
+	
+	function search() {
+		var query = getFormObj(document.querySelector('form#search-form'));
+		if(query.title == '') {
+			vueDom.articleList = [];
+			vueDom.articleCount = 0;
+			alert('关键字不得为空');
+			return;
+		}
+		query.page = page.page;
+		query.limit = page.limit;
+		
+		ajax('get', '/article/getList', query, function(res) {
+			vueDom.articleList = res.list;
+			vueDom.articleCount = res.count;
+			//页码填充
+			vueDom.page.thisPage = page.page;
+			page.totalPage = Math.ceil(res.count/page.limit);
+			vueDom.page.totalPage = page.totalPage;
+		});
+	}
+	
+	var page = new Page(search);
+	
+	function init() {
+		//页面显示数量
+		page.limit = 3;
+		//类型
+		var hash = window.location.hash.split('#');
+		var type_id = hash[1] ? hash[1] : '';
+		var title = hash[2] ? hash[2] : '';
+		document.querySelector('#search-form select[name="type_id"]').value = type_id;
+		document.querySelector('#search-form input[name="title"]').value = title;
+		search();
+	}
+	init();
+	
+	window.addEventListener('hashchange', function() {
+		init();
+	});
+</script>
+</#macro>

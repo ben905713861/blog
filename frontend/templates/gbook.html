@@ -1,43 +1,35 @@
-﻿<!doctype html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<title>留言板_小彬个人博客 - 后端技术员个人博客网站</title>
-	<meta name="keywords" content="个人博客,小彬个人博客，程序员" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<link href="css/base.css" rel="stylesheet">
-	<link href="css/index.css" rel="stylesheet">
-	<link href="css/article.css" rel="stylesheet">
-	<link href="css/m.css" rel="stylesheet">
-	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>
-</head>
-<body>
-<header class="header-navigation" id="header">
-	
-</header>
+﻿<#include "common/layout.html">
 
+<#macro head>
+<link href="${ STATIC_DOMAIN }/css/article.css" rel="stylesheet">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>
+</#macro>
+
+<#macro mainBody>
 <article>
 	<aside>
 		<div class="l_box">
 			<div class="about_me">
 				<h2>关于我</h2>
 				<ul>
-					<i><img :src="userInfo.head_img_url"></i>
-					<p>{{ userInfo.description }}</p>
+					<i><img src="${ userInfo.head_img_url }"></i>
+					<p>${ userInfo.description }</p>
 				</ul>
 			</div>
 			<div class="wdxc">
 				<h2>我的相册</h2>
 				<ul>
-					<li v-for="albumInfo in albumRecommendList">
-						<a :href="'album.html#'+ albumInfo.album_id"><img :title="albumInfo.title" :src="albumInfo.thumb_url || 'images/default_thumb_264x176.jpg'"></a>
+				<#list albumRecommendList as albumInfo>
+					<li>
+						<a href="/album/${ albumInfo.album_id }.html"><img title="${ albumInfo.title }" src="${ albumInfo.thumb_url ! STATIC_DOMAIN+'/images/default_thumb_264x176.jpg' }"></a>
 					</li>
+				</#list>
 				</ul>
 			</div>
 			<div class="guanzhu">
 				<h2>关注我 么么哒</h2>
 				<ul>
-					<img :src="userInfo.share_code_img_url">
+					<img src="${ userInfo.share_code_img_url }">
 				</ul>
 			</div>
 		</div>
@@ -59,7 +51,7 @@
 			<ul>
 				<template v-if="commentList.length > 0">
 					<li v-for="comment in commentList">
-						<img class="head" src="images/comment_user.png">
+						<img class="head" src="${ STATIC_DOMAIN }/images/comment_user.png">
 						<div class="comment-box">
 							<div class="content">
 								<span v-html="comment.content"></span>
@@ -81,27 +73,17 @@
 		</div>
 	</div>
 </article>
+</#macro>
 
-<footer>
-	
-</footer>
-
-<script type="text/javascript" src="js/commAction.js"></script>
-<script type="text/javascript" src="js/config.js"></script>
-<script type="text/javascript" src="js/common.js"></script>
-<script type="text/javascript" src="js/Page.js"></script>
+<#macro js>
+<script type="text/javascript" src="${ STATIC_DOMAIN }/js/Page.js"></script>
 <!--ueditor编辑器-->
-<script src="plugins/ueditor/ueditor.config.js"></script>
+<script src="${ STATIC_DOMAIN }/plugins/ueditor/ueditor.config.js"></script>
 <script src="http://www.gd-filmfund.cn/static/js/plugins/ueditor/ueditor.all.min.js"></script>
 <script type="text/javascript">
-	loadHtml('tpl/header.tpl', document.querySelector('header'));
-	loadHtml('tpl/footer.tpl', document.querySelector('footer'));
-	
 	var vueDom = new Vue({
-		el: 'article',
+		el: '.infosbox',
 		data: {
-			userInfo: {},
-			albumRecommendList: [],
 			commentList: [],
 			commentNum: 0,
 		},
@@ -135,14 +117,6 @@
 	//实例化编辑器
 	window.UEDITOR_CONFIG.serverUrl = DOMAIN + '/ueditor/index?type=comment';//type决定上传到哪个目录
 	var editor_add = UE.getEditor('editor_add');
-	
-	ajax('get', '/index/index', null, function(res) {
-		vueDom.userInfo = res.userInfo;
-	});
-	ajax('get', '/album/getRecommend', null, function(res) {
-		vueDom.albumRecommendList = res;
-	});
-	
 	//发表留言
 	function addComment(form) {
 		var data = getFormObj(form);
@@ -163,5 +137,4 @@
 		return false;
 	}
 </script>
-</body>
-</html>
+</#macro>

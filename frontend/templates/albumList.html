@@ -9,110 +9,76 @@
 	<div class="picbox">
 		<ul>
 		<#list albumBox.list as albumInfo>
+			<#if (albumInfo_index%4 == 0)>
 			<li data-scroll-reveal="enter bottom over 1s">
 				<a href="/album/${ albumInfo.album_id }.html">
-					<i><img src="${ albumInfo.thumb_url }"></i>
+					<i><img src="${ albumInfo.thumb_url ! STATIC_DOMAIN+'/images/default_thumb_264x176.jpg' }"></i>
 					<div class="picinfo">
 						<h3>${ albumInfo.title }</h3>
 						<span>${ albumInfo.description }</span>
 					</div>
 				</a>
 			</li>
+			</#if>
 		</#list>
-		
-			<li v-for="albumInfo in albumList[0]" data-scroll-reveal="enter bottom over 1s">
-				<a :href="'album.html#'+ albumInfo.album_id">
-					<i><img :src="albumInfo.thumb_url"></i>
-					<div class="picinfo">
-						<h3>{{ albumInfo.title }}</h3>
-						<span>{{ albumInfo.description }}</span>
-					</div>
-				</a>
-			</li>
 		</ul>
 		<ul>
-			<li v-for="albumInfo in albumList[1]" data-scroll-reveal="enter bottom over 1s">
-				<a :href="'album.html#'+ albumInfo.album_id">
-					<i><img :src="albumInfo.thumb_url"></i>
+		<#list albumBox.list as albumInfo>
+			<#if (albumInfo_index%4 == 1)>
+			<li data-scroll-reveal="enter bottom over 1s">
+				<a href="/album/${ albumInfo.album_id }.html">
+					<i><img src="${ albumInfo.thumb_url ! STATIC_DOMAIN+'/images/default_thumb_264x176.jpg' }"></i>
 					<div class="picinfo">
-						<h3>{{ albumInfo.title }}</h3>
-						<span>{{ albumInfo.description }}</span>
+						<h3>${ albumInfo.title }</h3>
+						<span>${ albumInfo.description }</span>
 					</div>
 				</a>
 			</li>
+			</#if>
+		</#list>
 		</ul>
 		<ul>
-			<li v-for="albumInfo in albumList[2]" data-scroll-reveal="enter bottom over 1s">
-				<a :href="'album.html#'+ albumInfo.album_id">
-					<i><img :src="albumInfo.thumb_url"></i>
+		<#list albumBox.list as albumInfo>
+			<#if (albumInfo_index%4 == 2)>
+			<li data-scroll-reveal="enter bottom over 1s">
+				<a href="/album/${ albumInfo.album_id }.html">
+					<i><img src="${ albumInfo.thumb_url ! STATIC_DOMAIN+'/images/default_thumb_264x176.jpg' }"></i>
 					<div class="picinfo">
-						<h3>{{ albumInfo.title }}</h3>
-						<span>{{ albumInfo.description }}</span>
+						<h3>${ albumInfo.title }</h3>
+						<span>${ albumInfo.description }</span>
 					</div>
 				</a>
 			</li>
+			</#if>
+		</#list>
 		</ul>
 		<ul>
-			<li v-for="albumInfo in albumList[3]" data-scroll-reveal="enter bottom over 1s">
-				<a :href="'album.html#'+ albumInfo.album_id">
-					<i><img :src="albumInfo.thumb_url"></i>
+		<#list albumBox.list as albumInfo>
+			<#if (albumInfo_index%4 == 3)>
+			<li data-scroll-reveal="enter bottom over 1s">
+				<a href="/album/${ albumInfo.album_id }.html">
+					<i><img src="${ albumInfo.thumb_url ! STATIC_DOMAIN+'/images/default_thumb_264x176.jpg' }"></i>
 					<div class="picinfo">
-						<h3>{{ albumInfo.title }}</h3>
-						<span>{{ albumInfo.description }}</span>
+						<h3>${ albumInfo.title }</h3>
+						<span>${ albumInfo.description }</span>
 					</div>
 				</a>
 			</li>
+			</#if>
+		</#list>
 		</ul>
 	</div>
 	<div class="pagelist">
-		<span class="thispage">{{ page.thisPage }}</span> &nbsp;
-		<a href="javascript:page.firstPage()">首页</a>
-		<a href="javascript:page.subPage()">上一页</a>
-		<a href="javascript:page.addPage()">下一页</a>
-		<a href="javascript:page.lastPage()">末页</a> &nbsp;
-		<span class="allpage">一共<b>{{ page.totalPage }}</b>页</span>
+		<span class="thispage">${ page.thisPage }</span> &nbsp;
+		<a href="${ page.firstPage }.html">首页</a>
+		<a href="${ page.lastPage }.html">上一页</a>
+		<a href="${ page.nextPage }.html">下一页</a>
+		<a href="${ page.endPage }.html">末页</a> &nbsp;
+		<span class="allpage">一共<b>${ page.endPage }</b>页</span>
 	</div>
 </article>
 </#macro>
 
 <#macro js>
-<script type="text/javascript" src="js/Page.js"></script>
-<script type="text/javascript">
-	function search() {
-		var query = {
-			page: page.page,
-			limit: page.limit,
-		}
-		ajax('get', '/album/getList', query, function(res) {
-			var albumList = res.list;
-			var newAlbumList = [
-				[],[],[],[]
-			];
-			for(var i = 0; i < albumList.length; i++) {
-				newAlbumList[i%4].push(albumList[i]);
-			}
-			//渲染
-			vueDom.albumList = newAlbumList;
-			//页码填充
-			vueDom.page.thisPage = page.page;
-			page.totalPage = Math.ceil(res.count/page.limit);
-			vueDom.page.totalPage = page.totalPage;
-			//保存查询条件
-			sessionStorage.setItem(window.location.pathname +'_query', JSON.stringify(query));
-		});
-	}
-	
-	var page = new Page(search);
-	
-	(function() {
-		page.limit = 8;
-		var query = sessionStorage.getItem(window.location.pathname +'_query');
-		if(query) {
-			query = JSON.parse(query);
-			page.page = query.page;
-			page.limit = query.limit;
-		}
-		search();
-	})();
-</script>
+
 </#macro>

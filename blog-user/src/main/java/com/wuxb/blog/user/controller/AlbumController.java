@@ -88,6 +88,14 @@ public class AlbumController {
 		return res;
 	}
 	
+	@RequestMapping("/getLikeNum")
+	public Map<String, Object> getLikeNum(@GetParam Map<String, Object> getMap) throws SQLException {
+		return Db.table("album")
+			.field("like_num")
+			.where("album_id", getMap.get("album_id"))
+			.find();
+	}
+	
 	@RequestMapping(value="/like", method=RequestMethod.POST)
 	public Map<String, Object> like(@PostParam Map<String, Object> postMap) throws SQLException {
 		Db.table("album")

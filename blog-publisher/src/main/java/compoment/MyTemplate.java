@@ -20,7 +20,7 @@ public abstract class MyTemplate {
 	
 	private static final String TEMPLATE_DIR = Config.get("TEMPLATE_DIR");
 	private static final String HTML_DIR = Config.get("HTML_DIR");
-	private static final String STATIC_DOMAIN = Config.get("STATIC_DOMAIN");
+	private static final String USER_API = Config.get("USER_API");
 	private static final String USER_DOMAIN = Config.get("USER_DOMAIN");
 	private String templateName;
 	private Template template;
@@ -28,7 +28,7 @@ public abstract class MyTemplate {
 	
 	public MyTemplate() {
 		templateName = setTemplate();
-		data.put("STATIC_DOMAIN", STATIC_DOMAIN);
+		data.put("STATIC_DOMAIN", USER_DOMAIN);
 		//模板引擎
 		Configuration configuration = new Configuration(Configuration.getVersion());
 		try {
@@ -86,7 +86,7 @@ public abstract class MyTemplate {
 	}
 	
 	private static String curl(String path) {
-		return Curl.simpleGet(USER_DOMAIN + path);
+		return Curl.simpleGet(USER_API + path);
 	}
 	
 }

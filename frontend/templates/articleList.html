@@ -80,5 +80,12 @@
 </#macro>
 
 <#macro js>
-	
+<script type="text/javascript">
+	//搜索框搜索事件
+	document.getElementById('search-form').onsubmit = function() {
+		var data = getFormObj(this);
+		window.location.href = '/articleSearch.html#'+ data.type_id +'#'+ data.title;
+		return false;
+	}
+</script>
 </#macro>

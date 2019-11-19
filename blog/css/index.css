@@ -18,8 +18,8 @@
 .links a { display: block; float: left; margin: 0 10px 5px 0 }
 .guanzhu img { width: 100% }
 .l_box .search { border: 1px solid #000; background: #000; border-radius: 0 5px 5px 0; position: relative; }
-.search input.input_submit { border: 0; background: 0; color: #fff; outline: none; padding: 8px 20px; cursor: pointer;}
-.search input.input_text { border: 0; line-height: 36px; height: 36px; width: 72%; padding-left: 10px; outline: none }
+.l_box .search input.input_submit { border: 0; background: 0; color: #fff; outline: none; padding: 8px 20px; cursor: pointer;}
+.l_box .search input.input_text { border: 0; line-height: 36px; height: 36px; width: 72%; padding-left: 10px; outline: none }
 .r_box li { background: rgba(255,255,255,0.8); padding: 15px; overflow: hidden; color: #797b7c; margin-bottom: 20px }
 .r_box li h3 { font-size: 16px; line-height: 25px; text-shadow: #FFF 1px 1px 1px }
 .r_box li h3 a { color: #222 }
