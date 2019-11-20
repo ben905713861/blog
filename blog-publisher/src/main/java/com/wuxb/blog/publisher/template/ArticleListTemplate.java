@@ -1,5 +1,6 @@
 package com.wuxb.blog.publisher.template;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSONArray;
@@ -12,18 +13,21 @@ public class ArticleListTemplate extends MyTemplate {
 
 	private static final int limit = 3;
 	
-	public static void main(String[] args) {
-		ArticleListTemplate indexTemplate = new ArticleListTemplate();
-		indexTemplate.display();
-	}
-
 	@Override
 	protected String setTemplate() {
 		return "articleList";
 	}
+	
+	@Override
+	public void clear(JSONArray inputData) {
+		for(Object row : inputData) {
+			int type_id = (int) row;
+			delete("/"+ type_id);
+		}
+	}
 
 	@Override
-	public void display() {
+	public void display(JSONArray inputData) {
 		data.put("userInfo", curlGetMap("/index/index").get("userInfo"));
 		data.put("articleRecommendList", curlGetList("/article/getRecommend"));
 		
@@ -42,10 +46,18 @@ public class ArticleListTemplate extends MyTemplate {
 		}
 		data.put("articleTypeList", articleTypeList);
 		
+		Map<String, String> type_id2type = new HashMap<String, String>();
 		for(Object row : articleTypeList) {
 			JSONObject articleType = (JSONObject) row;
 			String type_id = articleType.getString("type_id");
-			data.put("articleType", articleType.getString("type"));
+			String type = articleType.getString("type");
+			type_id2type.put(type_id, type);
+		}
+		
+		for(Object row : inputData) {
+			String type_id = (row instanceof Integer) ? String.valueOf((int) row) : (String) row;
+			String type = type_id2type.get(type_id);
+			data.put("articleType", type);
 			
 			int page = 1;
 			while(true) {

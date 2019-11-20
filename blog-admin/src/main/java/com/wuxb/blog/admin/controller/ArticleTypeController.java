@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.wuxb.blog.admin.component.Publisher;
 import com.wuxb.blog.admin.validate.ArticleTypeValidate;
 import com.wuxb.httpServer.Validate;
 import com.wuxb.httpServer.annotation.GetParam;
@@ -66,7 +67,12 @@ public class ArticleTypeController {
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("type", postMap.get("type"));
 		data.put("sort", postMap.get("sort"));
-		Db.table("article_type").insert(data);
+		int type_id = Db.table("article_type").insert(data);
+		
+		Publisher publisher = new Publisher("articleList");
+		publisher.addInputData(type_id);
+		publisher.send();
+		
 		return Tools.returnSucc();
 	}
 	
@@ -76,13 +82,20 @@ public class ArticleTypeController {
 		if(!validate.scene("update").check(postMap)) {
 			return Tools.returnErr(validate.getError());
 		}
+		Object type_id = postMap.get("type_id");
+		
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("type", postMap.get("type"));
 		data.put("sort", postMap.get("sort"));
 		Db.table("article_type")
-			.where("type_id", postMap.get("type_id"))
+			.where("type_id", type_id)
 			.limit(1)
 			.update(data);
+		
+		Publisher publisher = new Publisher("articleList");
+		publisher.addInputData(type_id);
+		publisher.send();
+		
 		return Tools.returnSucc();
 	}
 	
@@ -92,10 +105,17 @@ public class ArticleTypeController {
 		if(articleNum > 0) {
 			return Tools.returnErr("该分类下存在文章，请先删除分类下的文章在进行本操作");
 		}
+		
+		Object type_id = postMap.get("type_id");
 		Db.table("article_type")
-			.where("type_id", postMap.get("type_id"))
+			.where("type_id", type_id)
 			.limit(1)
 			.delete();
+		
+		Publisher publisher = new Publisher("articleList");
+		publisher.addDeleteData(type_id);
+		publisher.send();
+		
 		return Tools.returnSucc();
 	}
 	

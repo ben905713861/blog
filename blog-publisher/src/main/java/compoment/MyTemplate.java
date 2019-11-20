@@ -40,8 +40,34 @@ public abstract class MyTemplate {
 		}
 	}
 	
+	protected void delete() {
+		delete("");
+	}
+	
+	protected void delete(String suffix) {
+		File file = new File(HTML_DIR + "/" + templateName + suffix +".html");
+		delFile(file);
+		File fileDir = new File(HTML_DIR + "/" + templateName + suffix);
+		delFile(fileDir);
+	}
+	
+	private static boolean delFile(File file) {
+		if(!file.exists()) {
+			return false;
+		}
+		if(file.isDirectory()) {
+			File[] files = file.listFiles();
+			for (File f : files) {
+				delFile(f);
+			}
+		}
+		return file.delete();
+	}
+	
+	
 	protected abstract String setTemplate();
-	public abstract void display();
+	public abstract void clear(JSONArray inputData);
+	public abstract void display(JSONArray inputData);
 	
 	protected void play() {
 		play("");

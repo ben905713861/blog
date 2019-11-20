@@ -1,21 +1,23 @@
 package com.wuxb.blog.publisher.template;
 
+import com.alibaba.fastjson.JSONArray;
+
 import compoment.MyTemplate;
 
 public class IndexTemplate extends MyTemplate {
-
-	public static void main(String[] args) {
-		IndexTemplate indexTemplate = new IndexTemplate();
-		indexTemplate.display();
-	}
 
 	@Override
 	protected String setTemplate() {
 		return "index";
 	}
+	
+	@Override
+	public void clear(JSONArray inputData) {
+		delete();
+	}
 
 	@Override
-	public void display() {
+	public void display(JSONArray inputData) {
 		data.put("userInfo", curlGetMap("/index/index").get("userInfo"));
 		data.put("articleBox", curlGetMap("/article/getList"));
 		data.put("albumRecommendList", curlGetList("/album/getRecommend"));

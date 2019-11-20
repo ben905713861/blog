@@ -1,5 +1,6 @@
 package com.wuxb.blog.publisher.template;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 import compoment.MyTemplate;
@@ -9,18 +10,18 @@ public class AlbumListTemplate extends MyTemplate {
 
 	private static final int limit = 8;
 	
-	public static void main(String[] args) {
-		AlbumListTemplate indexTemplate = new AlbumListTemplate();
-		indexTemplate.display();
-	}
-
 	@Override
 	protected String setTemplate() {
 		return "albumList";
 	}
+	
+	@Override
+	public void clear(JSONArray inputData) {
+		delete();
+	}
 
 	@Override
-	public void display() {
+	public void display(JSONArray inputData) {
 		int page = 1;
 		while(true) {
 			JSONObject albumBox = curlGetMap("/album/getList?page="+ page +"&limit="+ limit);
