@@ -113,6 +113,9 @@ public class ArticleController {
 			.join("article_type t", "t.type_id=a.type_id", "LEFT")
 			.where("a.article_id", getMap.get("article_id"))
 			.find();
+		if(articleInfo == null) {
+			return res;
+		}
 		//还原文件网址前缀
 		String content = (String) articleInfo.get("content");
 		articleInfo.replace("content", UeditorFileDomainFilter.replay(content));

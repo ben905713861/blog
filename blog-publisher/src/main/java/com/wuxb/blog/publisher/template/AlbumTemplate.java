@@ -27,9 +27,15 @@ public class AlbumTemplate extends MyTemplate {
 		
 		for(Object row : inputData) {
 			int album_id = (int) row;
-			JSONObject albumInfo = curlGetMap("/album/getDetail?album_id="+ album_id);
-			data.put("albumInfo", albumInfo.getJSONObject("albumInfo"));
-			data.put("imgList", albumInfo.getJSONArray("imgList"));
+			JSONObject info = curlGetMap("/album/getDetail?album_id="+ album_id);
+			
+			JSONObject albumInfo = info.getJSONObject("albumInfo");
+			if(albumInfo == null || albumInfo.size() == 0) {
+				delete("/"+ album_id);
+				continue;
+			}
+			data.put("albumInfo",albumInfo);
+			data.put("imgList", info.getJSONArray("imgList"));
 			play("/"+ album_id);
 		}
 	}

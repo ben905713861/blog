@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.wuxb.blog.admin.component.Publisher;
 import com.wuxb.blog.admin.component.UeditorFileDomainFilter;
 import com.wuxb.blog.admin.component.UploadFile;
 import com.wuxb.blog.admin.validate.ArticleValidate;
@@ -127,13 +128,13 @@ public class ArticleController {
 		try {
 			Db.begin();
 			
-			Map<String, Object> data1 = new HashMap<String, Object>();
-			data1.put("title", postMap.get("title"));
-			data1.put("type_id", postMap.get("type_id"));
-			data1.put("key_words", postMap.get("key_words"));
-			data1.put("is_recommend", postMap.get("is_recommend"));
-			data1.put("thumb_path", postMap.get("thumb_path"));
-			data1.put("add_time", Tools.time());
+			Map<String, Object> data = new HashMap<String, Object>();
+				data.put("title", postMap.get("title"));
+				data.put("type_id", postMap.get("type_id"));
+				data.put("key_words", postMap.get("key_words"));
+				data.put("is_recommend", postMap.get("is_recommend"));
+				data.put("thumb_path", postMap.get("thumb_path"));
+				data.put("add_time", Tools.time());
 			
 			String content = (String) postMap.get("content");
 			if(((String) postMap.get("description")).isEmpty()) {
@@ -142,21 +143,23 @@ public class ArticleController {
 				description = HtmlFilter.htmlspecialcharsDecode(description);
 				int contentLen = description.length();
 				description = description.substring(0, contentLen>255 ? 255 : contentLen);
-				data1.put("description", description);
+				data.put("description", description);
 			} else {
 				String description = (String) postMap.get("description");
 				description = HtmlFilter.stripTags(description);
-				data1.put("description", description);
+				data.put("description", description);
 			}
-			int article_id = Db.table("article").insert(data1);
+			int article_id = Db.table("article").insert(data);
 			
 			Map<String, Object> data2 = new HashMap<String, Object>();
 			data2.put("article_id", article_id);
 			//将正文中的上传文件url的网址前缀去掉
 			data2.put("content", UeditorFileDomainFilter.filter(content));
-			Db.table("article_content").insert(data2);
 			
+			Db.table("article_content").insert(data2);
 			Db.commit();
+			
+			publishHtml(article_id, postMap.get("type_id"));
 		} catch (SQLException e) {
 			Db.rollback();
 			throw new SQLException(e.getMessage());
@@ -173,12 +176,14 @@ public class ArticleController {
 		try {
 			Db.begin();
 			
-			Map<String, Object> data1 = new HashMap<String, Object>();
-			data1.put("title", postMap.get("title"));
-			data1.put("type_id", postMap.get("type_id"));
-			data1.put("key_words", postMap.get("key_words"));
-			data1.put("is_recommend", postMap.get("is_recommend"));
-			data1.put("thumb_path", postMap.get("thumb_path"));
+			Object article_id = postMap.get("article_id");
+			
+			Map<String, Object> data = new HashMap<String, Object>();
+				data.put("title", postMap.get("title"));
+				data.put("type_id", postMap.get("type_id"));
+				data.put("key_words", postMap.get("key_words"));
+				data.put("is_recommend", postMap.get("is_recommend"));
+				data.put("thumb_path", postMap.get("thumb_path"));
 			
 			String content = (String) postMap.get("content");
 			if(((String) postMap.get("description")).isEmpty()) {
@@ -187,27 +192,30 @@ public class ArticleController {
 				description = HtmlFilter.htmlspecialcharsDecode(description);
 				int contentLen = description.length();
 				description = description.substring(0, contentLen>255 ? 255 : contentLen);
-				data1.put("description", description);
+				data.put("description", description);
 			} else {
 				String description = (String) postMap.get("description");
 				description = HtmlFilter.stripTags(description);
-				data1.put("description", description);
+				data.put("description", description);
 			}
+			
 			Db.table("article")
-				.where("article_id", postMap.get("article_id"))
+				.where("article_id", article_id)
 				.limit(1)
-				.update(data1);
+				.update(data);
 			
 			Map<String, Object> data2 = new HashMap<String, Object>();
 			//将正文中的上传文件url的网址前缀去掉
 			data2.put("content", UeditorFileDomainFilter.filter(content));
 			
 			Db.table("article_content")
-				.where("article_id", postMap.get("article_id"))
+				.where("article_id", article_id)
 				.limit(1)
 				.update(data2);
 			
 			Db.commit();
+			
+			publishHtml(article_id, postMap.get("type_id"));
 		} catch (SQLException e) {
 			Db.rollback();
 			throw new SQLException(e.getMessage());
@@ -217,22 +225,41 @@ public class ArticleController {
 	
 	@RequestMapping(value="/delete", method=RequestMethod.POST)
 	public Map<String, Object> delete(@PostParam Map<String, Object> postMap) throws SQLException {
+		Object article_id = postMap.get("article_id");
 		try {
 			Db.begin();
+			Object type_id = Db.table("article")
+				.where("article_id", article_id)
+				.value("type_id");
 			Db.table("article_content")
-				.where("article_id", postMap.get("article_id"))
+				.where("article_id", article_id)
 				.limit(1)
 				.delete();
 			Db.table("article")
-				.where("article_id", postMap.get("article_id"))
+				.where("article_id", article_id)
 				.limit(1)
 				.delete();
 			Db.commit();
+			
+			publishHtml(article_id, type_id);
 		} catch (SQLException e) {
 			Db.rollback();
 			throw new SQLException(e.getMessage());
 		}
 		return Tools.returnSucc();
+	}
+	
+	private static void publishHtml(Object article_id, Object type_id) {
+		{
+			Publisher publisher = new Publisher("article");
+			publisher.addInputData(article_id);
+			publisher.send();
+		}
+		{
+			Publisher publisher = new Publisher("articleList");
+			publisher.addInputData(type_id);
+			publisher.send();
+		}
 	}
 	
 }

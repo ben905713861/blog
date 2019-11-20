@@ -15,8 +15,8 @@ public class ArticleTemplate extends MyTemplate {
 	@Override
 	public void clear(JSONArray inputData) {
 		for(Object row : inputData) {
-			int type_id = (int) row;
-			delete("/"+ type_id);
+			int article_id = (int) row;
+			delete("/"+ article_id);
 		}
 	}
 
@@ -29,6 +29,11 @@ public class ArticleTemplate extends MyTemplate {
 		for(Object temp : inputData) {
 			String article_id = (String) temp;
 			JSONObject articleInfo = curlGetMap("/article/getOne?article_id="+ article_id);
+			//查询结果为空，执行删除
+			if(articleInfo == null || articleInfo.size() == 0) {
+				delete("/"+ article_id);
+				continue;
+			}
 			data.put("articleInfo", articleInfo.getJSONObject("articleInfo"));
 			data.put("nextArticleInfo", articleInfo.getJSONObject("nextArticleInfo"));
 			data.put("lastArticleInfo", articleInfo.getJSONObject("lastArticleInfo"));
