@@ -1,13 +1,12 @@
 cd blog-admin/
-mvn clean
-mvn install
+mvn clean install
 cd ../
 cd blog-user/
-mvn clean
-mvn install
+mvn clean install
 cd ../
 cd blog-file/
-mvn clean
-mvn install
+mvn clean install
 cd ../
-
+cd blog-publisher/
+mvn clean install
+cd ../
