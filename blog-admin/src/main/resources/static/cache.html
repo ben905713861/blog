@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>缓存</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/toastr.min.css" rel="stylesheet">
+<link href="css/font-awesome.min.css" rel="stylesheet">
+<link href="css/animate.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<div style="padding: 20px;">
+	<form id="searchForm" class="pull-left form-inline" onsubmit="return cache(this)">
+		<div class="form-group">
+			<span>重建缓存：</span>
+		</div>
+		<div class="form-group">
+			<select name="type" class="form-control">
+				<option value="all">全部</option>
+				<option value="index">主页、留言页、搜索页、关于我页</option>
+				<option value="articleList">文章列表页</option>
+				<option value="article">文章内容页</option>
+				<option value="albumList">相册列表页</option>
+				<option value="album">相册内容页</option>
+			</select>
+		</div>
+		<div class="form-group">
+			<button type="submit" class="btn btn-info"><i class="fa fa-recycle"></i> 重建</button>
+		</div>
+	</form>
+</div>
+
+
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/plugins/layer/layer.min.js"></script>
+<!--右上角提示框插件-->
+<script src="js/toastr.min.js"></script>
+<script src="js/common.js"></script>
+<script type="text/javascript">
+	function cache(form) {
+		ajax('post', '/cache/rebuild', getFormObj(form));
+		return false;
+	}
+</script>
+</body>
+</html>

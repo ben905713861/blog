@@ -180,6 +180,7 @@
 	
 	//文本编辑器
 	//实例化编辑器
+	document.domain = '${ STATIC_DOMAIN }'.replace(/http:\/\/|https:\/\//, '');
 	window.UEDITOR_CONFIG.serverUrl = DOMAIN + '/ueditor/index?type=article_comment';//type决定上传到哪个目录
 	var editor_add = UE.getEditor('editor_add');
 	

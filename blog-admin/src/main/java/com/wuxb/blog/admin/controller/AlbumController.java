@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.wuxb.blog.admin.component.Publisher;
 import com.wuxb.blog.admin.component.UploadFile;
 import com.wuxb.blog.admin.validate.AlbumValidate;
 import com.wuxb.httpServer.HttpServletRequest;
@@ -116,6 +117,8 @@ public class AlbumController {
 		data.put("thumb_path", postMap.get("thumb_path"));
 		data.put("add_time", Tools.time());
 		Db.table("album").insert(data);
+		
+		publishHtml();
 		return Tools.returnSucc();
 	}
 	
@@ -134,6 +137,8 @@ public class AlbumController {
 			.where("album_id", postMap.get("album_id"))
 			.limit(1)
 			.update(data);
+		
+		publishHtml();
 		return Tools.returnSucc();
 	}
 	
@@ -149,11 +154,18 @@ public class AlbumController {
 				.limit(1)
 				.delete();
 			Db.commit();
+			
+			publishHtml();
 		} catch (SQLException e) {
 			Db.rollback();
 			throw new SQLException(e.getMessage());
 		}
 		return Tools.returnSucc();
+	}
+	
+	private static void publishHtml() {
+		Publisher publisher = new Publisher("albumList");
+		publisher.send();
 	}
 	
 }

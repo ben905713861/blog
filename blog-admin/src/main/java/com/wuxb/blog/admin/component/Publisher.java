@@ -1,5 +1,8 @@
 package com.wuxb.blog.admin.component;
 
+import java.util.Collections;
+import java.util.List;
+
 import com.alibaba.fastjson.JSONArray;
 import com.wuxb.httpServer.Redis;
 
@@ -22,10 +25,14 @@ public class Publisher {
 		this.templateName = templateName;
 	}
 	
+	
 	public void addInputData(Object[] array) {
 		for(Object object : array) {
 			inputData.add(object);
 		}
+	}
+	public void addInputData(List<Object> list) {
+		addInputData(list.toArray());
 	}
 	public void addInputData(Object object) {
 		inputData.add(object);
@@ -35,6 +42,9 @@ public class Publisher {
 		for(Object object : array) {
 			deleteData.add(object);
 		}
+	}
+	public void addDeleteData(List<Object> list) {
+		addDeleteData(list.toArray());
 	}
 	public void addDeleteData(Object object) {
 		deleteData.add(object);

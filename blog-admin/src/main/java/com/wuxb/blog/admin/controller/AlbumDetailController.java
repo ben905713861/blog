@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.wuxb.blog.admin.component.Publisher;
 import com.wuxb.httpServer.annotation.GetParam;
 import com.wuxb.httpServer.annotation.PostParam;
 import com.wuxb.httpServer.annotation.RequestMapping;
@@ -83,16 +84,32 @@ public class AlbumDetailController {
 		}
 		
 		Db.table("album_img").insertAll(dataList);
+		
+		publishHtml(postMap.get("album_id"));
 		return Tools.returnSucc();
 	}
 	
 	@RequestMapping(value="/delete", method=RequestMethod.POST)
 	public Map<String, Object> delete(@PostParam Map<String, Object> postMap) throws SQLException {
+		Object album_id = Db.table("album_img")
+			.where("img_id", postMap.get("img_id"))
+			.value("album_id");
+		
 		Db.table("album_img")
 			.where("img_id", postMap.get("img_id"))
 			.limit(1)
 			.delete();
+		
+		if(album_id != null) {
+			publishHtml(album_id);
+		}
 		return Tools.returnSucc();
+	}
+	
+	private static void publishHtml(Object album_id) {
+		Publisher publisher = new Publisher("album");
+		publisher.addInputData(album_id);
+		publisher.send();
 	}
 	
 }

@@ -43,6 +43,7 @@ public class Publisher {
 		while(true) {
 			Jedis jedis = Redis.getConn();
 			List<String> messages = jedis.brpop(10, REDIS_KEY_NAME);
+			jedis.close();
 			if(messages.size() < 2) {
 				continue;
 			}

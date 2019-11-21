@@ -15,7 +15,7 @@ public class AlbumTemplate extends MyTemplate {
 	@Override
 	public void clear(JSONArray inputData) {
 		for(Object row : inputData) {
-			int album_id = (int) row;
+			String album_id = (row instanceof Integer) ? String.valueOf((int) row) : (String) row;
 			delete("/"+ album_id);
 		}
 	}
@@ -26,7 +26,7 @@ public class AlbumTemplate extends MyTemplate {
 		data.put("albumRecommendList", curlGetList("/album/getRecommend"));
 		
 		for(Object row : inputData) {
-			int album_id = (int) row;
+			String album_id = (row instanceof Integer) ? String.valueOf((int) row) : (String) row;
 			JSONObject info = curlGetMap("/album/getDetail?album_id="+ album_id);
 			
 			JSONObject albumInfo = info.getJSONObject("albumInfo");

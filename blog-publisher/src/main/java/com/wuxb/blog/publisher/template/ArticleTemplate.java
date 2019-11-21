@@ -15,7 +15,7 @@ public class ArticleTemplate extends MyTemplate {
 	@Override
 	public void clear(JSONArray inputData) {
 		for(Object row : inputData) {
-			int article_id = (int) row;
+			String article_id = (row instanceof Integer) ? String.valueOf((int) row) : (String) row;
 			delete("/"+ article_id);
 		}
 	}
@@ -26,8 +26,8 @@ public class ArticleTemplate extends MyTemplate {
 		data.put("articleRecommendList", curlGetList("/article/getRecommend"));
 		data.put("articleTypeList", curlGetList("/article/getTypes"));
 		
-		for(Object temp : inputData) {
-			String article_id = (String) temp;
+		for(Object row : inputData) {
+			String article_id = (row instanceof Integer) ? String.valueOf((int) row) : (String) row;
 			JSONObject articleInfo = curlGetMap("/article/getOne?article_id="+ article_id);
 			//查询结果为空，执行删除
 			if(articleInfo == null || articleInfo.size() == 0) {

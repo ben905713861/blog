@@ -21,7 +21,7 @@ public class ArticleListTemplate extends MyTemplate {
 	@Override
 	public void clear(JSONArray inputData) {
 		for(Object row : inputData) {
-			int type_id = (int) row;
+			String type_id = (row instanceof Integer) ? String.valueOf((int) row) : (String) row;
 			delete("/"+ type_id);
 		}
 	}
