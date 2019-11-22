@@ -7517,6 +7517,7 @@ body.skin-3 {
     .navbar-top-links .dropdown-alerts {
         margin-left: auto;
     }
+    .navbar-static-top { display:none }
 }
 
 @media (max-width: 768px) {
