@@ -41,8 +41,9 @@ public class UeditorController {
 		}
 	}
 	
-	private void config() {
-		httpServletResponse.location("/static/js/plugins/ueditor/ueditorConfig.json");
+	private void config() throws Exception {
+//		httpServletResponse.location("/static/js/plugins/ueditor/ueditorConfig.json");
+		httpServletResponse.setResponse("{}");
 	}
 	
 	private Map<String, Object> uploadfile(String type) {

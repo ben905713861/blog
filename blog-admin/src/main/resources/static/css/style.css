@@ -4,6 +4,9 @@
  *   version 4.0
  *
 */
+iframe {
+	display: block;
+}
 
 h1,
 h2,
@@ -3721,7 +3724,7 @@ nav.page-tabs .page-tabs-content {
 }
 
 #content-main {
-    height: calc(100% - 140px);
+    height: calc(100% - 80px);
     overflow: hidden;
 }
 
@@ -7565,7 +7568,7 @@ body.skin-3 {
         display: none;
     }
     #content-main {
-        height: calc(100% - 100px);
+        height: calc(100% - 90px);
     }
     .fixed-nav #content-main {
         height: calc(100% - 38px);

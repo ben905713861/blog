@@ -10,14 +10,16 @@
 <link href="css/style.css?v=4.1.0" rel="stylesheet">
 </head>
 <body class="gray-bg" style="background:url('img/login-background.jpg') no-repeat center fixed;background-size: cover;">
-	
-<div class="text-center loginscreen animated fadeInDown">
-	<div style="padding-top: 150px;text-align: center;">
-		<h2>cms个人博客</h2>
-	</div>
-	<div class="middle-box">
-		<div style="background-color: rgba(255,255,255,0.5);margin:-20px;padding: 20px;border-radius: 10px;">
-			<h2 style="margin-top:20px;margin-bottom:30px ;">管理端</h2>
+
+
+<div class="middle-box text-center loginscreen  animated fadeInDown">
+	<div>
+		<div>
+			<h1 class="logo-name">&nbsp;</h1>
+		</div>
+		
+		<div style="background-color: rgba(255,255,255,0.3);padding: 15px;margin: 0 -15px;border-radius: 3px;box-shadow: 0 3px 0 rgba(12, 12, 12, 0.03);border: 1px solid rgba(255,255,255,.3)">
+			<h3>cms个人博客</h3>
 			<form class="m-t" role="form" method="post" onsubmit="return login(this)">
 				<div class="form-group">
 					<input type="text" name="name" pattern=".{2,20}" title="2-20字符" required="" class="form-control" placeholder="管理员名" value="" />
@@ -34,6 +36,7 @@
 		</div>
 	</div>
 </div>
+
 
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
