@@ -1,5 +1,7 @@
 package com.wuxb.blog.admin.controller;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -18,12 +20,22 @@ import com.wuxb.httpServer.util.FormdataParamsEncode;
 @RequestMapping("/ueditor")
 public class UeditorController {
 
+	private static String ueditorConfig;
 	private HttpServletRequest httpServletRequest;
 	private HttpServletResponse httpServletResponse;
 	private static final String[] ALLOW_TYPE = new String[] {
 		"article", "album", "website"
 	};
-			
+	
+	static {
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("ueditorConfig.json");
+		try {
+			byte[] temp = inputStream.readAllBytes();
+			ueditorConfig = new String(temp);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	@RequestMapping("/index")
 	public void index(@GetParam Map<String, Object> getMap, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
@@ -42,8 +54,8 @@ public class UeditorController {
 	}
 	
 	private void config() throws Exception {
-//		httpServletResponse.location("/static/js/plugins/ueditor/ueditorConfig.json");
-		httpServletResponse.setResponse("{}");
+//		httpServletResponse.location("http://www.gd-filmfund.cn/static/js/plugins/ueditor/ueditorConfig.json");
+		httpServletResponse.setResponse(ueditorConfig);
 	}
 	
 	private Map<String, Object> uploadfile(String type) {
