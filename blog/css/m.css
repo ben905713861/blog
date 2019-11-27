@@ -18,6 +18,7 @@ nav{ width:96%; }
 .picshowlist{ display:none}
 .pagelist a { padding: 2px 3px;}
 }
+
  @media only screen and (min-width: 480px) and (max-width: 767px) {
 header{ width:96%; margin:auto}
 article{ width:96%}
@@ -26,8 +27,8 @@ nav{ width:100%; position:relative}
 #starlist{ display:none; background: rgba(255,255,255,1)}
 #starlist li{ display:block; width:50%; padding:0}
 #mnavh{ position:absolute;display:block; top:8px; right:10px}
-.l_box{ display:none}
-.r_box,.infosbox,.picsbox{ width:100%}
+.l_box{ width: 100%; }
+.r_box,.infosbox,.picsbox{ width:100%!important}
 .pagelist a { padding: 2px 3px;}
 .picbox ul{    width: 22%;}
 .picbox ul li i{ margin:5px}
@@ -35,16 +36,17 @@ nav{ width:100%; position:relative}
 .picshowlist{ display:none}
 .lmname,.view{ display:none}
 }
+
 @media only screen and (max-width: 479px) {
 header{ width:96%; margin:auto}
-article{ width:100%}
+article{ width:98%}
 .logo{ width:100%}
 nav{ width:100%; position:relative}
 #starlist{ display:none; background: rgba(255,255,255,1)}
 #starlist li{ display:block; width:50%; padding:0}
 #mnavh{ position:absolute;display:block; top:8px; right:10px}
-.l_box{ display:none}
-.r_box,.infosbox,.picsbox{ width:100%}
+.l_box{ width: 100%; }
+.r_box,.infosbox,.picsbox{ width:100%!important}
 .pagelist a { padding: 2px 3px; margin:0}
 .picbox ul{    width: 22%;}
 .piclistshow ul li{ height:100px; padding:0}
