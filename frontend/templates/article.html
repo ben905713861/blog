@@ -12,7 +12,6 @@
 			<div class="search">
 				<form id="search-form">
 					<input type="text" name="title" class="input_text" placeholder="请输入关键字查询相关文章">
-					<input type="hidden" name="type_id">
 					<input type="submit" class="input_submit" value="搜索">
 				</form>
 			</div>
@@ -185,8 +184,8 @@
 	var editor_add = UE.getEditor('editor_add');
 	
 	document.querySelector('form#search-form').onsubmit = function() {
-		var queryParams = getFormObj(this);
-		window.location.href = 'articleList.html##'+ queryParams.title;
+		var data = getFormObj(this);
+		window.location.href = '/articleSearch.html##'+ data.title;
 		return false;
 	}
 	
