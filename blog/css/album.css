@@ -78,7 +78,7 @@ a.gaoqing:hover {  color: #FF702D; text-decoration: underline; }
 .returnbtn a { width: 115px; height: 22px; border: 1px solid #ccc; padding: 5px 15px; line-height: 22px; text-align: center; color: White; font-size: 16px; display: block; }
 .returnbtn a:hover { color: #FF702D; text-decoration: underline; border: 1px solid #8d5a00; }
 .firsttop { padding: 20px; background: #1C1C1C; position: absolute; top: 10%; left: 10%; z-index: 1200; color: White; display: none; }
-.endtop { padding: 20px; background: #1C1C1C; position: absolute; top: 40%; left: 10%; z-index: 1200; color: White; display: none; }
+.endtop { padding: 20px; background: #1C1C1C; position: absolute; top: 10%; left: 10%; z-index: 1200; color: White; display: none; }
 .sleft { display: block; width: 23px; height: 76px; background: url(../images/left1.jpg) no-repeat center }
 .sright { display: block; width: 23px; height: 76px; background: url(../images/right1.jpg) no-repeat center }
 .pictext ul{ padding: 20px}
