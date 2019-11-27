@@ -67,7 +67,7 @@
 			<template v-if="articleList.length > 0">
 				<li v-for="articleInfo in articleList">
 					<i>
-						<a :href="'article/'+ articleInfo.article_id +'.html'"><img :src="articleInfo.thumb_url || 'images/default_thumb_264x176.jpg'"></a>
+						<a :href="'article/'+ articleInfo.article_id +'.html'"><img :src="articleInfo.thumb_url || '${ STATIC_DOMAIN }/images/default_thumb_264x176.jpg'"></a>
 					</i>
 					<h3><a :href="'article/'+ articleInfo.article_id +'.html'">{{ articleInfo.title }}</a></h3>
 					<p>{{ articleInfo.description }}</p>
