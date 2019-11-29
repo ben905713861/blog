@@ -1,10 +1,12 @@
 package com.wuxb.blog.admin.controller;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.wuxb.blog.admin.component.ImageCutter;
 import com.wuxb.blog.admin.component.Publisher;
 import com.wuxb.blog.admin.component.UeditorFileDomainFilter;
 import com.wuxb.blog.admin.component.UploadFile;
@@ -95,7 +97,7 @@ public class ArticleController {
 	}
 	
 	@RequestMapping(value="/uploadThumb", method=RequestMethod.POST)
-	public Map<String, Object> uploadThumb(HttpServletRequest httpServletRequest) {
+	public Map<String, Object> uploadThumb(HttpServletRequest httpServletRequest) throws Exception {
 		Map<String, Object> resMap = new HashMap<String, Object>();
 		
 		List<FileInfo> fileList = httpServletRequest.getBody().getFileList();
@@ -103,6 +105,18 @@ public class ArticleController {
 			return Tools.returnErr("上传文件不得为空");
 		}
 		FileInfo fileInfo = fileList.get(0);
+		
+		//压缩缩略图
+		try {
+			ImageCutter imageCutter = new ImageCutter(fileInfo.path, fileInfo.extname);
+			imageCutter.zoomImageByWidth(450);
+			imageCutter.cutCenterImage(450, 300);
+			//覆盖源文件
+			imageCutter.writeFile(fileInfo.path);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new Exception("缩略图压缩失败");
+		}
 		
 		UploadFile uploadFile = new UploadFile();
 		FormdataParamsEncode formdata = uploadFile.getFormdataObject();
