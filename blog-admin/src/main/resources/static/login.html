@@ -12,28 +12,25 @@
 <body class="gray-bg" style="background:url('img/login-background.jpg') no-repeat center fixed;background-size: cover;">
 
 
-<div class="middle-box text-center loginscreen  animated fadeInDown">
+<div class="middle-box text-center loginscreen  animated fadeInDown" style="height: 100%;">
 	<div>
-		<div>
-			<h1 class="logo-name">&nbsp;</h1>
-		</div>
-		
-		<div style="background-color: rgba(255,255,255,0.3);padding: 15px;margin: 0 -15px;border-radius: 3px;box-shadow: 0 3px 0 rgba(12, 12, 12, 0.03);border: 1px solid rgba(255,255,255,.3)">
-			<h3>cms个人博客</h3>
-			<form class="m-t" role="form" method="post" onsubmit="return login(this)">
-				<div class="form-group">
-					<input type="text" name="name" pattern=".{2,20}" title="2-20字符" required="" class="form-control" placeholder="管理员名" value="" />
-				</div>
-				<div class="form-group">
-					<input type="password" name="password" pattern=".{6,20}" title="6-20字符" required="" class="form-control" placeholder="密码" value="" />
-				</div>
-				<div class="form-group" style="overflow: hidden;">
-					<input type="text" name="vrf_code" class="form-control" pattern="[a-zA-Z0-9]{4}" title="4个字母或数字" required="" placeholder="验证码" style="float: left;width: 60%;" value="" />
-					<img id="vrf_code_img" style="display: block;float: right;width: 38%;height: 35px;cursor: pointer;" onclick="refersh_vrfCode()" src="/login/getVrfCode" />
-				</div>
-				<button type="submit" class="btn btn-primary block full-width m-b">登 录</button>
-			</form>
-		</div>
+		<h1 class="logo-name"></h1>
+	</div>
+	<div style="background-color: rgba(255,255,255,0.3);padding: 15px;margin-top: 30%;border-radius: 3px;box-shadow: 0 3px 0 rgba(12, 12, 12, 0.03);border: 1px solid rgba(255,255,255,.3)">
+		<h3>cms个人博客</h3>
+		<form class="m-t" role="form" method="post" onsubmit="return login(this)">
+			<div class="form-group">
+				<input type="text" name="name" pattern=".{2,20}" title="2-20字符" required="" class="form-control" placeholder="管理员名" value="" />
+			</div>
+			<div class="form-group">
+				<input type="password" name="password" pattern=".{6,20}" title="6-20字符" required="" class="form-control" placeholder="密码" value="" />
+			</div>
+			<div class="form-group" style="overflow: hidden;">
+				<input type="text" name="vrf_code" class="form-control" pattern="[a-zA-Z0-9]{4}" title="4个字母或数字" required="" placeholder="验证码" style="float: left;width: 60%;" value="" />
+				<img id="vrf_code_img" style="display: block;float: right;width: 38%;height: 35px;cursor: pointer;" onclick="refersh_vrfCode()" src="/login/getVrfCode" />
+			</div>
+			<button type="submit" class="btn btn-primary block full-width m-b">登 录</button>
+		</form>
 	</div>
 </div>
 
@@ -43,7 +40,6 @@
 <script src="js/plugins/layer/layer.min.js"></script>
 <!--右上角提示框插件-->
 <script src="js/toastr.min.js"></script>
-<script src="js/"></script>
 <script src="js/common.js"></script>
 <script type="text/javascript">
 	function login(form) {
