@@ -9,11 +9,14 @@
 <link href="/static/css/font-awesome.min.css" rel="stylesheet">
 <link href="/static/css/animate.css" rel="stylesheet">
 <link href="/static/css/style.css" rel="stylesheet">
+<style>
+	input[type="checkbox"]{ display: inline-block; width: 20px; height: 20px; margin: 0; vertical-align: middle;}
+</style>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>
 </head>
 <body style="padding: 20px;">
 
-<form id="searchForm" class="form-inline" style="padding-bottom: 10px;" onsubmit="search.query();return false;">
+<form id="searchForm" class="form-inline" onsubmit="search.query();return false;">
 	<div class="form-group">
 		<div class="input-group">
 			<span class="input-group-btn">
@@ -25,7 +28,7 @@
 					<option v-for="typeInfo in typeList" :value="typeInfo.type_id">{{ typeInfo.type }}</option>
 				</select>
 			</span>
-				<input type="text" name="title" class="form-control input-sm" placeholder="输入文章标题关键字进行搜索" />
+			<input type="text" name="title" class="form-control input-sm" placeholder="输入文章标题关键字进行搜索" />
 			<span class="input-group-btn">
 				<button type="submit" class="btn btn-sm btn-info" ><i class="fa fa-search"></i> 搜索</button>
 			</span>
@@ -63,6 +66,7 @@
 </div>
 
 <script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/plugins/layer/layer.min.js"></script>
 <!--右上角提示框插件-->
 <script src="/static/js/toastr.min.js"></script>
 <script src="/static/js/common.js"></script>
@@ -140,6 +144,23 @@
 		}
 	}
 	
+	function remove() {
+		var data = getFormObj(document.getElementById('search-result'));
+		if(data.article_id == '') {
+			return;
+		}
+		layer.confirm('确定要删除吗？', function(index) {
+			layer.close(index);
+			var article_ids = data.article_id.split(',');
+			article_ids.forEach(function(article_id) {
+				ajax('post', '/article/delete', {
+					article_id: article_id,
+				}, function(res) {
+					search.query();
+				})
+			});
+		});
+	}
 </script>
 </body>
 </html>
