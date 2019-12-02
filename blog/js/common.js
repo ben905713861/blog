@@ -141,8 +141,7 @@ function ajax(method, url, data, truefun, falsefun, endfun) {
 	}
 	//未登录的处理
 	function noLogin() {
-		//清除本地登录标识
-		sessionStorage.removeItem('user_name');
+		sessionStorage.clear();
 		window.top.location.href = 'login.html';
 	}
 }

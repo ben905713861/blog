@@ -185,13 +185,16 @@
 <script src="js/common.js"></script>
 <script type="text/javascript">
 	window.onload = function() {
-		//登录检查
+		//左导航用户名称渲染
 		var managerName = sessionStorage.getItem('manager_name');
 		if(!managerName) {
-			window.location.href = 'login.html';
+			ajax('get', '/index/getManagerInfo', null, function(res) {
+				sessionStorage.setItem('manager_name', res.name);
+				document.querySelector('strong#manager_name').innerText = res.name;
+			});
+		} else {
+			document.querySelector('strong#manager_name').innerText = managerName;
 		}
-		//左导航用户名称渲染
-		document.querySelector('strong#manager_name').innerText = managerName;
 		//加载最后一次打开的面板
 		openLastHref();
 	}
@@ -235,7 +238,7 @@
 	
 	function logout() {
 		ajax('get', '/login/logout', null, function() {
-			sessionStorage.removeItem('manager_name');
+			sessionStorage.clear();
 			window.location.href = 'login.html';
 		});
 	}
