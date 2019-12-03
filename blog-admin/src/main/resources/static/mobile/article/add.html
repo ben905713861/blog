@@ -11,12 +11,12 @@
 <link href="/static/css/style.css" rel="stylesheet">
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>
 </head>
-<body style="padding: 20px;">
-
-<h3>新增文章</h3>
+<body style="padding: 5px;">
+	
+<h3 style="padding: 10px 10px 0;">新增文章</h3>
 
 <form onsubmit="add(this);return false;">
-	<table class="table table-condensed">
+	<table class="table table-condensed table-bordered" style="table-layout:fixed;">
 		<tr>
 			<th style="width: 100px;">*分类：</th>
 			<td>
@@ -43,7 +43,7 @@
 			<th>缩略图：</th>
 			<td>
 				<a onclick="uploadThumb(this)">
-					<img name="thumb_url" style="max-height: 100px;" src="img/upload-thumb.png" title="点我上传" />
+					<img name="thumb_url" style="max-height: 100px;" src="/static/img/upload-thumb.png" title="点我上传" />
 					<input type="text" class="hidden" name="thumb_path" />
 				</a>
 			</td>
@@ -61,6 +61,8 @@
 			</td>
 		</tr>
 	</table>
+	
+	
 	<div class="form-inline">
 		<div class="form-group">
 			<div class="input-group">
@@ -98,7 +100,11 @@
 	})();
 	
 	window.UEDITOR_CONFIG.serverUrl = '/ueditor/index?type=article';//type决定上传到哪个目录
-	var editor = UE.getEditor('editor');
+	var editor = UE.getEditor('editor', {
+		toolbars: [[
+            'bold', 'insertimage', 'insertvideo', 'attachment',
+        ]]
+	});
 	
 	function add(form) {
 		if(!editor.hasContents()) {
