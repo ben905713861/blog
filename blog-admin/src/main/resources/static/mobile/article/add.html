@@ -123,13 +123,13 @@
 	}
 	
 	function windowClose(action) {
-		if(action) {
-			if(opener) {
-				opener.toastr['success']('操作成功');
-				opener.search.query();
+		if(parent) {
+			if(action) {
+				parent.toastr['success']('操作成功');
+				parent.search.query();
 			}
+			parent.iframeClose();
 		}
-		window.close();
 	}
 </script>
 </body>

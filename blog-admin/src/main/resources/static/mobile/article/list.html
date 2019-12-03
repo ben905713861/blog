@@ -10,60 +10,68 @@
 <link href="/static/css/animate.css" rel="stylesheet">
 <link href="/static/css/style.css" rel="stylesheet">
 <style>
+	iframe{ width: 100%;height: 100%; border: 0; display: none; }
 	input[type="checkbox"]{ display: inline-block; width: 20px; height: 20px; margin: 0; vertical-align: middle;}
 </style>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>
 </head>
-<body style="padding: 20px;">
+<body>
 
-<form id="searchForm" class="form-inline" onsubmit="search.query();return false;">
-	<div class="form-group">
-		<div class="input-group">
-			<span class="input-group-btn">
-				<a href="add.html" target="_blank" class="btn btn-sm btn-primary btn-block"><i class="fa fa-plus"></i> 新增</a>
-			</span>
-			<span class="input-group-btn">
-				<select name="type_id" class="form-control input-sm" style="padding: 3px 5px;width: auto;">
-					<option value="">文章分类</option>
-					<option v-for="typeInfo in typeList" :value="typeInfo.type_id">{{ typeInfo.type }}</option>
-				</select>
-			</span>
-			<input type="text" name="title" class="form-control input-sm" placeholder="输入文章标题关键字进行搜索" />
-			<span class="input-group-btn">
-				<button type="submit" class="btn btn-sm btn-info" ><i class="fa fa-search"></i> 搜索</button>
-			</span>
+<div id="list-box" style="padding: 5px;">
+	<form id="searchForm" class="form-inline" onsubmit="search.query();return false;" style="padding-top: 20px;">
+		<div class="form-group">
+			<div class="input-group">
+				<span class="input-group-btn">
+					<button type="button" class="btn btn-sm btn-primary" onclick="add()"><i class="fa fa-plus"></i> 新增</button>
+					<!--<a href="add.html" target="_blank" class="btn btn-sm btn-primary btn-block"><i class="fa fa-plus"></i> 新增</a>-->
+				</span>
+				<span class="input-group-btn">
+					<select name="type_id" class="form-control input-sm" style="padding: 3px 5px;width: auto;">
+						<option value="">文章分类</option>
+						<option v-for="typeInfo in typeList" :value="typeInfo.type_id">{{ typeInfo.type }}</option>
+					</select>
+				</span>
+				<input type="text" name="title" class="form-control input-sm" placeholder="输入文章标题关键字进行搜索" />
+				<span class="input-group-btn">
+					<button type="submit" class="btn btn-sm btn-info" ><i class="fa fa-search"></i> 搜索</button>
+				</span>
+			</div>
 		</div>
-	</div>
-</form>
-
-<table id="search-result" class="table table-hover table-condensed table-striped">
-	<thead>
-		<tr>
-			<th style="width: 50px;">#</th>
-			<th>标题</th>
-		</tr>
-	</thead>
-	<tbody>
-		<template v-if="articleList.length > 0">
-			<tr v-for="articleInfo in articleList" >
-				<td><input type="checkbox" name="article_id" :value="articleInfo.article_id"></td>
-				<td v-on:click="window.open('update.html#' + articleInfo.article_id, '_blank')">{{ articleInfo.title }}</td>
-			</tr>
-		</template>
-		<template v-else="">
+	</form>
+	
+	<table id="search-result" class="table table-hover table-condensed table-striped">
+		<thead>
 			<tr>
-				<td colspan="2">空</td>
+				<th style="width: 50px;">#</th>
+				<th>标题</th>
 			</tr>
-		</template>
-	</tbody>
-</table>
+		</thead>
+		<tbody>
+			<template v-if="articleList.length > 0">
+				<tr v-for="articleInfo in articleList" >
+					<td><input type="checkbox" name="article_id" :value="articleInfo.article_id"></td>
+					<td v-on:click="update(articleInfo.article_id)">{{ articleInfo.title }}</td>
+					<!--<td v-on:click="window.open('update.html#' + articleInfo.article_id, '_blank')">{{ articleInfo.title }}</td>-->
+				</tr>
+			</template>
+			<template v-else="">
+				<tr>
+					<td colspan="2">空</td>
+				</tr>
+			</template>
+		</tbody>
+	</table>
+	
+	<div class="form-group">
+		<button class="btn btn-sm btn-danger" onclick="remove()"><i class="fa fa-remove"></i> 删除</button>
+	</div>
+	<div class="form-group">
+		<button class="btn btn-default btn-block" onclick="search.nextPage()">加载更多</button>
+	</div>
+</div>
 
-<div class="form-group">
-	<button class="btn btn-sm btn-danger" onclick="remove()"><i class="fa fa-remove"></i> 删除</button>
-</div>
-<div class="form-group">
-	<button class="btn btn-default btn-block" onclick="search.nextPage()">加载更多</button>
-</div>
+<iframe id="add-box"></iframe>
+<iframe id="update-box"></iframe>
 
 <script src="/static/js/jquery.min.js"></script>
 <script src="/static/js/plugins/layer/layer.min.js"></script>
@@ -160,6 +168,30 @@
 				})
 			});
 		});
+	}
+	
+	function add() {
+		document.getElementById('list-box').style.display = 'none';
+		var box = document.getElementById('add-box');
+		box.style.display = 'block';
+		box.src = 'add.html';
+	}
+	
+	function update(articlr_id) {
+		document.getElementById('list-box').style.display = 'none';
+		var box = document.getElementById('update-box');
+		box.style.display = 'block';
+		box.src = 'update.html#'+ articlr_id;
+	}
+	
+	function iframeClose() {
+		document.getElementById('list-box').style.display = 'block';
+		var addBox = document.getElementById('add-box');
+		addBox.style.display = 'none';
+		addBox.src = '';
+		var updateBox = document.getElementById('update-box')
+		updateBox.style.display = 'none';
+		updateBox.src = '';
 	}
 </script>
 </body>

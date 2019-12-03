@@ -11,7 +11,7 @@
 <link href="/static/css/style.css" rel="stylesheet">
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>
 </head>
-<body>
+<body style="padding: 5px;">
 
 <h3 style="padding: 10px 10px 0;">修改文章</h3>
 
@@ -88,7 +88,11 @@
 	var article_id = window.location.hash.split('#')[1];
 	
 	window.UEDITOR_CONFIG.serverUrl = '/ueditor/index?type=article';//type决定上传到哪个目录
-	var editor = UE.getEditor('editor');
+	var editor = UE.getEditor('editor', {
+		toolbars: [[
+            'bold', 'insertimage', 'insertvideo', 'attachment',
+        ]]
+	});
 	
 	(function() {
 		var vueDom = new Vue({
@@ -113,7 +117,7 @@
 			formload(document.querySelector('body>form'), res);
 			setTimeout(function() {
 				editor.setContent(res.content);
-			}, 100);
+			}, 200);
 		});
 	}
 	
@@ -145,13 +149,13 @@
 	}
 	
 	function windowClose(action) {
-		if(action) {
-			if(opener) {
-				opener.toastr['success']('操作成功');
-				opener.search.query();
+		if(parent) {
+			if(action) {
+				parent.toastr['success']('操作成功');
+				parent.search.query();
 			}
+			parent.iframeClose();
 		}
-		window.close();
 	}
 </script>
 </body>
