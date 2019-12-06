@@ -10,11 +10,15 @@
 <link href="/static/css/animate.css" rel="stylesheet">
 <link href="/static/css/style.css" rel="stylesheet">
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>
+<style type="text/css">
+.ck-toolbar{ border: none!important; }
+.ck-content{ min-height: 200px; border: none!important;}
+</style>
 </head>
 <body>
 	
 <form onsubmit="add(this);return false;">
-	<div class="row" style="padding: 10px 0 5px;">
+	<div class="row" style="padding: 10px 0;background-color: #eee;">
 		<div class="col-xs-4">
 			<div style="padding-left: 10px;">
 				<button type="button" class="btn btn-sm btn-default" onclick="windowClose(false)"><i class="fa fa-reply"></i> 返回</button>
@@ -29,7 +33,17 @@
 			</div>
 		</div>
 	</div>
-	<table class="table table-condensed table-bordered" style="table-layout:fixed;margin-bottom: 0;">
+	
+	<div class="row">
+		<div class="col-xs-12">
+			<input type="text" pattern=".{1,50}" title="50字符以内" required="" class="form-control input-lg" name="title" placeholder="文章标题" style="border:none" />
+		</div>
+	</div>
+	<!--富文本编辑器-->
+	<div id="editor">
+		
+	</div>
+	<table class="table">
 		<tr>
 			<th style="width: 100px;">*分类：</th>
 			<td>
@@ -37,10 +51,6 @@
 					<option v-for="typeInfo in typeList" :value="typeInfo.type_id">{{ typeInfo.type }}</option>
 				</select>
 			</td>
-		</tr>
-		<tr>
-			<th>*附件标题：</th>
-			<td><input type="text" pattern=".{1,50}" title="50字符以内" required="" class="form-control" name="title" /></td>
 		</tr>
 		<tr>
 			<th>关键词：</th>
@@ -69,7 +79,6 @@
 			</td>
 		</tr>
 	</table>
-	<script id="editor" name="content" type="text/plain" style="width:100%;"></script>
 </form>
 
 
@@ -77,9 +86,8 @@
 <script src="/static/js/plugins/layer/layer.min.js"></script>
 <!--右上角提示框插件-->
 <script src="/static/js/toastr.min.js"></script>
-<!--ueditor编辑器-->
-<script src="/static/js/plugins/ueditor/ueditor.config.js"></script>
-<script src="/static/js/plugins/ueditor/ueditor.all.min.js"></script>
+<!--ckeditor5编辑器-->
+<script src="/static/js/plugins/ckeditor5/ckeditor.js"></script>
 <script src="/static/js/common.js"></script>
 <script type="text/javascript">
 	(function() {
@@ -94,22 +102,53 @@
 		});
 	})();
 	
-	window.UEDITOR_CONFIG.serverUrl = '/ueditor/index?type=article';//type决定上传到哪个目录
-	var editor = UE.getEditor('editor', {
-		toolbars: [[
-            'bold', 'insertimage', 'insertvideo', 'attachment',
-        ]]
-	});
+	//富文本编辑器
+	ClassicEditor.create(document.querySelector('#editor'))
+		.then(function(editor) {
+			window.editor = editor;
+			//重写上传文件的方法
+			editor.plugins.get('FileRepository').createUploadAdapter = function(loader) {
+		        return new class UploadAdapter {
+		        	constructor() {
+		        		
+		        	}
+		        	upload() {
+		        		return loader.file.then(function(file) {
+							return new Promise(function(resolve, reject) {
+					            ajax('file', '/upload/uploadOne?type=article', {
+					            	upfile: file,
+					            }, function success(res) {
+					            	resolve({
+			                            default: res.url,
+			                        });
+					            }, function fail(res) {
+					            	reject('上传失败，'+ res.msg);
+					            }, null, function error() {
+					            	reject('上传失败，服务器响应错误');
+					            });
+							});
+						});
+		        	}
+		        	abort() {
+						
+					}
+		        }
+		    }
+		})
+		.catch(function(error) {
+			console.error(error);
+		});
 	
 	function add(form) {
-		if(!editor.hasContents()) {
-			layer.alert('正文不得为空');
-			return;
-		}
+//		if(!editor.hasContents()) {
+//			layer.alert('正文不得为空');
+//			return;
+//		}
 		var submitBtn = form.querySelector('[type="submit"]');
 		submitBtn.disabled = true;
 		
 		var data = getFormObj(form);
+		data.content = editor.getData();
 		ajax('post', '/article/add', data, function(res) {
 			windowClose(true);
 		}, null, function end() {

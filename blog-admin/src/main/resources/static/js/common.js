@@ -1,4 +1,4 @@
-function ajax(method, url, data, truefun, falsefun, endfun) {
+function ajax(method, url, data, truefun, falsefun, endfun, errfun) {
 	var succfun;
 	var xhr = new XMLHttpRequest();
 	method = method.toLowerCase();
@@ -18,7 +18,7 @@ function ajax(method, url, data, truefun, falsefun, endfun) {
 				truefun ? truefun(res) : null;
 			} else {
 				_alert(res.msg);
-				falsefun && falsefun();
+				falsefun && falsefun(res);
 			}
 		}
 		xhr.open('post', url);
@@ -76,23 +76,31 @@ function ajax(method, url, data, truefun, falsefun, endfun) {
 				input_file.click();
 				return;
 			}
-			var formData = new FormData();
-			for(key in data) {
-				if(data[key].length == 1) {
-					formData.append(key, data[key][0]);
-				} else {
-					if(typeof data[key] == 'object') {
-						var files = data[key];
-						for(index=0; index<files.length; index++) {
-							formData.append(key+'[]', files[index]);
-						}
-					} else {
-						//非文件参数
+			//data不是FromData
+			if(!(data instanceof FormData)) {
+				var formData = new FormData();
+				for(key in data) {
+					if(data[key] instanceof File) {
 						formData.append(key, data[key]);
 					}
+					else if(data[key] instanceof Array) {
+						if(data[key].length == 1) {
+							formData.append(key, data[key][0]);
+						} else {
+							if(typeof data[key] == 'object') {
+								var files = data[key];
+								for(index=0; index<files.length; index++) {
+									formData.append(key+'[]', files[index]);
+								}
+							} else {
+								//非文件参数
+								formData.append(key, data[key]);
+							}
+						}
+					}
 				}
+				data = formData;
 			}
-			data = formData;
 		}
 		else if(method == 'post') {
 			xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
@@ -112,21 +120,24 @@ function ajax(method, url, data, truefun, falsefun, endfun) {
 				var res = JSON.parse(xhr.responseText);
 				succfun(res);
 			}
-			else if(xhr.status == 401) {
-				_alert('尚未登录或登陆失效');
-				noLogin();
-			}
-			else if(xhr.status == 403) {
-				_alert(xhr.responseText);
-			}
-			else if(xhr.status == 404) {
-				_alert('链接不存在');
-			}
-			else if(xhr.status>=500 && xhr.status<=599) {
-				_alert('服务器错误，请稍后再试');
-			}
 			else {
-				_alert('未知错误'+xhr.status);
+				if(xhr.status == 401) {
+					_alert('尚未登录或登陆失效');
+					noLogin();
+				}
+				else if(xhr.status == 403) {
+					_alert(xhr.responseText);
+				}
+				else if(xhr.status == 404) {
+					_alert('链接不存在');
+				}
+				else if(xhr.status>=500 && xhr.status<=599) {
+					_alert('服务器错误，请稍后再试');
+				}
+				else {
+					_alert('未知错误'+xhr.status);
+				}
+				errfun && errfun();
 			}
 		}
 	}
