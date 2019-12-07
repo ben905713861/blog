@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>文章修改</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link href="/static/css/bootstrap.min.css" rel="stylesheet">
+<link href="/static/css/toastr.min.css" rel="stylesheet">
+<link href="/static/css/font-awesome.min.css" rel="stylesheet">
+<link href="/static/css/animate.css" rel="stylesheet">
+<link href="/static/css/style.css" rel="stylesheet">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>
+<style type="text/css">
+.ck-toolbar{ border: none!important; }
+.ck-content{ min-height: 200px; border: none!important;}
+</style>
+</head>
+<body>
+
+<form onsubmit="update(this);return false;">
+	<div class="row" style="padding: 10px 0;background-color: #eee;">
+		<div class="col-xs-4">
+			<div style="padding-left: 10px;">
+				<button type="button" class="btn btn-sm btn-default" onclick="windowClose(false)"><i class="fa fa-reply"></i></button>
+			</div>
+		</div>
+		<div class="col-xs-4">
+			<h3 class="text-center">修改文章</h3>
+		</div>
+		<div class="col-xs-4">
+			<div style="padding-right: 10px;text-align: right;">
+				<button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></button>
+			</div>
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-xs-12">
+			<input type="text" pattern=".{1,50}" title="50字符以内" required="" class="form-control input-lg" name="title" placeholder="文章标题" style="border:none;font-size: 20px;font-weight: bold;" />
+		</div>
+	</div>
+	<!--富文本编辑器-->
+	<div id="editor">
+		
+	</div>
+	<table class="table">
+		<tr>
+			<th style="width: 100px;">*分类：</th>
+			<td>
+				<select name="type_id" class="form-control input-sm" style="padding: 3px 12px;">
+					<option v-for="typeInfo in typeList" :value="typeInfo.type_id">{{ typeInfo.type }}</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<th>关键词：</th>
+			<td><input type="text" pattern=".{1,100}" title="100字符以内" class="form-control" name="key_words" /></td>
+		</tr>
+		<tr>
+			<th>描述：</th>
+			<td>
+				<textarea name="description" class="form-control" maxlength="255" placeholder="为空时自动拾取内容正文的前255个字符填充"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<th>缩略图：</th>
+			<td>
+				<a onclick="uploadThumb(this)">
+					<img name="thumb_url" style="max-height: 100px;" src="/static/img/default_thumb_264x176.jpg" title="点我上传" />
+					<input type="text" class="hidden" name="thumb_path" />
+				</a>
+			</td>
+		</tr>
+		<tr>
+			<th>*是否推荐：</th>
+			<td>
+				<label><input type="radio" name="is_recommend" value="1" />是 </label>
+				<label><input type="radio" name="is_recommend" value="0" checked="" />否 </label>
+			</td>
+		</tr>
+	</table>
+</form>
+
+
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/plugins/layer/layer.min.js"></script>
+<!--右上角提示框插件-->
+<script src="/static/js/toastr.min.js"></script>
+<!--ckeditor5编辑器-->
+<script src="/static/js/plugins/ckeditor5/ckeditor.js"></script>
+<script src="/static/js/common.js"></script>
+<script type="text/javascript">
+	var article_id = window.location.hash.split('#')[1];
+	
+	var vueDom = new Vue({
+		el: 'select[name="type_id"]',
+		data: {
+			typeList: [],
+		},
+	});
+	
+	//富文本编辑器
+	async function initEditor() {
+		return new Promise(function(resolve0, reject0) {
+			ClassicEditor.create(document.querySelector('#editor'))
+				.then(function(editor) {
+					window.editor = editor;
+					//重写上传文件的方法
+					editor.plugins.get('FileRepository').createUploadAdapter = function(loader) {
+				        return new class UploadAdapter {
+				        	constructor() {
+				        		
+				        	}
+				        	upload() {
+				        		return loader.file.then(function(file) {
+									return new Promise(function(resolve, reject) {
+							            ajax('file', '/upload/uploadOne?type=article', {
+							            	upfile: file,
+							            }, function success(res) {
+							            	resolve({
+					                            default: res.url,
+					                        });
+							            }, function fail(res) {
+							            	reject('上传失败，'+ res.msg);
+							            }, null, function error() {
+							            	reject('上传失败，服务器响应错误');
+							            });
+									});
+								});
+				        	}
+				        	abort() {
+								
+							}
+				        }
+				    }
+				})
+				.catch(function(error) {
+					console.error(error);
+					reject0();
+				});
+			resolve0();
+		});
+	}
+	
+	async function init() {
+		return new Promise(function(resolve, reject) {
+			ajax('get', '/article/init', null, function(res) {
+				resolve(res);
+			}, null, null, function error() {
+				reject();
+			});
+		});
+	}
+	
+	async function load() {
+		return await new Promise(function(resolve, reject) {
+			ajax('get', '/article/getOne', {
+				article_id: article_id
+			}, function(res) {
+				resolve(res);
+			}, null, null, function error() {
+				reject();
+			});
+		});
+	}
+	
+	(async function() {
+		var fun_initEditor = initEditor();
+		var fun_init = init();
+		var fun_load = load();
+		
+		await fun_initEditor;
+		await fun_init;
+		await fun_load;
+		
+		fun_init.then(function(res) {
+			//初始化下拉列表
+			vueDom.typeList = res;
+			//回显
+			fun_load.then(function(res) {
+				if(!res.thumb_path) {
+					delete res.thumb_url;
+				}
+				formload(document.querySelector('body>form'), res);
+				editor.setData(res.content);
+			})
+		})
+	})();
+		
+	
+	function uploadThumb(btn) {
+		input_upload('img', false, function(file) {
+			ajax('file', '/article/uploadThumb', {
+				articleThumb: file,
+			}, function(res) {
+				formload(btn, res);
+			});
+		});
+	}
+	
+	function update(form) {
+		var submitBtn = form.querySelector('[type="submit"]');
+		submitBtn.disabled = true;
+		
+		var data = getFormObj(form);
+		data.article_id = article_id;
+		data.content = editor.getData();
+		if(data.content.length == 0) {
+			layer.alert('正文不得为空');
+			submitBtn.disabled = false;
+			return;
+		}
+		ajax('post', '/article/update', data, function(res) {
+			windowClose(true);
+		}, null, function end() {
+			submitBtn.disabled = false;
+		});
+	}
+	
+	function windowClose(action) {
+		if(action) {
+			parent.toastr['success']('操作成功');
+			parent.refresh();
+		}
+		parent.iframeClose();
+	}
+	
+	(function() {
+		window.addEventListener('popstate', function(e) {
+			windowClose(false);
+		}, false);
+		window.history.pushState(null, '', '');
+	})();
+</script>
+</body>
+</html>

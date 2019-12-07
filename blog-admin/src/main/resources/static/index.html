@@ -9,6 +9,23 @@
 <link href="css/font-awesome.min.css" rel="stylesheet">
 <link href="css/animate.css" rel="stylesheet">
 <link href="css/style.css" rel="stylesheet">
+<script type="text/javascript">
+	function is_mobileBrowser() {
+		var sUserAgent = navigator.userAgent.toLowerCase();
+		var bIsIpad = sUserAgent.match(/ipad/i) == "ipad";
+		var bIsIphoneOs = sUserAgent.match(/iphone os/i) == "iphone os";
+		var bIsMidp = sUserAgent.match(/midp/i) == "midp";
+		var bIsUc7 = sUserAgent.match(/rv:1.2.3.4/i) == "rv:1.2.3.4";
+		var bIsUc = sUserAgent.match(/ucweb/i) == "ucweb";
+		var bIsAndroid = sUserAgent.match(/android/i) == "android";
+		var bIsCE = sUserAgent.match(/windows ce/i) == "windows ce";
+		var bIsWM = sUserAgent.match(/windows mobile/i) == "windows mobile";
+		return (bIsIpad || bIsIphoneOs || bIsMidp || bIsUc7 || bIsUc || bIsAndroid || bIsCE || bIsWM);
+	}
+	if(is_mobileBrowser()) {
+		window.location.href = 'article/m_list.html';
+	}
+</script>
 </head>
 <body class="fixed-sidebar full-height-layout gray-bg" style="overflow:hidden">
 
@@ -36,22 +53,22 @@
 				</li>
 				
 				<li>
-					<a class="J_menuItem" href="articleType.html" data-index="0">
+					<a class="J_menuItem" href="/static/articleType.html" data-index="0">
 					<i class="fa fa fa-list"></i>
 					<span class="nav-label">文章分类管理</span></a>
 				</li>
 				<li>
-					<a class="J_menuItem" href="articleList.html" data-index="1">
+					<a class="J_menuItem" href="/static/article/list.html" data-index="1">
 					<i class="fa fa fa-pencil"></i>
 					<span class="nav-label">文章管理</span></a>
 				</li>
 				<li>
-					<a class="J_menuItem" href="albumList.html" data-index="2">
+					<a class="J_menuItem" href="/static/albumList.html" data-index="2">
 					<i class="fa fa fa-photo"></i>
 					<span class="nav-label">相册管理</span></a>
 				</li>
 				<li style="display: none;">
-					<a class="J_menuItem" href="albumDetail.html">
+					<a class="J_menuItem" href="/static/albumDetail.html">
 					<span class="nav-label">相册管理-照片管理</span></a>
 				</li>
 				<li>
@@ -61,19 +78,19 @@
 						<span class="fa arrow"></span>
 					</a>
 					<ul class="nav nav-second-level collapse">
-						<li><a class="J_menuItem" href="comment.html" data-index="3">留言管理</a></li>
-						<li><a class="J_menuItem" href="articleComment.html" data-index="4">文章评论管理</a></li>
-						<li><a class="J_menuItem" href="albumComment.html" data-index="5">相册评论管理</a></li>
+						<li><a class="J_menuItem" href="/static/comment.html" data-index="3">留言管理</a></li>
+						<li><a class="J_menuItem" href="/static/articleComment.html" data-index="4">文章评论管理</a></li>
+						<li><a class="J_menuItem" href="/static/albumComment.html" data-index="5">相册评论管理</a></li>
 					</ul>
 				</li>
 				<li>
-					<a class="J_menuItem" href="website.html" data-index="6">
+					<a class="J_menuItem" href="/static/website.html" data-index="6">
 						<i class="fa fa fa-info"></i>
 						<span class="nav-label">网站信息</span>
 					</a>
 				</li>
 				<li>
-					<a class="J_menuItem" href="cache.html" data-index="7">
+					<a class="J_menuItem" href="/static/cache.html" data-index="7">
 						<i class="fa fa fa-flash"></i>
 						<span class="nav-label">缓存</span>
 					</a>
@@ -251,8 +268,8 @@
 			for(index=0; index<iframes.length; index++) {
 				var iframe = iframes[index];
 				if(iframe.name!='iframe' && (iframe.style==undefined || iframe.style.display!='none')) {
-					var href = iframe.contentWindow.location.href;
-					href = href.substr(href.lastIndexOf('/')+1);
+					var href = iframe.contentWindow.location.pathname;
+//					href = href.substr(href.lastIndexOf('/')+1);
 					localStorage.setItem('lastManagerHref', href);
 					break;
 				}

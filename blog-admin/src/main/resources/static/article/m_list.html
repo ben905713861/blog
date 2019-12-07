@@ -3,12 +3,12 @@
 <head>
 <title>文章列表</title>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="/static/css/bootstrap.min.css" rel="stylesheet">
-<link href="/static/css/toastr.min.css" rel="stylesheet">
-<link href="/static/css/font-awesome.min.css" rel="stylesheet">
-<link href="/static/css/animate.css" rel="stylesheet">
-<link href="/static/css/style.css" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link href="../css/bootstrap.min.css" rel="stylesheet">
+<link href="../css/toastr.min.css" rel="stylesheet">
+<link href="../css/font-awesome.min.css" rel="stylesheet">
+<link href="../css/animate.css" rel="stylesheet">
+<link href="../css/style.css" rel="stylesheet">
 <style>
 	iframe{ width: 100%;height: 100%; border: 0; display: none; }
 	input[type="checkbox"]{ display: inline-block; width: 20px; height: 20px; margin: 0; vertical-align: middle;}
@@ -23,7 +23,6 @@
 			<div class="input-group">
 				<span class="input-group-btn">
 					<button type="button" class="btn btn-sm btn-primary" onclick="add()"><i class="fa fa-plus"></i> 新增</button>
-					<!--<a href="add.html" target="_blank" class="btn btn-sm btn-primary btn-block"><i class="fa fa-plus"></i> 新增</a>-->
 				</span>
 				<span class="input-group-btn">
 					<select name="type_id" class="form-control input-sm" style="padding: 3px 5px;width: auto;">
@@ -51,7 +50,6 @@
 				<tr v-for="articleInfo in articleList" >
 					<td><input type="checkbox" name="article_id" :value="articleInfo.article_id"></td>
 					<td v-on:click="update(articleInfo.article_id)">{{ articleInfo.title }}</td>
-					<!--<td v-on:click="window.open('update.html#' + articleInfo.article_id, '_blank')">{{ articleInfo.title }}</td>-->
 				</tr>
 			</template>
 			<template v-else="">
@@ -73,11 +71,11 @@
 <iframe id="add-box"></iframe>
 <iframe id="update-box"></iframe>
 
-<script src="/static/js/jquery.min.js"></script>
-<script src="/static/js/plugins/layer/layer.min.js"></script>
+<script src="../js/jquery.min.js"></script>
+<script src="../js/plugins/layer/layer.min.js"></script>
 <!--右上角提示框插件-->
-<script src="/static/js/toastr.min.js"></script>
-<script src="/static/js/common.js"></script>
+<script src="../js/toastr.min.js"></script>
+<script src="../js/common.js"></script>
 <script type="text/javascript">
 	var vueDom = new Vue({
 		el: '#search-result',
@@ -86,7 +84,6 @@
 		},
 	});
 	
-	var search;
 	(function() {
 		ajax('get', '/article/init', null, function(res) {
 			new Vue({
@@ -96,7 +93,7 @@
 				},
 			});
 			
-			search = new Search();
+			window.search = new Search();
 			search.query();
 		});
 	})();
@@ -105,19 +102,6 @@
 		var offset = 0;
 		var limit = 4;
 		var total = 0;
-		
-//		//搜索条件回显
-//		(function() {
-//			var queryParams = sessionStorage.getItem(window.location.pathname +'queryParams');
-//			if(queryParams) {
-//				queryParams = JSON.parse(queryParams);
-//				console.log(queryParams)
-//				formload(document.getElementById('searchForm'), queryParams.search);
-//				offset = queryParams.offset;
-//				limit = queryParams.limit;
-//				total = queryParams.total;
-//			}
-//		})();
 		
 		this.query = function() {
 			offset = 0;
@@ -146,10 +130,12 @@
 				res.rows.forEach(function(row) {
 					vueDom.articleList.push(row);
 				});
-//				//保存搜索条件
-//				sessionStorage.setItem(window.location.pathname +'queryParams', JSON.stringify(data));
 			});
 		}
+	}
+	
+	function refresh() {
+		search.query();
 	}
 	
 	function remove() {
@@ -165,7 +151,7 @@
 					article_id: article_id,
 				}, function(res) {
 					search.query();
-				})
+				});
 			});
 		});
 	}

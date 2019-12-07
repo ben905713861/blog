@@ -123,6 +123,7 @@ public class ArticleController {
 		
 		Map<String, Object> nextArticleInfo = Db.table("article")
 			.field("article_id,title")
+			.where("type_id", articleInfo.get("type_id"))
 			.where("article_id", ">", getMap.get("article_id"))
 			.order("article_id", "ASC")
 			.find();
@@ -130,6 +131,7 @@ public class ArticleController {
 		
 		Map<String, Object> lastArticleInfo = Db.table("article")
 			.field("article_id,title")
+			.where("type_id", articleInfo.get("type_id"))
 			.where("article_id", "<", getMap.get("article_id"))
 			.order("article_id", "DESC")
 			.find();

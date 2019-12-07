@@ -274,6 +274,10 @@ public class ArticleController {
 			publisher.addInputData(type_id);
 			publisher.send();
 		}
+		new Publisher("index").send();
+		new Publisher("gbook").send();
+		new Publisher("articleSearch").send();
+		new Publisher("about").send();
 	}
 	
 }

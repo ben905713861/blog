@@ -83,20 +83,19 @@ function ajax(method, url, data, truefun, falsefun, endfun, errfun) {
 					if(data[key] instanceof File) {
 						formData.append(key, data[key]);
 					}
-					else if(data[key] instanceof Array) {
+					else if(data[key] instanceof FileList) {
 						if(data[key].length == 1) {
 							formData.append(key, data[key][0]);
 						} else {
-							if(typeof data[key] == 'object') {
-								var files = data[key];
-								for(index=0; index<files.length; index++) {
-									formData.append(key+'[]', files[index]);
-								}
-							} else {
-								//非文件参数
-								formData.append(key, data[key]);
+							var files = data[key];
+							for(index=0; index<files.length; index++) {
+								formData.append(key+'[]', files[index]);
 							}
 						}
+					}
+					else {
+						//非文件参数
+						formData.append(key, data[key]);
 					}
 				}
 				data = formData;
