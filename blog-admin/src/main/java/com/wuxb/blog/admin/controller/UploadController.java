@@ -2,7 +2,6 @@ package com.wuxb.blog.admin.controller;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +12,6 @@ import com.wuxb.httpServer.annotation.RequestMapping;
 import com.wuxb.httpServer.annotation.RestController;
 import com.wuxb.httpServer.params.FileInfo;
 import com.wuxb.httpServer.params.RequestMethod;
-import com.wuxb.httpServer.util.FormdataParamsEncode;
 import com.wuxb.httpServer.util.Tools;
 
 @RestController
@@ -48,18 +46,11 @@ public class UploadController {
 		}
 		
 		//发送到文件服务器
-		FormdataParamsEncode formdata = new FormdataParamsEncode();
-			formdata.add(type, fileInfo);
 		UploadFile uploadFile = new UploadFile();
-		if(!uploadFile.send(formdata)) {
-			return Tools.returnErr(uploadFile.getErrorMessage());
-		}
-		
-		List<Map<String, Object>> fileResultList = uploadFile.getFileResultList();
-		Map<String, Object> file = fileResultList.get(0);
+		uploadFile.send(type, fileInfo);
 		
 		Map<String, Object> resMap = Tools.returnSucc();
-		resMap.put("url", (String) file.get("url"));
+		resMap.put("url", uploadFile.getUrl());
 		return resMap;
 	}
 	

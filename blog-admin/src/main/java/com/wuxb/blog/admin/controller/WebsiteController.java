@@ -13,7 +13,6 @@ import com.wuxb.httpServer.annotation.RestController;
 import com.wuxb.httpServer.db.Db;
 import com.wuxb.httpServer.params.FileInfo;
 import com.wuxb.httpServer.util.Config;
-import com.wuxb.httpServer.util.FormdataParamsEncode;
 import com.wuxb.httpServer.util.Tools;
 
 @RestController
@@ -40,45 +39,27 @@ public class WebsiteController {
 	
 	@RequestMapping("/upload_headImg")
 	public Map<String, Object> upload_headImg(@PostParam Map<String, Object> postMap, HttpServletRequest httpServletRequest) throws Exception {
-		Map<String, Object> resMap = new HashMap<String, Object>();
-		
-		FormdataParamsEncode formdata = new FormdataParamsEncode();
 		List<FileInfo> fileList = httpServletRequest.getBody().getFileList();
-		formdata.add("headImg", fileList.get(0));
 		
 		UploadFile uploadFile = new UploadFile();
-		if(!uploadFile.send(formdata)) {
-			return Tools.returnErr(uploadFile.getErrorMessage());
-		}
+		uploadFile.send("headImg", fileList.get(0));
 		
-		List<Map<String, Object>> fileResultList = uploadFile.getFileResultList();
-		Map<String, Object> file = fileResultList.get(0);
-		
-		resMap.put("status", true);
-		resMap.put("head_img_url", file.get("url"));
-		resMap.put("head_img_path", file.get("path"));
+		Map<String, Object> resMap = Tools.returnSucc();
+		resMap.put("head_img_url", uploadFile.getUrl());
+		resMap.put("head_img_path", uploadFile.getPath());
 		return resMap;
 	}
 	
 	@RequestMapping("/upload_shareCodeImg")
 	public Map<String, Object> upload_shareCodeImg(@PostParam Map<String, Object> postMap, HttpServletRequest httpServletRequest) throws Exception {
-		Map<String, Object> resMap = new HashMap<String, Object>();
-		
-		FormdataParamsEncode formdata = new FormdataParamsEncode();
 		List<FileInfo> fileList = httpServletRequest.getBody().getFileList();
-		formdata.add("shareCodeImg", fileList.get(0));
 		
 		UploadFile uploadFile = new UploadFile();
-		if(!uploadFile.send(formdata)) {
-			return Tools.returnErr(uploadFile.getErrorMessage());
-		}
+		uploadFile.send("shareCodeImg", fileList.get(0));
 		
-		List<Map<String, Object>> fileResultList = uploadFile.getFileResultList();
-		Map<String, Object> file = fileResultList.get(0);
-		
-		resMap.put("status", true);
-		resMap.put("share_code_img_url", file.get("url"));
-		resMap.put("share_code_img_path", file.get("path"));
+		Map<String, Object> resMap = Tools.returnSucc();
+		resMap.put("share_code_img_url", uploadFile.getUrl());
+		resMap.put("share_code_img_path", uploadFile.getPath());
 		return resMap;
 	}
 	

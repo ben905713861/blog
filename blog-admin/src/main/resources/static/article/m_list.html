@@ -30,7 +30,7 @@
 						<option v-for="typeInfo in typeList" :value="typeInfo.type_id">{{ typeInfo.type }}</option>
 					</select>
 				</span>
-				<input type="text" name="title" class="form-control input-sm" placeholder="输入文章标题关键字进行搜索" />
+				<input type="text" name="title" class="form-control input-sm" placeholder="输入关键字搜索" />
 				<span class="input-group-btn">
 					<button type="submit" class="btn btn-sm btn-info" ><i class="fa fa-search"></i> 搜索</button>
 				</span>
@@ -150,7 +150,7 @@
 				ajax('post', '/article/delete', {
 					article_id: article_id,
 				}, function(res) {
-					search.query();
+					refresh();
 				});
 			});
 		});
@@ -163,11 +163,11 @@
 		box.src = 'add.html';
 	}
 	
-	function update(articlr_id) {
+	function update(article_id) {
 		document.getElementById('list-box').style.display = 'none';
 		var box = document.getElementById('update-box');
 		box.style.display = 'block';
-		box.src = 'update.html#'+ articlr_id;
+		box.src = 'update.html#'+ article_id;
 	}
 	
 	function iframeClose() {

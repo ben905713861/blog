@@ -21,7 +21,6 @@ import com.wuxb.httpServer.db.Db;
 import com.wuxb.httpServer.params.FileInfo;
 import com.wuxb.httpServer.params.RequestMethod;
 import com.wuxb.httpServer.util.Config;
-import com.wuxb.httpServer.util.FormdataParamsEncode;
 import com.wuxb.httpServer.util.HtmlFilter;
 import com.wuxb.httpServer.util.Tools;
 
@@ -119,17 +118,11 @@ public class ArticleController {
 		}
 		
 		UploadFile uploadFile = new UploadFile();
-		FormdataParamsEncode formdata = uploadFile.getFormdataObject();
-		formdata.add("articleThumb", fileInfo);
-		if(!uploadFile.send(formdata)) {
-			return Tools.returnErr(uploadFile.getErrorMessage());
-		}
-		List<Map<String, Object>> fileResultList = uploadFile.getFileResultList();
-		Map<String, Object> fileResult = fileResultList.get(0);
+		uploadFile.send("articleThumb", fileInfo);
 		
 		resMap.put("status", true);
-		resMap.put("thumb_path", fileResult.get("path"));
-		resMap.put("thumb_url", fileResult.get("url"));
+		resMap.put("thumb_path", uploadFile.getPath());
+		resMap.put("thumb_url", uploadFile.getUrl());
 		return resMap;
 	}
 	
