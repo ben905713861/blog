@@ -57,7 +57,7 @@ public class AlbumDetailController {
 		res.put("total", total);
 		
 		Map<String, Object> albumInfo = Db.table("album")
-			.field("title")
+			.field("title,description")
 			.where("album_id", search.get("album_id"))
 			.find();
 		res.put("albumInfo", albumInfo);
@@ -70,16 +70,12 @@ public class AlbumDetailController {
 	public Map<String, Object> add(@PostParam Map<String, Object> postMap) throws SQLException {
 		List<Map<String, Object>> dataList = new ArrayList<Map<String,Object>>();
 		
-		List<Map<String, Object>> list = (List<Map<String, Object>>) postMap.get("list");
+		List<Map<String, Object>> list = (List<Map<String, Object>>) postMap.get("filePathList");
 		for(Map<String, Object> map : list) {
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("album_id", postMap.get("album_id"));
 			data.put("name", map.get("name"));
-			String url = (String) map.get("url");
-			if(url.indexOf(FILE_SERVER_DOMAIN) == 0) {
-				url = url.substring(FILE_SERVER_DOMAIN.length());
-			}
-			data.put("path", url);
+			data.put("path", map.get("path"));
 			dataList.add(data);
 		}
 		

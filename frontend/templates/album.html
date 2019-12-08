@@ -2,6 +2,24 @@
 
 <#macro head>
 <link href="${ STATIC_DOMAIN }/css/album.css" rel="stylesheet">
+<!--相册插件-->
+<link href="${ STATIC_DOMAIN }/plugins/blueimp/css/blueimp-gallery.min.css" rel="stylesheet">
+<style>
+	.lightBoxGallery{ font-size: 0; }
+	.img-box{ max-height: 200px; overflow: hidden; display: inline-block;position: relative; vertical-align: middle; margin: 10px 0; padding: 0 6px; box-sizing: border-box; }
+	@media (min-width: 500px) {
+		.img-box{ width: 50%; }
+	}
+	@media (min-width: 768px) {
+		.img-box{ width: 33.3333%; }
+	}
+	@media (min-width: 992px) {
+		.img-box{ width: 25%; }
+	}
+	.img-box .delete{ position: absolute; top: 10px; right: 22px; cursor: pointer; opacity: 0.8; }
+	.img-box .delete:hover{ opacity: 1; }
+	.img-box img{ width: 100%; }
+</style>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>
 </#macro>
 
@@ -29,101 +47,28 @@
 	</aside>
 	
 	<div class="picsbox">
-		<div class="bodymodal"></div>
-		<!--播放到第一张图的提示-->
-		<div class="firsttop">
-			<div class="firsttop_right">
-				<div class="close2">
-					<a class="closebtn1" title="关闭" href="javascript:void(0)"></a>
-				</div>
-				<div class="replay">
-					<h2 id="div-end-h2"> 已到第一张图片了。 </h2>
-					<p>
-						<a class="replaybtn1" href="javascript:void(0);">重新播放</a>
-					</p>
-				</div>
-			</div>
-		</div>
-		<!--播放到最后一张图的提示-->
-		<div class="endtop">
-			<div class="firsttop_right">
-				<div class="close2">
-					<a class="closebtn2" title="关闭" href="javascript:void(0)"></a>
-				</div>
-				<div class="replay">
-					<h2 id="H1"> 已到最后一张图片了。 </h2>
-					<p>
-						<a class="replaybtn2" href="javascript:;">重新播放</a>
-					</p>
-				</div>
-			</div>
-		</div>
-		<!--弹出层结束-->
-		<!--图片特效内容开始-->
-		<div class="piccontext">
+		<div style="padding: 15px 20px 20px;">
 			<h2>${ albumInfo.title }</h2>
-			<div class="source">
-				<div class="source_left"><span>${ albumInfo.add_time }</span></div>
-				<div class="source_right">
-					<a href="javascript:;" class="list">列表查看</a>
-				</div>
-				<div class="source_right1">
-					<a href="javascript:;" class="gaoqing">高清查看</a>
-				</div>
-			</div>
-			<!--大图展示-->
-			<div class="picshow">
-				<div class="picshowtop" style="min-height: 200px;">
-					<a href="#"><img src="" id="pic1" curindex="0" /></a>
-					<a id="preArrow" href="javascript:void(0)" class="contextDiv" title="上一张"><span id="preArrow_A"></span></a>
-					<a id="nextArrow" href="javascript:void(0)" class="contextDiv" title="下一张"><span id="nextArrow_A"></span></a>
-				</div>
-				<div class="picshowtxt">
-					<div class="picshowtxt_left"><span>1</span>/<i>${ imgList?size }</i></div>
-					<div class="picshowtxt_right"></div>
-				</div>
-				<div class="picshowlist">
-					<div class="picshowlist_mid">
-						<div class="picmidleft">
-							<a href="javascript:void(0)" id="preArrow_B"><span class="sleft"></span></a>
-						</div>
-						<div class="picmidmid">
-							<ul>
-							<#list imgList as imgInfo>
-								<li>
-									<a href="javascript:void(0)">
-										<img src="${ imgInfo.url }" bigimg="${ imgInfo.url }" text="${ imgInfo.name }" />
-									</a>
-								</li>
-							</#list>
-							</ul>
-						</div>
-						<div class="picmidright">
-							<a href="javascript:void(0)" id="nextArrow_B"><span class="sright"></span></a>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<!--列表展示-->
-			<div class="piclistshow">
-				<ul>
+			<p>${ albumInfo.description }</p>
+			<div class="lightBoxGallery">
 				<#list imgList as imgInfo>
-					<li>
-						<div class="picimg">
-							<img src="${ imgInfo.url }" alt="${ imgInfo.name }" />
-						</div>
-						<div class="pictxt">
-							<h3>${ imgInfo.name }(${ imgInfo_index+1 }/${ imgList?size })</span></h3>
-						</div>
-					</li>
-				</#list>
-				</ul>
+					<span class="img-box">
+						<a href="${ imgInfo.url }" title="${ imgInfo.name }" data-gallery="">
+							<img src="${ imgInfo.url }">
+						</a>
+					</span></#list>
+				<div id="blueimp-gallery" class="blueimp-gallery">
+					<div class="slides"></div>
+					<h3 class="title"></h3>
+					<a class="prev">‹</a>
+					<a class="next">›</a>
+					<a class="close">×</a>
+					<a class="play-pause"></a>
+					<ol class="indicator"></ol>
+				</div>
 			</div>
 		</div>
-		<div class="pictext">
-			<ul>${ albumInfo.description }</ul>
-		</div>
+		
 		<div class="share">
 			<p class="diggit">
 				<a href="JavaScript:void(0)" onclick="like()"> 很赞哦！ (<b id="diggnum">{{ like_num }}</b>)</a>
@@ -170,8 +115,8 @@
 </#macro>
 
 <#macro js>
-<!--相册特效-->
-<script src="${ STATIC_DOMAIN }/js/piccontent.min.js"></script>
+<!--相册插件-->
+<script src="${ STATIC_DOMAIN }/plugins/blueimp/jquery.blueimp-gallery.min.js"></script>
 <script src="${ STATIC_DOMAIN }/js/Page.js"></script>
 <!--ueditor编辑器-->
 <script src="${ STATIC_DOMAIN }/plugins/ueditor/ueditor.config.js"></script>

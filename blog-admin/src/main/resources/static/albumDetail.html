@@ -8,180 +8,149 @@
 <link href="css/toastr.min.css" rel="stylesheet">
 <link href="css/font-awesome.min.css" rel="stylesheet">
 <link href="css/animate.css" rel="stylesheet">
-<link href="css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+<!--相册插件-->
+<link href="plugins/blueimp/css/blueimp-gallery.min.css" rel="stylesheet">
 <link href="css/style.css" rel="stylesheet">
 <style>
-	.thumb-table{max-height: 30px;max-width: 45px;}
+	.img-box{ max-height: 200px; overflow: hidden; display: inline-block;position: relative; vertical-align: middle; margin: 10px 0; padding: 0 6px; }
+	@media (min-width: 500px) {
+		.img-box{ width: 50%; }
+	}
+	@media (min-width: 768px) {
+		.img-box{ width: 33.3333%; }
+	}
+	@media (min-width: 992px) {
+		.img-box{ width: 20%; }
+	}
+	@media (min-width: 1200px) {
+		.img-box{ width: 12.5%; }
+	}
+	.img-box .delete{ position: absolute; top: 10px; right: 22px; cursor: pointer; opacity: 0.8; }
+	.img-box .delete:hover{ opacity: 1; }
+	.img-box img{ width: 100%; }
 </style>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>
 </head>
-<body>
+<body style="padding: 15px;">
 
-<div style="padding: 20px;">
-	<h4 id="album_title"></h4>
-	<form id="searchForm" class="pull-left form-inline" style="padding-top: 15px;" onsubmit="return search()">
-		<div class="form-group">
-			<a href="albumList.html" class="btn btn-default btn-sm"><i class=" fa fa-reply"></i>返回</a>
-			<button type="button" class="btn btn-sm btn-primary" onclick="modalOpen.add()"><i class="fa fa-plus"></i> 上传图片</button>
-		</div>
-		<div class="form-group">
-			<input type="text" class="form-control input-sm" name="name" placeholder="照片名" />
-		</div>
-		<div class="form-group">
-			<button type="submit" class="btn btn-sm btn-info"><i class="fa fa-search"></i> 搜索</button>
-			<button type="reset" class="btn btn-sm btn-default"><i class="fa fa-recycle"></i> 重置</button>
-		</div>
-	</form>
-	<table id="tableBox" data-mobile-responsive="true"></table>
-</div>
+<form id="searchForm" onsubmit="return search()">
+	<div class="form-group">
+		<a href="albumList.html" class="btn btn-default btn-sm"><i class=" fa fa-reply"></i>返回</a>
+		<button type="button" class="btn btn-sm btn-primary" onclick="modalSubmit.add()"><i class="fa fa-plus"></i> 上传图片</button>
+	</div>
+</form>
 
-<script id="Ueditor" type="text/plain" style="display: none;"></script>
-
-<!-- 查看模态框 -->
-<div class="modal fade" id="show-modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
-	<div class="modal-dialog" style="width: 80%;">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-				<h4 class="modal-title">照片查看</h4>
-			</div>
-			<div class="modal-body" style="text-align: center;padding: 20px 0;">
-				<img name="path" style="max-width: 80%;" />
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-			</div>
+<div class="ibox-content">
+	<h2>{{ albumInfo.title }}</h2>
+	<p>{{ albumInfo.description }}</p>
+	<div class="lightBoxGallery">
+		<template v-for="imgInfo in imgList">
+			<span class="img-box">
+				<a :href="imgInfo.url" :title="imgInfo.name" data-gallery="">
+					<img :src="imgInfo.url">
+				</a>
+				<i class="fa fa-remove delete" @click="modalSubmit.delete(imgInfo.img_id)"></i>
+			</span>
+		</template>
+		<div id="blueimp-gallery" class="blueimp-gallery">
+			<div class="slides"></div>
+			<h3 class="title"></h3>
+			<a class="prev">‹</a>
+			<a class="next">›</a>
+			<a class="close">×</a>
+			<a class="play-pause"></a>
+			<ol class="indicator"></ol>
 		</div>
 	</div>
+</div>
+<div class="text-center">
+	<button onclick="search.nextPage()" class="btn btn-default">加载更多</button>
 </div>
 
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
-<script src="js/plugins/layer/layer.min.js"></script>
-<script src="js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
-<script src="js/plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="plugins/layer/layer.min.js"></script>
 <!--右上角提示框插件-->
 <script src="js/toastr.min.js"></script>
-<!--ueditor编辑器-->
-<script src="js/plugins/ueditor/ueditor.config.js"></script>
-<script src="js/plugins/ueditor/ueditor.all.min.js"></script>
+<!--相册插件-->
+<script src="plugins/blueimp/jquery.blueimp-gallery.min.js"></script>
 <script src="js/common.js"></script>
-<script>
-	window.UEDITOR_CONFIG.serverUrl = '/ueditor/index?type=album';//type决定上传到哪个目录
-    var ueditor = UE.getEditor('Ueditor');
-    ueditor.ready(function () {
-        //隐藏编辑器，因为不会用到这个编辑器实例，所以要隐藏
-        ueditor.hide();
-        //侦听图片上传
-        ueditor.addListener('beforeinsertimage', function (t, imgInfoList) {
-        	console.log(imgInfoList)
-        	var list = [];
-        	imgInfoList.forEach(function(imgInfo) {
-        		list.push({
-        			name: imgInfo.alt,
-        			url: imgInfo.src,
-        		});
-        	});
-        	modalSubmit.add(list);
-        })
-    });
-</script>
 <script type="text/javascript">
 	var hash = window.location.hash.split('#');
 	var album_id = hash[1];
 	
-	//记忆
-	var queryParams = sessionStorage.getItem(window.location.href +'_queryParams');
-	if(queryParams) {
-		queryParams = JSON.parse(queryParams);
-		formload(document.getElementById('searchForm'), queryParams.search);
-		queryParams.pageNumber = queryParams.offset/queryParams.limit + 1;
-		queryParams.pageSize = queryParams.limit;
-	}
-	$('#tableBox').bootstrapTable({
-		sortable: true,					 //是否启用排序
-		sortName: '',
-		sortOrder: '',
-		ajax: function(params) {
-			params.data.search = getFormObj(document.getElementById('searchForm'));
-			params.data.search.album_id = album_id;
-			ajax('get', '/albumDetail/getList', params.data, function(res) {
-				if(res.total == 0) {
-					res.total = 1;
-				}
-				params.success(res);
-				document.querySelector('#album_title').innerText = res.albumInfo.title;
-				//记录搜索条件用于返回
-				sessionStorage.setItem(window.location.href +'_queryParams', JSON.stringify(params.data));
-			});
+	var vueDom = new Vue({
+		el: '.ibox-content',
+		data: {
+			albumInfo: {},
+			imgList: [],
 		},
-		striped: true,					  //是否显示行间隔色
-		cache: false,					   //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
-		pagination: true,				   //是否显示分页（*）
-		sidePagination: 'server',		   //分页方式：client客户端分页，server服务端分页（*）
-		pageNumber: queryParams ? queryParams.pageNumber : 1,					   //初始化加载第一页，默认第一页
-		pageSize: queryParams ? queryParams.pageSize : 10,					   //每页的记录行数（*）
-		pageList: [10, 25, 50, 100],		//可供选择的每页的行数（*）
-		showRefresh: true,
-		showToggle: true,
-		showColumns: true,
-		iconSize: 'outline',
-		toolbar: '#searchForm',
-		columns: [
-			{
-				field: 'name',
-				title: '照片名',
-				align: 'center',
-			},
-			{
-				field: 'url',
-				title: '缩略图',
-				align: 'center',
-				formatter: function(value, row) {
-					return '<img src="'+ value +'" class="thumb-table" />';
-				},
-			},
-			{
-				field: 'url',
-				title: 'url',
-				align: 'center',
-			},
-			{
-				field: 'img_id',
-				title: '操作',
-				align: 'center',
-				formatter:function(value,row,index){
-					return '<button class="btn btn-default btn-sm" onclick="modalOpen.show(\''+ row.url +'\')"><i class="fa fa-list"></i> 查看</button> &nbsp;'
-						+ '<button class="btn btn-danger btn-sm" onclick="modalSubmit.delete('+ value +')"><i class="fa fa-remove"></i> 删除</button>';
-				}
-			},
-		],
 	});
-	function search() {
-		$('#tableBox').bootstrapTable('selectPage', 1);
-		return false;
-	}
-	function refresh() {
-		$('#tableBox').bootstrapTable('refresh');
+	
+	function Search() {
+		var offset = 0;
+		var limit = 10;
+		var total = 0;
+		
+		this.query = function() {
+			offset = 0;
+			total = 0;
+			vueDom.imgList = [];
+			this.getData();
+		}
+		
+		this.nextPage = function() {
+			if((offset+limit) >= total) {
+				(typeof toastr == 'undefined') ? alert('已到达最后一页') : toastr['warning']('已到达最后一页');
+				return;
+			}
+			offset += limit;
+			this.getData();
+		}
+		
+		this.getData = function() {
+			ajax('get', '/albumDetail/getList', {
+				search: {
+					album_id: album_id,
+				},
+				offset: offset,
+				limit: limit,
+			}, function(res) {
+				total = res.total;
+				vueDom.albumInfo = res.albumInfo;
+				res.rows.forEach(function(row) {
+					vueDom.imgList.push(row);
+				});
+			});
+		}
 	}
 	
-	//模态框打开事件
-	var modalOpen = {
-		show: function(url) {
-			document.querySelector('#show-modal img[name="path"]').src = url;
-			$('#show-modal').modal();
-		},
-		add: function() {
-			ueditor.getDialog('insertimage').open();
-		},
+	var search = new Search();
+	search.query();
+	
+	function refresh() {
+		search.query();
 	}
 	
 	var modalSubmit = {
-		add: function(list) {
-			ajax('post', '/albumDetail/add', {
-				album_id: album_id,
-				list: list,
-			}, function(res) {
-				refresh();
+		add: function() {
+			input_upload('img', true, function(files) {
+//				var newFiles = [];
+//				files.forEach(function(file) {
+//					newFiles.
+//				});
+				
+				ajax('file', '/upload/uploadMore?type=album', {
+					upfiles: files,
+				}, function(res) {
+					//入库
+					ajax('post', '/albumDetail/add', {
+						album_id: album_id,
+						filePathList: res.fileResList,
+					}, function(res) {
+						refresh();
+					});
+				});
 			});
 		},
 		delete: function(img_id) {
@@ -195,7 +164,6 @@
 			});
 		},
 	}
-
 </script>
 </body>
 </html>

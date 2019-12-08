@@ -8,9 +8,9 @@ a:hover { text-decoration: none; color: #000; }
 .blank { height: 20px; overflow: hidden; width: 100%; margin: auto; clear: both }
 .f_l { float: left }
 .f_r { float: right }
-article { width: 1000px; margin: 80px auto 0; overflow: hidden; zoom: 1; }
-.container { width: 1000px; margin: auto }
-nav { width: 1000px; margin: auto }
+article { width: 1150px; margin: 80px auto 0; overflow: hidden; zoom: 1; }
+.container { width: 1150px; margin: auto }
+nav { width: 1150px; margin: auto }
 .logo { float: left; font-size: 22px }
 article, aside { display: block; position: relative; }
 #mnavh { display: none; width: 30px; height: 40px; float: right; text-align: center; padding: 0 5px }
