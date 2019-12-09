@@ -34,4 +34,8 @@ public class UploadFile {
 		return FILE_SERVER_DOMAIN + relativePath;
 	}
 	
+	public static boolean delete(String path) {
+		return new File(FILE_BASE_DIR + path).delete();
+	}
+	
 }

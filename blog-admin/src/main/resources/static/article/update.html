@@ -88,6 +88,7 @@
 <script src="../js/toastr.min.js"></script>
 <!--ckeditor5编辑器-->
 <script src="../plugins/ckeditor5/ckeditor.js"></script>
+<script src="../js/ImageCutter.js"></script>
 <script src="../js/common.js"></script>
 <script type="text/javascript">
 	var article_id = window.location.hash.split('#')[1];
@@ -100,22 +101,26 @@
 	});
 	
 	//富文本编辑器
-	function initEditor() {
-		return new Promise(function(resolve0, reject0) {
-			ClassicEditor.create(document.querySelector('#editor'))
-				.then(function(editor) {
-					window.editor = editor;
-					//重写上传文件的方法
-					editor.plugins.get('FileRepository').createUploadAdapter = function(loader) {
-				        return new class UploadAdapter {
-				        	constructor() {
-				        		
-				        	}
-				        	upload() {
-				        		return loader.file.then(function(file) {
+	var initEditor = ClassicEditor.create(document.querySelector('#editor'))
+			.then(function(editor) {
+				window.editor = editor;
+				//重写上传文件的方法
+				editor.plugins.get('FileRepository').createUploadAdapter = function(loader) {
+			        class UploadAdapter {
+			        	constructor() {
+			        		
+			        	}
+			        	upload() {
+			        		let imageCutter;
+			        		return loader.file
+				        		.then(function(file) {
+				        			imageCutter = new ImageCutter(file);
+				        			return imageCutter.compress(1200);
+								}).then(function() {
+									let newFile = imageCutter.display();
 									return new Promise(function(resolve, reject) {
 							            ajax('file', '/upload/uploadOne?type=article', {
-							            	upfile: file,
+							            	upfile: newFile,
 							            }, function success(res) {
 							            	resolve({
 					                            default: res.url,
@@ -127,74 +132,71 @@
 							            });
 									});
 								});
-				        	}
-				        	abort() {
-								
-							}
-				        }
-				    }
-				})
-				.catch(function(error) {
-					console.error(error);
-					reject0();
-				});
-			resolve0();
-		});
-	}
-	
-	function init() {
-		return new Promise(function(resolve, reject) {
-			ajax('get', '/article/init', null, function(res) {
-				resolve(res);
-			}, null, null, function error() {
-				reject();
+			        	}
+			        	abort() {
+							
+						}
+			        }
+			        return new UploadAdapter();
+			    }
+			})
+			.catch(function(error) {
+				console.error(error);
 			});
-		});
-	}
 	
-	function load() {
-		return new Promise(function(resolve, reject) {
-			ajax('get', '/article/getOne', {
-				article_id: article_id
-			}, function(res) {
-				resolve(res);
-			}, null, null, function error() {
-				reject();
-			});
+	var init = new Promise(function(resolve, reject) {
+		ajax('get', '/article/init', null, function(res) {
+			resolve(res);
+		}, null, null, function error() {
+			reject();
 		});
-	}
+	});
+	
+	var load = new Promise(function(resolve, reject) {
+		ajax('get', '/article/getOne', {
+			article_id: article_id
+		}, function(res) {
+			resolve(res);
+		}, null, null, function error() {
+			reject();
+		});
+	});
 	
 	(async function() {
-		var fun_initEditor = initEditor();
-		var fun_init = init();
-		var fun_load = load();
+		await initEditor;
+		await init;
+		await load;
 		
-		await fun_initEditor;
-		await fun_init;
-		await fun_load;
-		
-		fun_init.then(function(res) {
-			//初始化下拉列表
-			vueDom.typeList = res;
-			//回显
-			fun_load.then(function(res) {
+		init.then(function(res) {
+				//初始化下拉列表
+				vueDom.typeList = res;
+				return load;
+			})
+			.then(function(res) {
+				//回显
 				if(!res.thumb_path) {
 					delete res.thumb_url;
 				}
 				formload(document.querySelector('body>form'), res);
 				editor.setData(res.content);
-			})
-		})
+			});
 	})();
 		
-	
 	function uploadThumb(btn) {
-		input_upload('img', false, function(file) {
-			ajax('file', '/article/uploadThumb', {
-				articleThumb: file,
-			}, function(res) {
-				formload(btn, res);
-			});
+		input_upload('img', false, function(files) {
+			let imageCutter = new ImageCutter(files[0]);
+			imageCutter.zoom(450)
+				.then(function() {
+					return imageCutter.cut(450, 300);
+				})
+				.then(function() {
+					let newFile = imageCutter.display();
+					ajax('file', '/article/uploadThumb', {
+						articleThumb: newFile,
+					}, function(res) {
+						formload(btn, res);
+					});
+				});
 		});
 	}
 	
@@ -225,6 +227,7 @@
 		parent.iframeClose();
 	}
 	
+	//按返回键的事件
 	(function() {
 		window.addEventListener('popstate', function(e) {
 			windowClose(false);

@@ -116,7 +116,11 @@ function ImageCutter(file, quality) {
 		canvas.setAttributeNode(anw);
 		canvas.setAttributeNode(anh);
 		
-		canvas.getContext('2d').drawImage(img, x, y, width, height);
+		var context = canvas.getContext('2d');
+		context.drawImage(img, x, y, width, height);
+		
+		//白色背景色
+		writeBackground(context, canvas);
 		
 		var base64 = canvas.toDataURL('image/jpeg', quality);
 		img = new Image();
@@ -124,6 +128,21 @@ function ImageCutter(file, quality) {
 		img.onload = function() {
 			callback();
 		}
+	}
+	
+	//将canvas的透明背景设置成白色   
+	function writeBackground(context, canvas) {
+		var imageData = context.getImageData(0, 0, canvas.width, canvas.height);   
+		for(var i = 0; i < imageData.data.length; i += 4) {   
+		    // 当该像素是透明的，则设置成白色   
+		    if(imageData.data[i + 3] == 0) {   
+		        imageData.data[i] = 255;   
+		        imageData.data[i + 1] = 255;   
+		        imageData.data[i + 2] = 255;   
+		        imageData.data[i + 3] = 255;    
+		    }   
+		}   
+		context.putImageData(imageData, 0, 0);
 	}
 	
 	this.display = function() {

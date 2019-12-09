@@ -142,6 +142,7 @@
 <script src="plugins/bootstrap-table/locale/bootstrap-table-zh-CN.min.js"></script>
 <!--右上角提示框插件-->
 <script src="js/toastr.min.js"></script>
+<script src="js/ImageCutter.js"></script>
 <script src="js/common.js"></script>
 <script type="text/javascript">
 	//记忆
@@ -254,12 +255,20 @@
 	
 	var modalSubmit = {
 		uploadThumb: function(btn) {
-			input_upload('img', false, function(file) {
-				ajax('file', '/album/uploadThumb', {
-					albumThumb: file,
-				}, function(res) {
-					formload(btn, res);
-				});
+			input_upload('img', false, function(files) {
+				let imageCutter = new ImageCutter(files[0]);
+				imageCutter.zoom(450)
+					.then(function() {
+						return imageCutter.cut(450, 300);
+					})
+					.then(function() {
+						let newFile = imageCutter.display();
+						ajax('file', '/album/uploadThumb', {
+							albumThumb: newFile,
+						}, function(res) {
+							formload(btn, res);
+						});
+					});
 			});
 		},
 		add: function(form) {

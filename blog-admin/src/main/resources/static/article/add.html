@@ -88,6 +88,7 @@
 <script src="../js/toastr.min.js"></script>
 <!--ckeditor5编辑器-->
 <script src="../plugins/ckeditor5/ckeditor.js"></script>
+<script src="../js/ImageCutter.js"></script>
 <script src="../js/common.js"></script>
 <script type="text/javascript">
 	(function() {
@@ -113,21 +114,27 @@
 		        		
 		        	}
 		        	upload() {
-		        		return loader.file.then(function(file) {
-							return new Promise(function(resolve, reject) {
-					            ajax('file', '/upload/uploadOne?type=article', {
-					            	upfile: file,
-					            }, function success(res) {
-					            	resolve({
-			                            default: res.url,
-			                        });
-					            }, function fail(res) {
-					            	reject('上传失败，'+ res.msg);
-					            }, null, function error() {
-					            	reject('上传失败，服务器响应错误');
-					            });
+		        		let imageCutter;
+		        		return loader.file
+			        		.then(function(file) {
+			        			imageCutter = new ImageCutter(file);
+			        			return imageCutter.compress(1200);
+							}).then(function() {
+								let newFile = imageCutter.display();
+								return new Promise(function(resolve, reject) {
+						            ajax('file', '/upload/uploadOne?type=article', {
+						            	upfile: newFile,
+						            }, function success(res) {
+						            	resolve({
+				                            default: res.url,
+				                        });
+						            }, function fail(res) {
+						            	reject('上传失败，'+ res.msg);
+						            }, null, function error() {
+						            	reject('上传失败，服务器响应错误');
+						            });
+								});
 							});
-						});
 		        	}
 		        	abort() {
 						
@@ -140,12 +147,20 @@
 		});
 	
 	function uploadThumb(btn) {
-		input_upload('img', false, function(file) {
-			ajax('file', '/article/uploadThumb', {
-				articleThumb: file,
-			}, function(res) {
-				formload(btn, res);
-			});
+		input_upload('img', false, function(files) {
+			let imageCutter = new ImageCutter(files[0]);
+			imageCutter.zoom(450)
+				.then(function() {
+					return imageCutter.cut(450, 300);
+				})
+				.then(function() {
+					let newFile = imageCutter.display();
+					ajax('file', '/article/uploadThumb', {
+						articleThumb: newFile,
+					}, function(res) {
+						formload(btn, res);
+					});
+				});
 		});
 	}
 	
@@ -175,6 +190,7 @@
 		parent.iframeClose();
 	}
 	
+	//按返回键的事件
 	(function() {
 		window.addEventListener('popstate', function(e) {
 			windowClose(false);

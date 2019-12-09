@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.wuxb.blog.admin.component.Publisher;
+import com.wuxb.blog.admin.component.UploadFile;
 import com.wuxb.httpServer.annotation.GetParam;
 import com.wuxb.httpServer.annotation.PostParam;
 import com.wuxb.httpServer.annotation.RequestMapping;
@@ -50,7 +51,7 @@ public class AlbumDetailController {
 			map.remove("path");
 			
 			String thumbPath = (String) map.get("thumbPath");
-			if(thumbPath.substring(0, 1).equals("/")) {
+			if(!thumbPath.isEmpty() && thumbPath.substring(0, 1).equals("/")) {
 				thumbPath = FILE_SERVER_DOMAIN + thumbPath;
 			}
 			map.put("thumbUrl", thumbPath);
@@ -95,17 +96,21 @@ public class AlbumDetailController {
 	
 	@RequestMapping(value="/delete", method=RequestMethod.POST)
 	public Map<String, Object> delete(@PostParam Map<String, Object> postMap) throws SQLException {
-		Object album_id = Db.table("album_img")
+		 Map<String, Object> imgInfo = Db.table("album_img")
+			.field("album_id,thumbPath,path")	
 			.where("img_id", postMap.get("img_id"))
-			.value("album_id");
+			.find();
 		
 		Db.table("album_img")
 			.where("img_id", postMap.get("img_id"))
 			.limit(1)
 			.delete();
 		
-		if(album_id != null) {
-			publishHtml(album_id);
+		UploadFile.delete((String) imgInfo.get("thumbPath"));
+		UploadFile.delete((String) imgInfo.get("path"));
+		
+		if(imgInfo.get("album_id") != null) {
+			publishHtml(imgInfo.get("album_id"));
 		}
 		return Tools.returnSucc();
 	}
