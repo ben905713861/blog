@@ -100,7 +100,7 @@
 	});
 	
 	//富文本编辑器
-	async function initEditor() {
+	function initEditor() {
 		return new Promise(function(resolve0, reject0) {
 			ClassicEditor.create(document.querySelector('#editor'))
 				.then(function(editor) {
@@ -142,7 +142,7 @@
 		});
 	}
 	
-	async function init() {
+	function init() {
 		return new Promise(function(resolve, reject) {
 			ajax('get', '/article/init', null, function(res) {
 				resolve(res);
@@ -152,8 +152,8 @@
 		});
 	}
 	
-	async function load() {
-		return await new Promise(function(resolve, reject) {
+	function load() {
+		return new Promise(function(resolve, reject) {
 			ajax('get', '/article/getOne', {
 				article_id: article_id
 			}, function(res) {

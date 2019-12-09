@@ -18,7 +18,6 @@ public class UploadFile {
 		Date date = new Date();
 		relativePath = "/" + type + "/" + new SimpleDateFormat("yyyy/MMdd").format(date) + "/" + Encrypt.md5(date.getTime()+ "" +System.currentTimeMillis()) +"."+ fileInfo.extname;
 		File newFile = new File(FILE_BASE_DIR + relativePath);
-		System.out.println(FILE_BASE_DIR + relativePath);
 		File newFilePath = newFile.getParentFile();
 		if(!newFilePath.exists()) {
 			newFilePath.mkdirs();

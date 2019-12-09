@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title></title>
+</head>
+<body>
+	
+<input type="file" id="myfile" />
+<button onclick="fundo()">send</button>
+<img id="view1" />
+<img id="view2" />
+	
+<script type="text/javascript" src="js/ImageCutter.js"></script>
+<script type="text/javascript">
+	function fundo() {
+		var imageCutter = new ImageCutter(document.getElementById('myfile').files[0]);
+		imageCutter.setCallbackType('base64');
+		imageCutter.compress(200)
+			.then(function() {
+				return imageCutter.cut(100, 100);
+			})
+			.then(function() {
+				var res = imageCutter.display();
+				document.getElementById('view2').src = res;
+			});
+		
+//		imageCutter.zoom(360)
+//			.then(function() {
+//				var res = imageCutter.display();
+//				document.getElementById('view2').src = res;
+//			});
+		
+//		imageCutter.compress(200, function() {
+//			var res = imageCutter.display();
+//			document.getElementById('view1').src = res;
+//			imageCutter.cut(100, 100, function() {
+//				var res = imageCutter.display();
+//				document.getElementById('view2').src = res;
+//			});
+//		});
+//		imageCutter.zoom(120, null, function() {
+//			var res = imageCutter.display();
+//			document.getElementById('view1').src = res;
+//		});
+	}
+</script>
+</body>
+</html>

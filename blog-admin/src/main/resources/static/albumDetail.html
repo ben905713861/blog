@@ -12,7 +12,7 @@
 <link href="plugins/blueimp/css/blueimp-gallery.min.css" rel="stylesheet">
 <link href="css/style.css" rel="stylesheet">
 <style>
-	.img-box{ max-height: 200px; overflow: hidden; display: inline-block;position: relative; vertical-align: middle; margin: 10px 0; padding: 0 6px; }
+	.img-box{ max-height: 1000px; overflow: hidden; display: inline-block;position: relative; vertical-align: middle; margin: 10px 0; padding: 0 6px; }
 	@media (min-width: 500px) {
 		.img-box{ width: 50%; }
 	}
@@ -47,7 +47,7 @@
 		<template v-for="imgInfo in imgList">
 			<span class="img-box">
 				<a :href="imgInfo.url" :title="imgInfo.name" data-gallery="">
-					<img :src="imgInfo.url">
+					<img :src="imgInfo.thumbUrl">
 				</a>
 				<i class="fa fa-remove delete" @click="modalSubmit.delete(imgInfo.img_id)"></i>
 			</span>
@@ -74,6 +74,7 @@
 <script src="js/toastr.min.js"></script>
 <!--相册插件-->
 <script src="plugins/blueimp/jquery.blueimp-gallery.min.js"></script>
+<script src="js/ImageCutter.js"></script>
 <script src="js/common.js"></script>
 <script type="text/javascript">
 	var hash = window.location.hash.split('#');
@@ -134,23 +135,74 @@
 	
 	var modalSubmit = {
 		add: function() {
-			input_upload('img', true, function(files) {
-//				var newFiles = [];
-//				files.forEach(function(file) {
-//					newFiles.
-//				});
+			input_upload('img', true, async function(files) {
+				var filePathList = [];
+				for(let i = 0; i < files.length; i++) {
+					let fun1,fun2;
+					let imgInfo = {}
+					let imageCutter = new ImageCutter(files[i]);
+					
+					fun1 = imageCutter.compress(1600)
+						.then(function() {
+							let newFile = imageCutter.display();
+							return new Promise((resolve, reject) => {
+								ajax('file', '/upload/uploadOne?type=album', {
+									upfile: newFile,
+								}, function(res) {
+									imgInfo.name = res.name;
+									imgInfo.path = res.path;
+									resolve();
+								}, function falsed(res) {
+									reject(res);
+								},null, function err() {
+									reject('服务器错误');
+								}, false);
+							});
+						})
+						.catch(function(msg) {
+							alert('上传失败，原因：'+ msg);
+							throw('上传失败，原因：'+ msg);
+						});
+					let thumbCutter = new ImageCutter(files[i]);
+					
+					fun2 = thumbCutter.zoom(480)
+						.then(function() {
+							return thumbCutter.cut(480, 320);
+						})
+						.then(function() {
+							let thumbFile = thumbCutter.display();
+							return new Promise((resolve, reject) => {
+								ajax('file', '/upload/uploadOne?type=albumThumb', {
+									upfile: thumbFile,
+								}, function(res) {
+									imgInfo.thumbPath = res.path;
+									resolve();
+								}, function falsed(res) {
+									reject(res);
+								},null, function err() {
+									reject('服务器错误');
+								}, false);
+							});
+						})
+						.catch(function(msg) {
+							alert('上传失败，原因：'+ msg);
+							throw('上传失败，原因：'+ msg);
+						});
+					
+					await fun1;
+					await fun2;
+					
+					filePathList.push(imgInfo);
+				}
 				
-				ajax('file', '/upload/uploadMore?type=album', {
-					upfiles: files,
+				//入库
+				ajax('post', '/albumDetail/add', {
+					album_id: album_id,
+					filePathList: filePathList,
 				}, function(res) {
-					//入库
-					ajax('post', '/albumDetail/add', {
-						album_id: album_id,
-						filePathList: res.fileResList,
-					}, function(res) {
-						refresh();
-					});
+					refresh();
 				});
+				
 			});
 		},
 		delete: function(img_id) {

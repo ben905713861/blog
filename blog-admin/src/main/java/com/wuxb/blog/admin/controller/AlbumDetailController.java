@@ -46,8 +46,15 @@ public class AlbumDetailController {
 			if(path.substring(0, 1).equals("/")) {
 				path = FILE_SERVER_DOMAIN + path;
 			}
-			 map.put("url", path);
-			 map.remove("path");
+			map.put("url", path);
+			map.remove("path");
+			
+			String thumbPath = (String) map.get("thumbPath");
+			if(thumbPath.substring(0, 1).equals("/")) {
+				thumbPath = FILE_SERVER_DOMAIN + thumbPath;
+			}
+			map.put("thumbUrl", thumbPath);
+			map.remove("thumbPath");
 		}
 		res.put("rows", rows);
 		
@@ -76,6 +83,7 @@ public class AlbumDetailController {
 			data.put("album_id", postMap.get("album_id"));
 			data.put("name", map.get("name"));
 			data.put("path", map.get("path"));
+			data.put("thumbPath", map.get("thumbPath"));
 			dataList.add(data);
 		}
 		

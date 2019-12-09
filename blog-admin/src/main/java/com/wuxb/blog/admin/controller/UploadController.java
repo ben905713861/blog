@@ -22,7 +22,7 @@ public class UploadController {
 
 	private static final int MAX_UPLOAD_SIZE = 10 * 1024 * 1024;
 	private static final String[] ALLOW_TYPE = new String[] {
-		"article", "album", "website"
+		"article", "album", "albumThumb", "website"
 	};
 	private static final String[] ALLOW_EXTNAMES = new String[] {
 		"jpg", "jpeg", "png", "gif", "xls", "xlsx", "doc", "docx"

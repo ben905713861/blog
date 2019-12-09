@@ -1,4 +1,4 @@
-function ajax(method, url, data, truefun, falsefun, endfun, errfun) {
+function ajax(method, url, data, truefun, falsefun, endfun, errfun, use_alert) {
 	var succfun;
 	var xhr = new XMLHttpRequest();
 	method = method.toLowerCase();
@@ -23,59 +23,6 @@ function ajax(method, url, data, truefun, falsefun, endfun, errfun) {
 		}
 		xhr.open('post', url);
 		if(method == 'file') {
-			if(typeof FormData == 'undefined') {
-				alert('因您浏览器版本太旧，请在弹窗中重新上传一次');
-				var iframe = document.createElement('iframe');
-				iframe.name = 'iframe_upload';
-				//form
-				var form = document.createElement('form');
-				form.action = url;
-				form.target = iframe.name;
-				form.method = 'post';
-				form.enctype = 'multipart/form-data';
-				//input
-				var input_file = append_input();
-				input_file.type = 'file';
-				input_file.onchange = function() {
-					form.submit();
-				}
-				for(key in data) {
-					if(data[key]==undefined || typeof data[key]=='object') {
-						input_file.name = key;
-					} else {
-						//非文件参数
-						append_input(key, data[key]);
-					}
-				}
-				append_input('csrf_random', Math.random());
-				append_input('csrf_time', (new Date()).getTime());
-				append_input().type = 'submit';
-				function append_input(key, value) {
-					var input = document.createElement('input');
-					if(key) input.name = key;
-					if(value) input.value = value;
-					form.appendChild(input);
-					return input;
-				}
-				//box
-				var divbox = document.createElement('div');
-				divbox.style.display = 'block';
-				divbox.appendChild(iframe);
-				divbox.appendChild(form);
-				document.body.appendChild(divbox);
-				//提交处理
-				iframe.onload = function() {
-					var json = iframe.contentWindow.document.body.innerText;
-					if(!json) {
-						return;
-					}
-					var res = JSON.parse(json);
-					succfun(res);
-					document.body.removeChild(divbox);
-				}
-				input_file.click();
-				return;
-			}
 			//data不是FromData
 			if(!(data instanceof FormData)) {
 				var formData = new FormData();
@@ -143,6 +90,9 @@ function ajax(method, url, data, truefun, falsefun, endfun, errfun) {
 	xhr.send(data);
 	//用户提示
 	function _alert(msg, type) {
+		if(use_alert === false) {
+			return;
+		}
 		if(!type) {
 			type = 'error';
 		}
