@@ -3,24 +3,24 @@
 <head>
 <title>相册详情</title>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="css/bootstrap.min.css" rel="stylesheet">
-<link href="css/toastr.min.css" rel="stylesheet">
-<link href="css/font-awesome.min.css" rel="stylesheet">
-<link href="css/animate.css" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link href="../css/bootstrap.min.css" rel="stylesheet">
+<link href="../css/toastr.min.css" rel="stylesheet">
+<link href="../css/font-awesome.min.css" rel="stylesheet">
+<link href="../css/animate.css" rel="stylesheet">
 <!--相册插件-->
-<link href="plugins/blueimp/css/blueimp-gallery.min.css" rel="stylesheet">
-<link href="css/style.css" rel="stylesheet">
+<link href="../plugins/blueimp/css/blueimp-gallery.min.css" rel="stylesheet">
+<link href="../css/style.css" rel="stylesheet">
 <style>
-	.img-box{ max-height: 1000px; overflow: hidden; display: inline-block;position: relative; vertical-align: middle; margin: 10px 0; padding: 0 6px; }
+	.img-box{ width: 33.3333%; overflow: hidden; display: inline-block;position: relative; vertical-align: middle; margin: 5px 0; padding: 0 3px; }
 	@media (min-width: 500px) {
-		.img-box{ width: 50%; }
+		.img-box{ width: 25%; }
 	}
 	@media (min-width: 768px) {
-		.img-box{ width: 33.3333%; }
+		.img-box{ width: 20%; }
 	}
 	@media (min-width: 992px) {
-		.img-box{ width: 20%; }
+		.img-box{ width: 16.6666%; }
 	}
 	@media (min-width: 1200px) {
 		.img-box{ width: 12.5%; }
@@ -31,57 +31,64 @@
 </style>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>
 </head>
-<body style="padding: 15px;">
+<body>
+	
+<div class="modal-header gray-bg">
+	<button type="button" class="close" onclick="windowClose()" style="position: absolute;left: 20px;top: 16px;"><i class=" fa fa-reply"></i></button>
+	<h4 class="modal-title text-center">相册详情</h4>
+	<button type="button" class="close" onclick="modalSubmit.add()" style="position: absolute;right: 20px;top: 16px;"><i class=" fa fa-plus"></i></button>
+</div>
 
-<form id="searchForm" onsubmit="return search()">
-	<div class="form-group">
-		<a href="albumList.html" class="btn btn-default btn-sm"><i class=" fa fa-reply"></i>返回</a>
-		<button type="button" class="btn btn-sm btn-primary" onclick="modalSubmit.add()"><i class="fa fa-plus"></i> 上传图片</button>
-	</div>
-</form>
-
-<div class="ibox-content">
-	<h2>{{ albumInfo.title }}</h2>
-	<p>{{ albumInfo.description }}</p>
-	<div class="lightBoxGallery">
-		<template v-for="imgInfo in imgList">
-			<span class="img-box">
-				<a :href="imgInfo.url" :title="imgInfo.name" data-gallery="">
-					<img :src="imgInfo.thumbUrl">
-				</a>
-				<i class="fa fa-remove delete" @click="modalSubmit.delete(imgInfo.img_id)"></i>
-			</span>
-		</template>
-		<div id="blueimp-gallery" class="blueimp-gallery">
-			<div class="slides"></div>
-			<h3 class="title"></h3>
-			<a class="prev">‹</a>
-			<a class="next">›</a>
-			<a class="close">×</a>
-			<a class="play-pause"></a>
-			<ol class="indicator"></ol>
+<article style="padding:0 15px;">
+	<div class="">
+		<h2>{{ albumInfo.title }}</h2>
+		<p>{{ albumInfo.description }}</p>
+		<hr />
+		<div class="lightBoxGallery">
+			<template v-if="imgList.length > 0">
+				<span v-for="imgInfo in imgList" class="img-box">
+					<a :href="imgInfo.url" :title="imgInfo.name" data-gallery="">
+						<img :src="imgInfo.thumbUrl">
+					</a>
+					<i class="fa fa-remove delete" @click="modalSubmit.delete(imgInfo.img_id)"></i>
+				</span>
+			</template>
+			<template v-else="">
+				<div class="text-center">(空)</div>
+			</template>
+			<div id="blueimp-gallery" class="blueimp-gallery">
+				<div class="slides"></div>
+				<h3 class="title"></h3>
+				<a class="prev">‹</a>
+				<a class="next">›</a>
+				<a class="close">×</a>
+				<a class="play-pause"></a>
+				<ol class="indicator"></ol>
+			</div>
 		</div>
 	</div>
-</div>
-<div class="text-center">
-	<button onclick="search.nextPage()" class="btn btn-default">加载更多</button>
-</div>
+	
+	<div v-if="imgList.length > 0" class="text-center" style="margin-top: 20px;">
+		<button onclick="search.nextPage()" class="btn btn-default">加载更多</button>
+	</div>
+	
+</article>
 
-<script src="js/jquery.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="plugins/layer/layer.min.js"></script>
+<script src="../js/jquery.min.js"></script>
+<script src="../js/bootstrap.min.js"></script>
+<script src="../plugins/layer/layer.min.js"></script>
 <!--右上角提示框插件-->
-<script src="js/toastr.min.js"></script>
+<script src="../js/toastr.min.js"></script>
 <!--相册插件-->
-<script src="plugins/blueimp/jquery.blueimp-gallery.min.js"></script>
-<script src="js/ImageCutter.js"></script>
-<script src="js/common.js"></script>
+<script src="../plugins/blueimp/jquery.blueimp-gallery.min.js"></script>
+<script src="../js/ImageCutter.js"></script>
+<script src="../js/common.js"></script>
 <script type="text/javascript">
 	var hash = window.location.hash.split('#');
 	var album_id = hash[1];
 	
 	var vueDom = new Vue({
-		el: '.ibox-content',
+		el: 'article',
 		data: {
 			albumInfo: {},
 			imgList: [],
@@ -138,11 +145,11 @@
 			input_upload('img', true, async function(files) {
 				var filePathList = [];
 				for(let i = 0; i < files.length; i++) {
-					let fun1,fun2;
 					let imgInfo = {}
-					let imageCutter = new ImageCutter(files[i]);
 					
-					fun1 = imageCutter.compress(1600)
+					//展示图
+					let imageCutter = new ImageCutter(files[i]);
+					let fun1 = imageCutter.compress(1600)
 						.then(function() {
 							let newFile = imageCutter.display();
 							return new Promise((resolve, reject) => {
@@ -163,11 +170,12 @@
 							alert('上传失败，原因：'+ msg);
 							throw('上传失败，原因：'+ msg);
 						});
-					let thumbCutter = new ImageCutter(files[i]);
 					
-					fun2 = thumbCutter.zoom(480)
+					//缩略图
+					let thumbCutter = new ImageCutter(files[i]);
+					let fun2 = thumbCutter.zoom(480)
 						.then(function() {
-							return thumbCutter.cut(480, 320);
+							return thumbCutter.cutMaxHeight(720);
 						})
 						.then(function() {
 							let thumbFile = thumbCutter.display();
@@ -175,7 +183,7 @@
 								ajax('file', '/upload/uploadOne?type=albumThumb', {
 									upfile: thumbFile,
 								}, function(res) {
-									imgInfo.thumbPath = res.path;
+									imgInfo.thumb_path = res.path;
 									resolve();
 								}, function falsed(res) {
 									reject(res);
@@ -216,6 +224,18 @@
 			});
 		},
 	}
+	
+	function windowClose(action) {
+		parent.iframeClose();
+	}
+	
+	//按返回键的事件
+	(function() {
+		window.addEventListener('popstate', function(e) {
+			windowClose(false);
+		}, false);
+		window.history.pushState(null, '', '');
+	})();
 </script>
 </body>
 </html>

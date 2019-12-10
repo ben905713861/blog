@@ -50,12 +50,12 @@ public class AlbumDetailController {
 			map.put("url", path);
 			map.remove("path");
 			
-			String thumbPath = (String) map.get("thumbPath");
-			if(!thumbPath.isEmpty() && thumbPath.substring(0, 1).equals("/")) {
-				thumbPath = FILE_SERVER_DOMAIN + thumbPath;
+			String thumb_path = (String) map.get("thumb_path");
+			if(!thumb_path.isEmpty() && thumb_path.substring(0, 1).equals("/")) {
+				thumb_path = FILE_SERVER_DOMAIN + thumb_path;
 			}
-			map.put("thumbUrl", thumbPath);
-			map.remove("thumbPath");
+			map.put("thumbUrl", thumb_path);
+			map.remove("thumb_path");
 		}
 		res.put("rows", rows);
 		
@@ -84,7 +84,7 @@ public class AlbumDetailController {
 			data.put("album_id", postMap.get("album_id"));
 			data.put("name", map.get("name"));
 			data.put("path", map.get("path"));
-			data.put("thumbPath", map.get("thumbPath"));
+			data.put("thumb_path", map.get("thumb_path"));
 			dataList.add(data);
 		}
 		
@@ -97,7 +97,7 @@ public class AlbumDetailController {
 	@RequestMapping(value="/delete", method=RequestMethod.POST)
 	public Map<String, Object> delete(@PostParam Map<String, Object> postMap) throws SQLException {
 		 Map<String, Object> imgInfo = Db.table("album_img")
-			.field("album_id,thumbPath,path")	
+			.field("album_id,thumb_path,path")	
 			.where("img_id", postMap.get("img_id"))
 			.find();
 		
@@ -106,7 +106,7 @@ public class AlbumDetailController {
 			.limit(1)
 			.delete();
 		
-		UploadFile.delete((String) imgInfo.get("thumbPath"));
+		UploadFile.delete((String) imgInfo.get("thumb_path"));
 		UploadFile.delete((String) imgInfo.get("path"));
 		
 		if(imgInfo.get("album_id") != null) {

@@ -18,20 +18,10 @@
 <body>
 
 <form onsubmit="update(this);return false;">
-	<div class="row" style="padding: 10px 0;background-color: #eee;">
-		<div class="col-xs-4">
-			<div style="padding-left: 10px;">
-				<button type="button" class="btn btn-sm btn-default" onclick="windowClose(false)"><i class="fa fa-reply"></i></button>
-			</div>
-		</div>
-		<div class="col-xs-4">
-			<h3 class="text-center">修改文章</h3>
-		</div>
-		<div class="col-xs-4">
-			<div style="padding-right: 10px;text-align: right;">
-				<button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></button>
-			</div>
-		</div>
+	<div class="modal-header gray-bg">
+		<button type="button" class="close" onclick="windowClose(false)" style="position: absolute;left: 20px;top: 16px;"><i class=" fa fa-reply"></i></button>
+		<h4 class="modal-title text-center">修改文章</h4>
+		<button type="submit" class="close" style="position: absolute;right: 20px;top: 16px;"><i class=" fa fa-save"></i></button>
 	</div>
 	
 	<div class="row">

@@ -90,9 +90,24 @@ function ImageCutter(file, quality) {
 	this.cut = function(width, height) {
 		return new Promise(function(resolve, reject) {
 			loadImg(function(originWidth, originHeight, rate) {
-				var x = - (originWidth - width) / 2;
-				var y = - (originHeight - height) / 2;
+				let x = - (originWidth - width) / 2;
+				let y = - (originHeight - height) / 2;
 				
+				imgDraw(function() {
+					resolve();
+				}, x, y, originWidth, originHeight, width, height);
+			});
+		});
+	}
+	
+	//根据输入的最大高度裁剪，保留裁剪后区域
+	this.cutMaxHeight = function(max_height) {
+		return new Promise(function(resolve, reject) {
+			loadImg(function(originWidth, originHeight, rate) {
+				let width = originWidth;
+				let height = originHeight > max_height ? max_height : originHeight;
+				let x = 0;
+				let y = - (originHeight - height) / 2;
 				imgDraw(function() {
 					resolve();
 				}, x, y, originWidth, originHeight, width, height);
@@ -132,16 +147,16 @@ function ImageCutter(file, quality) {
 	
 	//将canvas的透明背景设置成白色   
 	function writeBackground(context, canvas) {
-		var imageData = context.getImageData(0, 0, canvas.width, canvas.height);   
-		for(var i = 0; i < imageData.data.length; i += 4) {   
-		    // 当该像素是透明的，则设置成白色   
-		    if(imageData.data[i + 3] == 0) {   
-		        imageData.data[i] = 255;   
-		        imageData.data[i + 1] = 255;   
-		        imageData.data[i + 2] = 255;   
-		        imageData.data[i + 3] = 255;    
-		    }   
-		}   
+		var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+		for(var i = 0; i < imageData.data.length; i += 4) {
+		    // 当该像素是透明的，则设置成白色
+		    if(imageData.data[i + 3] == 0) {
+		        imageData.data[i] = 255;
+		        imageData.data[i + 1] = 255;
+		        imageData.data[i + 2] = 255;
+		        imageData.data[i + 3] = 255;
+		    }
+		}
 		context.putImageData(imageData, 0, 0);
 	}
 	

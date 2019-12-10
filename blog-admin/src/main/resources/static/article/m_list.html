@@ -17,54 +17,57 @@
 </head>
 <body>
 
-<div id="list-box" style="padding: 5px;">
-	<form id="searchForm" class="form-inline" onsubmit="search.query();return false;" style="padding-top: 20px;">
-		<div class="form-group">
-			<div class="input-group">
-				<span class="input-group-btn">
-					<button type="button" class="btn btn-sm btn-primary" onclick="add()"><i class="fa fa-plus"></i> 新增</button>
-				</span>
-				<span class="input-group-btn">
-					<select name="type_id" class="form-control input-sm" style="padding: 3px 5px;width: auto;">
-						<option value="">文章分类</option>
-						<option v-for="typeInfo in typeList" :value="typeInfo.type_id">{{ typeInfo.type }}</option>
-					</select>
-				</span>
-				<input type="text" name="title" class="form-control input-sm" placeholder="输入关键字搜索" />
-				<span class="input-group-btn">
-					<button type="submit" class="btn btn-sm btn-info" ><i class="fa fa-search"></i> 搜索</button>
-				</span>
-			</div>
-		</div>
-	</form>
-	
-	<table id="search-result" class="table table-hover table-condensed table-striped">
-		<thead>
-			<tr>
-				<th style="width: 50px;">#</th>
-				<th>标题</th>
-			</tr>
-		</thead>
-		<tbody>
-			<template v-if="articleList.length > 0">
-				<tr v-for="articleInfo in articleList" >
-					<td><input type="checkbox" name="article_id" :value="articleInfo.article_id"></td>
-					<td v-on:click="update(articleInfo.article_id)">{{ articleInfo.title }}</td>
-				</tr>
-			</template>
-			<template v-else="">
-				<tr>
-					<td colspan="2">空</td>
-				</tr>
-			</template>
-		</tbody>
-	</table>
-	
-	<div class="form-group">
-		<button class="btn btn-sm btn-danger" onclick="remove()"><i class="fa fa-remove"></i> 删除</button>
+<div id="list-box">
+	<div class="modal-header gray-bg">
+		<h4 class="modal-title text-center">文章列表</h4>
+		<button type="button" class="close" onclick="modalOpen.add()" style="position: absolute;right: 20px;top: 16px;"><i class=" fa fa-plus"></i></button>
 	</div>
-	<div class="form-group">
-		<button class="btn btn-default btn-block" onclick="search.nextPage()">加载更多</button>
+	<div style="padding: 10px;">
+		<form id="searchForm" class="form-inline" onsubmit="search.query();return false;">
+			<div class="form-group">
+				<div class="input-group">
+					<span class="input-group-btn">
+						<select name="type_id" class="form-control input-sm" style="padding: 3px 5px;width: auto;">
+							<option value="">文章分类</option>
+							<option v-for="typeInfo in typeList" :value="typeInfo.type_id">{{ typeInfo.type }}</option>
+						</select>
+					</span>
+					<input type="text" name="title" class="form-control input-sm" placeholder="输入关键字搜索" />
+					<span class="input-group-btn">
+						<button type="submit" class="btn btn-sm btn-info"><i class="fa fa-search"></i> 搜索</button>
+					</span>
+				</div>
+			</div>
+		</form>
+		
+		<table id="search-result" class="table table-hover table-condensed table-striped">
+			<thead>
+				<tr>
+					<th style="width: 50px;">#</th>
+					<th>标题</th>
+				</tr>
+			</thead>
+			<tbody>
+				<template v-if="articleList.length > 0">
+					<tr v-for="articleInfo in articleList" >
+						<td><input type="checkbox" name="article_id" :value="articleInfo.article_id"></td>
+						<td v-on:click="modalOpen.update(articleInfo.article_id)">{{ articleInfo.title }}</td>
+					</tr>
+				</template>
+				<template v-else="">
+					<tr>
+						<td colspan="2">空</td>
+					</tr>
+				</template>
+			</tbody>
+		</table>
+		
+		<div class="form-group">
+			<button class="btn btn-sm btn-danger" onclick="remove()"><i class="fa fa-remove"></i> 删除</button>
+		</div>
+		<div class="form-group">
+			<button class="btn btn-default btn-block" onclick="search.nextPage()">加载更多</button>
+		</div>
 	</div>
 </div>
 
@@ -156,18 +159,19 @@
 		});
 	}
 	
-	function add() {
-		document.getElementById('list-box').style.display = 'none';
-		var box = document.getElementById('add-box');
-		box.style.display = 'block';
-		box.src = 'add.html';
-	}
-	
-	function update(article_id) {
-		document.getElementById('list-box').style.display = 'none';
-		var box = document.getElementById('update-box');
-		box.style.display = 'block';
-		box.src = 'update.html#'+ article_id;
+	var modalOpen = {
+		add: function() {
+			document.getElementById('list-box').style.display = 'none';
+			var box = document.getElementById('add-box');
+			box.style.display = 'block';
+			box.src = 'add.html';
+		},
+		update: function(article_id) {
+			document.getElementById('list-box').style.display = 'none';
+			var box = document.getElementById('update-box');
+			box.style.display = 'block';
+			box.src = 'update.html#'+ article_id;
+		},
 	}
 	
 	function iframeClose() {

@@ -58,7 +58,11 @@ public class AlbumController {
 			.select();
 		for(Map<String, Object> row : rows) {
 			String thumb_path = (String) row.get("thumb_path");
-			row.put("thumb_url", FILE_SERVER_DOMAIN + thumb_path);
+			String thumb_url = "";
+			if(!thumb_path.isEmpty()) {
+				thumb_url = FILE_SERVER_DOMAIN + thumb_path;
+			}
+			row.put("thumb_url", thumb_url);
 		}
 		res.put("rows", rows);
 		

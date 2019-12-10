@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>相册列表</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link href="../css/bootstrap.min.css" rel="stylesheet">
+<link href="../css/toastr.min.css" rel="stylesheet">
+<link href="../css/font-awesome.min.css" rel="stylesheet">
+<link href="../css/animate.css" rel="stylesheet">
+<link href="../css/style.css" rel="stylesheet">
+<style>
+	iframe{ width: 100%;height: 100%; border: 0; display: none; }
+	input[type="checkbox"]{ display: inline-block; width: 20px; height: 20px; margin: 0; vertical-align: middle;}
+	#img-list{ overflow: hidden; margin: 5px -7px 10px; }
+	#img-list .img-box{ float: left; width: 50%; padding: 10px; margin-bottom: 7px; }
+	@media (min-width: 500px) {
+		#img-list .img-box{ width: 33.3333%; }
+	}
+	@media (min-width: 768px) {
+		#img-list .img-box{ width: 25%; }
+	}
+	@media (min-width: 992px) {
+		#img-list .img-box{ width: 16.6666%; }
+	}
+	@media (min-width: 1200px) {
+		#img-list .img-box{ width: 12.5%;}
+	}
+	#img-list .img-box .thumb{ display: block; margin-bottom: 4px; }
+	#img-list .img-box .thumb>img{ width: 100%; border-radius: 5px; }
+</style>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>
+</head>
+<body>
+
+<div id="list-box">
+	<div class="modal-header gray-bg">
+		<h4 class="modal-title text-center">相册列表</h4>
+		<button type="button" class="close" onclick="modalOpen.add()" style="position: absolute;right: 20px;top: 16px;"><i class=" fa fa-plus"></i></button>
+	</div>
+	
+	<div style="padding: 10px;">
+		<form id="searchForm" class="form-inline" onsubmit="search.query();return false;">
+			<div class="form-group">
+				<div class="input-group">
+					<input type="text" name="title" class="form-control input-sm" placeholder="输入相册名搜索" />
+					<span class="input-group-btn">
+						<button type="submit" class="btn btn-sm btn-info"><i class="fa fa-search"></i> 搜索</button>
+					</span>
+				</div>
+			</div>
+		</form>
+		
+		<div id="img-list">
+			<template v-if="albumList.length > 0">
+				<div v-for="albumInfo in albumList" class="img-box">
+					<a class="thumb" :href="'javascript:modalOpen.detail('+ albumInfo.album_id +')'">
+						<img :src="albumInfo.thumb_url ? albumInfo.thumb_url : '../img/default_thumb_264x176.jpg'">
+					</a>
+					<div><b>{{ albumInfo.title }}</b></div>
+					<div>
+						<a :href="'javascript:modalOpen.update('+ albumInfo.album_id +')'">修改</a>
+						<a :href="'javascript:modalSubmit.delete('+ albumInfo.album_id +')'">删除</a>
+					</div>
+				</div>
+			</template>
+			<template v-else="">
+				<div class="text-center">(空)</div>
+			</template>
+		</div>
+		
+		<div v-if="albumList.length > 0" class="form-group">
+			<button class="btn btn-default btn-block" onclick="search.nextPage()">加载更多</button>
+		</div>
+	</div>
+</div>
+
+<iframe id="detail-box"></iframe>
+
+<div id="add-box" style="display: none;">
+	<form onsubmit="return modalSubmit.add(this)">
+		<div class="modal-header gray-bg">
+			<button type="button" class="close" onclick="iframeClose()" style="position: absolute;"><i class="fa fa-reply"></i></button>
+			<h4 class="modal-title text-center">相册新增</h4>
+		</div>
+		<div >
+			<table class="table">
+				<tr>
+					<td>*相册名：</td>
+					<td><input type="text" pattern=".{1,50}" title="50字符以内" required="" class="form-control" name="title" /></td>
+				</tr>
+				<tr>
+					<td>描述：</td>
+					<td>
+						<textarea name="description" class="form-control" maxlength="255" placeholder="可输入255个字符来描述"></textarea>
+					</td>
+				</tr>
+				<tr>
+					<td>缩略图：</td>
+					<td>
+						<a onclick="modalSubmit.uploadThumb(this)">
+							<img name="thumb_url" style="max-height: 100px;" src="../img/upload-thumb.png" title="点我上传" />
+							<input type="text" class="hidden" name="thumb_path" />
+						</a>
+					</td>
+				</tr>
+				<tr>
+					<td>*是否推荐：</td>
+					<td>
+						<label><input type="radio" name="is_recommend" value="1" />是 </label>
+						<label><input type="radio" name="is_recommend" value="0" checked="" />否 </label>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div style="padding: 0 10px;">
+			<button type="submit" class="btn btn-primary btn-block">新增</button>
+		</div>
+	</form>
+</div>
+
+<div id="update-box" style="display: none;">
+	<form onsubmit="return modalSubmit.update(this)">
+		<div class="modal-header gray-bg">
+			<button type="button" class="close" onclick="iframeClose()" style="position: absolute;"><i class="fa fa-reply"></i></button>
+			<h4 class="modal-title text-center">相册修改</h4>
+		</div>
+		<div>
+			<input type="hidden" name="album_id" />
+			<table class="table">
+				<tr>
+					<td>*相册名：</td>
+					<td><input type="text" pattern=".{1,50}" title="50字符以内" required="" class="form-control" name="title" /></td>
+				</tr>
+				<tr>
+					<td>描述：</td>
+					<td>
+						<textarea name="description" class="form-control" maxlength="255" placeholder="可输入255个字符来描述"></textarea>
+					</td>
+				</tr>
+				<tr>
+					<td>缩略图：</td>
+					<td>
+						<a onclick="modalSubmit.uploadThumb(this)">
+							<img name="thumb_url" style="max-height: 100px;" src="../img/upload-thumb.png" title="点我上传" />
+							<input type="text" class="hidden" name="thumb_path" />
+						</a>
+					</td>
+				</tr>
+				<tr>
+					<td>*是否推荐：</td>
+					<td>
+						<label><input type="radio" name="is_recommend" value="1" />是 </label>
+						<label><input type="radio" name="is_recommend" value="0" checked="" />否 </label>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div style="padding: 0 10px;">
+			<button type="submit" class="btn btn-primary btn-block">修改</button>
+		</div>
+	</form>
+</div>
+
+
+<script src="../js/jquery.min.js"></script>
+<script src="../js/bootstrap.min.js"></script>
+<script src="../plugins/layer/layer.min.js"></script>
+<!--右上角提示框插件-->
+<script src="../js/toastr.min.js"></script>
+<script src="../js/ImageCutter.js"></script>
+<script src="../js/common.js"></script>
+<script type="text/javascript">
+	var vueDom = new Vue({
+		el: '#list-box',
+		data: {
+			albumList: [],
+		},
+	});
+	
+	(function() {
+		window.search = new Search();
+		search.query();
+	})();
+	
+	function Search() {
+		var offset = 0;
+		var limit = 4;
+		var total = 0;
+		
+		this.query = function() {
+			offset = 0;
+			total = 0;
+			vueDom.albumList = [];
+			getData();
+		}
+		
+		this.nextPage = function() {
+			if((offset+limit) >= total) {
+				(typeof toastr == 'undefined') ? alert('已到达最后一页') : toastr['warning']('已到达最后一页');
+				return;
+			}
+			offset += limit;
+			getData();
+		}
+		
+		function getData() {
+			var data = {
+				search: getFormObj(document.getElementById('searchForm')),
+				offset: offset,
+				limit: limit,
+			}
+			ajax('get', '/album/getList', data, function(res) {
+				total = res.total;
+				res.rows.forEach(function(row) {
+					vueDom.albumList.push(row);
+				});
+			});
+		}
+	}
+	
+	function refresh() {
+		search.query();
+	}
+	
+	//模态框打开事件
+	var modalOpen = {
+		detail: function(album_id) {
+			document.getElementById('list-box').style.display = 'none';
+			var box = document.getElementById('detail-box');
+			box.style.display = 'block';
+			box.src = 'detail.html#'+ album_id;
+		},
+		add: function() {
+			document.querySelector('#add-box form').reset();
+			document.getElementById('list-box').style.display = 'none';
+			document.getElementById('add-box').style.display = 'block';
+		},
+		update: function(album_id) {
+			document.querySelector('#update-box form').reset();
+			ajax('get', '/album/getOne', {
+				album_id: album_id
+			}, function(res) {
+				if(!res.thumb_path) {
+					res.thumb_url = '../img/upload-thumb.png';
+				}
+				formload(document.querySelector('#update-box form'), res);
+			});
+			document.getElementById('list-box').style.display = 'none';
+			document.getElementById('update-box').style.display = 'block';
+		},
+	}
+	
+	var modalSubmit = {
+		uploadThumb: function(btn) {
+			input_upload('img', false, function(files) {
+				let imageCutter = new ImageCutter(files[0]);
+				imageCutter.zoom(450)
+					.then(function() {
+						return imageCutter.cut(450, 300);
+					})
+					.then(function() {
+						let newFile = imageCutter.display();
+						ajax('file', '/album/uploadThumb', {
+							albumThumb: newFile,
+						}, function(res) {
+							formload(btn, res);
+						});
+					});
+			});
+		},
+		add: function(form) {
+			var submitBtn = form.querySelector('[type="submit"]');
+			submitBtn.disabled = true;
+			ajax('post', '/album/add', getFormObj(form), function(res) {
+				iframeClose();
+				refresh();
+			}, null, function end() {
+				submitBtn.disabled = false;
+			});
+			return false;
+		},
+		update: function(form) {
+			var submitBtn = form.querySelector('[type="submit"]');
+			submitBtn.disabled = true;
+			ajax('post', '/album/update', getFormObj(form), function(res) {
+				iframeClose();
+				refresh();
+			}, null, function end() {
+				submitBtn.disabled = false;
+			});
+			return false;
+		},
+		delete: function(album_id) {
+			layer.confirm('确定要删除吗？', function(index) {
+				layer.close(index);
+				ajax('post', '/album/delete', {
+					album_id: album_id,
+				}, function(res) {
+					refresh();
+				});
+			});
+		},
+	}
+
+	function iframeClose() {
+		document.getElementById('list-box').style.display = 'block';
+		var detailBox = document.getElementById('detail-box');
+		detailBox.style.display = 'none';
+		detailBox.src = '';
+		document.getElementById('add-box').style.display = 'none';
+		document.getElementById('update-box').style.display = 'none';
+	}
+</script>
+</body>
+</html>
