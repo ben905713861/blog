@@ -2,6 +2,8 @@
 
 <#macro head>
 <link href="${ STATIC_DOMAIN }/css/article.css" rel="stylesheet">
+<!--代码上色-->
+<link href="${ STATIC_DOMAIN }/plugins/highlight/styles/monokai-sublime.css" rel="stylesheet" />
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>
 </#macro>
 
@@ -130,6 +132,8 @@
 
 <#macro js>
 <script src="${ STATIC_DOMAIN }/js/Page.js"></script>
+<!--代码上色-->
+<script src="http://cdn.bootcss.com/highlight.js/8.0/highlight.min.js"></script>
 <!--ueditor编辑器-->
 <script src="${ STATIC_DOMAIN }/plugins/ueditor/ueditor.config.js"></script>
 <script src="http://www.gd-filmfund.cn/static/js/plugins/ueditor/ueditor.all.min.js"></script>
@@ -148,6 +152,11 @@
 				return timestampToStr(value);
 			},
 		},
+	});
+	
+	//代码上色
+	document.querySelectorAll('pre code').forEach(function(code) {
+		hljs.highlightBlock(code);
 	});
 	
 	//点赞数
