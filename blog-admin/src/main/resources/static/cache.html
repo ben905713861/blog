@@ -12,6 +12,10 @@
 </head>
 <body>
 
+<div class="modal-header gray-bg">
+	<h4 class="modal-title text-center">缓存</h4>
+</div>
+
 <div style="padding: 20px;">
 	<form id="searchForm" class="pull-left form-inline" onsubmit="return cache(this)">
 		<div class="form-group">
@@ -40,6 +44,7 @@
 <!--右上角提示框插件-->
 <script src="js/toastr.min.js"></script>
 <script src="js/common.js"></script>
+<script src="js/action.js"></script>
 <script type="text/javascript">
 	function cache(form) {
 		ajax('post', '/cache/rebuild', getFormObj(form));

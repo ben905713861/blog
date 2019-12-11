@@ -140,7 +140,7 @@
 		//类型
 		var hash = window.location.hash.split('#');
 		var type_id = hash[1] ? hash[1] : '';
-		var title = hash[2] ? hash[2] : '';
+		var title = hash[2] ? decodeURIComponent(hash[2]) : '';
 		document.querySelector('#search-form select[name="type_id"]').value = type_id;
 		document.querySelector('#search-form input[name="title"]').value = title;
 		search();

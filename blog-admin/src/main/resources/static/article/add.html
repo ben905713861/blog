@@ -11,13 +11,11 @@
 <link href="../css/style.css" rel="stylesheet">
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>
 <style type="text/css">
-.ck-toolbar{ border: none!important; }
-.ck-content{ min-height: 200px; border: none!important;}
+	.ck-toolbar{ border: none!important; }
+	.ck-content{ min-height: 200px; border: none!important;}
 </style>
 </head>
 <body>
-
-
 
 <form onsubmit="add(this);return false;">
 	<div class="modal-header gray-bg">
@@ -80,6 +78,7 @@
 <script src="../js/toastr.min.js"></script>
 <!--ckeditor5编辑器-->
 <script src="../plugins/ckeditor5/ckeditor.js"></script>
+<script src="../plugins/ckeditor5/UploadAdapter.js"></script>
 <script src="../js/ImageCutter.js"></script>
 <script src="../js/common.js"></script>
 <script type="text/javascript">
@@ -101,37 +100,7 @@
 			window.editor = editor;
 			//重写上传文件的方法
 			editor.plugins.get('FileRepository').createUploadAdapter = function(loader) {
-		        return new class UploadAdapter {
-		        	constructor() {
-		        		
-		        	}
-		        	upload() {
-		        		let imageCutter;
-		        		return loader.file
-			        		.then(function(file) {
-			        			imageCutter = new ImageCutter(file);
-			        			return imageCutter.compress(1200);
-							}).then(function() {
-								let newFile = imageCutter.display();
-								return new Promise(function(resolve, reject) {
-						            ajax('file', '/upload/uploadOne?type=article', {
-						            	upfile: newFile,
-						            }, function success(res) {
-						            	resolve({
-				                            default: res.url,
-				                        });
-						            }, function fail(res) {
-						            	reject('上传失败，'+ res.msg);
-						            }, null, function error() {
-						            	reject('上传失败，服务器响应错误');
-						            });
-								});
-							});
-		        	}
-		        	abort() {
-						
-					}
-		        }
+				return new UploadAdapter(loader, 'article');
 		    }
 		})
 		.catch(function(error) {

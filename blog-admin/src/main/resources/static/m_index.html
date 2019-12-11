@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>博客管理后台-手机版</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/toastr.min.css" rel="stylesheet">
+<link href="css/font-awesome.min.css" rel="stylesheet">
+<link href="css/animate.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<style type="text/css">
+	#nav{ padding: 10px 0; }
+	#nav dd{ background: #f8f8f8; padding: 0 10px; }
+	#nav dd:hover{ background: #eee; }
+	#nav dd a{ display: block; padding: 10px 15px; border-bottom: 1px solid #eaeaea; color: #999; position: relative; }
+	#nav dd:last-child a{ border-bottom: none; }
+	#nav dd a>i.fa{ font-size: 1.8em; display: inline-block; width: 30px; text-align: center; }
+	#nav dd a>span{ display: inline-block; padding-left: 10px; }
+	#nav dd a>.right-arrow{ position: absolute; top: 10px; right: 10px; font-size: 1.5em; }
+</style>
+</head>
+<body>
+
+<div class="modal-header" style="background-color: lightblue;color: #fff;">
+	<h4 class="modal-title text-center"><i class="fa fa-home"></i> 管理后台</h4>
+</div>
+
+<div id="nav">
+	<dl>
+		<dd>
+			<a href="articleType.html">
+				<i class="fa fa-edit"></i>
+				<span>文章类别管理</span>
+				<div class="right-arrow">
+					<i class="fa fa-arrow-circle-right"></i>
+				</div>
+			</a>
+		</dd>
+		<dd>
+			<a href="article/m_list.html">
+				<i class="fa fa fa-pencil"></i>
+				<span>文章管理</span>
+				<div class="right-arrow">
+					<i class="fa fa-arrow-circle-right"></i>
+				</div>
+			</a>
+		</dd>
+		<dd>
+			<a href="album/m_list.html">
+				<i class="fa fa fa-photo"></i>
+				<span>相册管理</span>
+				<div class="right-arrow">
+					<i class="fa fa-arrow-circle-right"></i>
+				</div>
+			</a>
+		</dd>
+		<dd>
+			<a href="website.html">
+				<i class="fa fa fa-info"></i>
+				<span>网站信息</span>
+				<div class="right-arrow">
+					<i class="fa fa-arrow-circle-right"></i>
+				</div>
+			</a>
+		</dd>
+		<dd>
+			<a href="cache.html">
+				<i class="fa fa fa-flash"></i>
+				<span>缓存</span>
+				<div class="right-arrow">
+					<i class="fa fa-arrow-circle-right"></i>
+				</div>
+			</a>
+		</dd>
+	</dl>
+</div>
+
+
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="plugins/layer/layer.min.js"></script>
+<!--右上角提示框插件-->
+<script src="js/toastr.min.js"></script>
+<script src="js/common.js"></script>
+<script type="text/javascript">
+	//下方快捷导航
+	loadHtml('/static/tpl/nav.html', function(html) {
+		document.body.innerHTML += html;
+	});
+</script>
+</body>
+</html>
