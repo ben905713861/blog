@@ -35,7 +35,7 @@
 
 <div id="list-box">
 	<div class="modal-header gray-bg">
-		<!--<a href="../m_index.html" class="close" style="position: absolute;left: 20px;top: 16px;"><i class=" fa fa-reply"></i></a>-->
+		<a href="/static/m_index.html" class="close" style="position: absolute;left: 20px;top: 16px;"><i class=" fa fa-reply"></i></a>
 		<h4 class="modal-title text-center">相册列表</h4>
 		<button type="button" class="close" onclick="modalOpen.add()" style="position: absolute;right: 20px;top: 16px;"><i class=" fa fa-plus"></i></button>
 	</div>
@@ -305,14 +305,35 @@
 		},
 	}
 
-	function iframeClose() {
+	async function iframeClose() {
 		document.getElementById('list-box').style.display = 'block';
 		var detailBox = document.getElementById('detail-box');
 		detailBox.style.display = 'none';
 		detailBox.src = '';
 		document.getElementById('add-box').style.display = 'none';
 		document.getElementById('update-box').style.display = 'none';
+		
+		await new Promise((resolve, reject) => {
+			detailBox.onload = function() {
+				resolve();
+			}
+		});
+		//重写按返回键的事件
+		back();
 	}
+	
+	//按返回键的事件
+	function back() {
+		window.onpopstate = function() {
+			if(document.getElementById('list-box').style.display == 'none') {
+				iframeClose();
+			} else {
+				window.location.href = '/static/m_index.html';
+			}
+		}
+		window.history.pushState(null, '', '');
+	}
+	back();
 </script>
 </body>
 </html>

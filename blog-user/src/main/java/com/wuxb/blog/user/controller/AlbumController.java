@@ -83,12 +83,12 @@ public class AlbumController {
 			map.put("url", FILE_SERVER_DOMAIN + path);
 			map.remove("path");
 			
-			String thumbPath = (String) map.get("thumbPath");
-			if(!thumbPath.isEmpty() && thumbPath.substring(0, 1).equals("/")) {
-				thumbPath = FILE_SERVER_DOMAIN + thumbPath;
+			String thumb_path = (String) map.get("thumb_path");
+			if(!thumb_path.isEmpty() && thumb_path.substring(0, 1).equals("/")) {
+				thumb_path = FILE_SERVER_DOMAIN + thumb_path;
 			}
-			map.put("thumbUrl", thumbPath);
-			map.remove("thumbPath");
+			map.put("thumbUrl", thumb_path);
+			map.remove("thumb_path");
 		}
 		res.put("imgList", list);
 		

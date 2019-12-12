@@ -231,9 +231,9 @@
 	
 	//按返回键的事件
 	(function() {
-		window.addEventListener('popstate', function(e) {
-			windowClose(false);
-		}, false);
+		window.onpopstate = function() {
+			windowClose();
+		}
 		window.history.pushState(null, '', '');
 	})();
 </script>

@@ -9,6 +9,11 @@
 <link href="css/font-awesome.min.css" rel="stylesheet">
 <link href="css/style.css" rel="stylesheet">
 <style type="text/css">
+	#info-box{ padding: 20px 5px; }
+	@media (min-width: 500px) {
+		#info-box{ padding: 20px; }
+	}
+	
 	.ck-toolbar{ border: none!important; }
 	.ck-content{ min-height: 200px; border: none!important;}
 </style>
@@ -22,45 +27,41 @@
 		<button type="submit" class="close" style="position: absolute;right: 20px;top: 16px;"><i class=" fa fa-save"></i></button>
 	</div>
 	
-	<div style="padding: 5px;">
-		<table class="table">
-			<tr>
-				<th>网站名称：</th>
-				<td>
-					<input type="text" name="website_name" class="form-control" required="" pattern=".{1,20}" title="20个字符以内" />
-				</td>
-			</tr>
-			<tr>
-				<th>个人描述：</th>
-				<td>
-					<textarea name="description" class="form-control" required="" pattern=".{1,255}" title="255个字符以内"></textarea>
-				</td>
-			</tr>
-			<tr>
-				<th>个人头像：</th>
-				<td>
-					<a onclick="modalSubmit.upload_headImg(this)">
-						<img name="head_img_url" src="img/upload-thumb.png" title="点我上传" />
-						<input type="text" class="hidden" name="head_img_path" />
-					</a>
-				</td>
-			</tr>
-			<tr>
-				<th>分享二维码：</th>
-				<td>
-					<a onclick="modalSubmit.upload_shareCodeImg(this)">
-						<img name="share_code_img_url" src="img/upload-thumb.png" title="点我上传" />
-						<input type="text" class="hidden" name="share_code_img_path" />
-					</a>
-				</td>
-			</tr>
-		</table>
+	<div id="info-box">
+		<h4>网站名称：</h4>
+		<div>
+			<input type="text" name="website_name" class="form-control" required="" pattern=".{1,20}" title="20个字符以内" />
+		</div>
+		<hr>
+		
+		<h4>个人描述：</h4>
+		<div>
+			<textarea name="description" class="form-control" required="" pattern=".{1,255}" title="255个字符以内"></textarea>
+		</div>
+		<hr>
+		
+		<h4>个人头像：</h4>
+		<div>
+			<a onclick="modalSubmit.upload_headImg(this)">
+				<img name="head_img_url" src="img/upload-thumb.png" title="点我上传" style="max-width: 100%;" />
+				<input type="text" class="hidden" name="head_img_path" />
+			</a>
+		</div>
+		<hr>
+		
+		<h4>分享二维码：</h4>
+		<div>
+			<a onclick="modalSubmit.upload_shareCodeImg(this)">
+				<img name="share_code_img_url" src="img/upload-thumb.png" title="点我上传" style="max-width: 100%;" />
+				<input type="text" class="hidden" name="share_code_img_path" />
+			</a>
+		</div>
+		<hr>
+		
+		<!--富文本编辑器-->
+		<h4 style="padding: 0 10px;">关于我：</h4>
+		<div id="editor"></div>
 	</div>
-	
-	<hr>
-	<!--富文本编辑器-->
-	<h4 style="padding: 0 10px;">关于我：</h4>
-	<div id="editor"></div>
 </form>
 
 

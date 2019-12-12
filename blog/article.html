@@ -1,18 +1,23 @@
 ﻿<!doctype html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<title>文章页_小彬个人博客 - 后端技术员个人博客网站</title>
-	<meta name="keywords" content="个人博客,小彬个人博客，程序员" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<link href="http://www.gd-filmfund.cn/static/css/toastr.min.css" rel="stylesheet">
-	<!--代码上色-->
-	<link href="plugins/highlight/styles/monokai-sublime.css" rel="stylesheet" />
-	<link href="css/base.css" rel="stylesheet">
-	<link href="css/index.css" rel="stylesheet">
-	<link href="css/article.css" rel="stylesheet">
-	<link href="css/m.css" rel="stylesheet">
-	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>
+<meta charset="utf-8">
+<title>文章页_小彬个人博客 - 后端技术员个人博客网站</title>
+<meta name="keywords" content="个人博客,小彬个人博客，程序员" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<link href="http://www.gd-filmfund.cn/static/css/toastr.min.css" rel="stylesheet">
+<!--代码上色-->
+<link href="plugins/highlight/styles/monokai-sublime.css" rel="stylesheet" />
+<!--表情转图片-->
+<link href="http://cdn.staticfile.org/emoji/0.2.2/emoji.css" rel="stylesheet" type="text/css" />
+<link href="css/base.css" rel="stylesheet">
+<link href="css/index.css" rel="stylesheet">
+<link href="css/article.css" rel="stylesheet">
+<link href="css/m.css" rel="stylesheet">
+<style type="text/css">
+	.ck-content{ min-height: 150px; }
+</style>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>
 </head>
 <body>
 	
@@ -79,7 +84,7 @@
 				{{ articleInfo.description }}
 			</div>
 			<div class="news_con">
-				<div  v-highlight v-html="articleInfo.content"></div>
+				<div v-highlight="" v-html="articleInfo.content"></div>
 			</div>
 		</div>
 		<div class="share">
@@ -112,7 +117,7 @@
 					<label>您的名称：<input type="text" name="name" pattern=".{0,20}" title="20字以内" placeholder="选填" class="input" /></label> &nbsp;&nbsp;&nbsp;
 					<label>联系方式：<input type="text" name="connection" max=".{0,50}" title="50字以内" placeholder="选填" class="input" /></label>
 				</div>
-				<script id="editor_add" name="content" type="text/plain" style="width:100%;height: 135px;"></script>
+				<div id="editor"></div>
 				<div class="btn-box">
 					<input type="submit" class="submit" value="评论" />
 				</div>
@@ -123,7 +128,7 @@
 						<img class="head" src="images/comment_user.png">
 						<div class="comment-box">
 							<div class="content">
-								<span v-html="comment.content"></span>
+								<div v-emoji2img="" v-highlight="" v-html="comment.content"></div>
 							</div>
 							<div class="info">
 								<span>{{ comment.name=='' ? '匿名' : comment.name }}[{{ comment.connection=='' ? '无' : comment.connection }}]</span>&nbsp;
@@ -151,13 +156,12 @@
 <script type="text/javascript" src="http://www.gd-filmfund.cn/static/js/toastr.min.js"></script>
 <!--代码上色-->
 <script src="http://cdn.bootcss.com/highlight.js/8.0/highlight.min.js"></script>
+<!--表情转图片-->
+<script src="http://cdn.staticfile.org/emoji/0.2.2/emoji.js"></script>
 <script type="text/javascript" src="js/commAction.js"></script>
 <script type="text/javascript" src="js/config.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
 <script type="text/javascript" src="js/Page.js"></script>
-<!--ueditor编辑器-->
-<script src="plugins/ueditor/ueditor.config.js"></script>
-<script src="http://www.gd-filmfund.cn/static/js/plugins/ueditor/ueditor.all.min.js"></script>
 <script type="text/javascript">
 	loadHtml('tpl/header.tpl', document.querySelector('header'));
 	loadHtml('tpl/footer.tpl', document.querySelector('footer'));
@@ -187,11 +191,13 @@
 			hljs.highlightBlock(block);
 		});
 	});
+	Vue.directive('emoji2img', function(el) {
+		el.innerHTML = jEmoji.unifiedToHTML(el.innerHTML);
+	});
 	
-	var article_id;
 	function init() {
 		var hash = window.location.hash.split('#');
-		article_id = hash[1] ? hash[1] : '';
+		window.article_id = hash[1] ? hash[1] : '';
 		//文章内容
 		ajax('get', '/article/getOne', {
 			article_id: article_id,
@@ -200,12 +206,32 @@
 			vueDom.lastArticleInfo = res.lastArticleInfo;
 			vueDom.nextArticleInfo = res.nextArticleInfo;
 		});
-		//评论
-		vueDom.commentList = [];
-		page.page = 1;
-		getComment();
 	}
 	
+	(function() {
+		//加载侧边栏
+		ajax('get', '/article/getTypes', null, function(res) {
+			vueDom.articleTypeList = res;
+			var articleCount = 0;
+			res.forEach(function(info) {
+				articleCount += info.article_num;
+			});
+			vueDom.articleCount = articleCount;
+		});
+		ajax('get', '/article/getRecommend', null, function(res) {
+			vueDom.articleRecommendList = res;
+		});
+		ajax('get', '/index/index', null, function(res) {
+			vueDom.userInfo = res.userInfo;
+		});
+		
+		//加载正文
+		init();
+	})();
+</script>
+<!--ckeditor编辑器-->
+<script src="http://47.107.246.194/ckeditor5/ckeditor.js"></script>
+<script type="text/javascript">
 	//评论列表
 	function getComment() {
 		ajax('get', '/articleComment/getList', {
@@ -220,37 +246,44 @@
 			vueDom.commentNum = res.count;
 		});
 	}
-	//评论分页
-	var page = new Page(getComment);
-	page.limit = 2;
 	
-	init();
-	ajax('get', '/article/getTypes', null, function(res) {
-		vueDom.articleTypeList = res;
-		var articleCount = 0;
-		res.forEach(function(info) {
-			articleCount += info.article_num;
-		});
-		vueDom.articleCount = articleCount;
-	});
-	ajax('get', '/article/getRecommend', null, function(res) {
-		vueDom.articleRecommendList = res;
-	});
-	ajax('get', '/index/index', null, function(res) {
-		vueDom.userInfo = res.userInfo;
-	});
-	
-	//文本编辑器
-	//实例化编辑器
-	document.domain = document.domain;
-	window.UEDITOR_CONFIG.serverUrl = DOMAIN + '/ueditor/index?type=article_comment';//type决定上传到哪个目录
-	var editor_add = UE.getEditor('editor_add');
-	
-	document.querySelector('form#search-form').onsubmit = function() {
-		var queryParams = getFormObj(this);
-		window.location.href = 'articleList.html##'+ queryParams.title;
-		return false;
+	//加载评论
+	function initComment() {
+		vueDom.commentList = [];
+		page.page = 1;
+		getComment();
 	}
+	
+	(function() {
+		//评论分页
+		window.page = new Page(getComment);
+		page.limit = 2;
+		//加载评论
+		initComment();
+		
+		//留言编辑器
+		ClassicEditor.create(document.querySelector('#editor'), {
+				toolbar: {
+					items: [
+						'emoji',
+						'codeBlock',
+					],
+				},
+			})
+			.then(function(editor) {
+				window.editor = editor;
+			})
+			.catch(function(error) {
+				console.error(error);
+			});
+		
+		//搜索框
+		document.querySelector('form#search-form').onsubmit = function() {
+			var queryParams = getFormObj(this);
+			window.location.href = 'articleList.html##'+ queryParams.title;
+			return false;
+		}
+	})();
 	
 	//点赞
 	function like() {
@@ -271,14 +304,15 @@
 	function addComment(form) {
 		var data = getFormObj(form);
 		data.article_id = article_id;
-		if(!editor_add.hasContents()) {
+		data.content = editor.getData();
+		if(data.content == '') {
 			alert('留言内容不得为空');
 			return false;
 		}
 		var submitBtn = form.querySelector('[type="submit"]');
 		submitBtn.disabled = true;
 		ajax('post', '/articleComment/add', data, function(res) {
-			editor_add.execCommand('cleardoc');
+			editor.setData('');
 			vueDom.commentList = [];
 			page.page = 1;
 			getComment();
@@ -290,6 +324,7 @@
 	
 	window.addEventListener('hashchange', function() {
 		init();
+		initComment();
 	});
 </script>
 </body>

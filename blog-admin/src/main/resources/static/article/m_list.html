@@ -176,7 +176,7 @@
 		},
 	}
 	
-	function iframeClose() {
+	async function iframeClose() {
 		document.getElementById('list-box').style.display = 'block';
 		var addBox = document.getElementById('add-box');
 		addBox.style.display = 'none';
@@ -184,7 +184,29 @@
 		var updateBox = document.getElementById('update-box')
 		updateBox.style.display = 'none';
 		updateBox.src = '';
+		
+		await new Promise((resolve, reject) => {
+			addBox.onload = function() {
+				resolve();
+			}
+		});
+		await new Promise((resolve, reject) => {
+			updateBox.onload = function() {
+				resolve();
+			}
+		});
+		//重写按返回键的事件
+		back();
 	}
+	
+	//按返回键的事件
+	function back() {
+		window.onpopstate = function() {
+			window.location.href = '/static/m_index.html';
+		}
+		window.history.pushState(null, '', '');
+	}
+	back();
 </script>
 </body>
 </html>

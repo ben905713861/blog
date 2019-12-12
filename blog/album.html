@@ -11,6 +11,8 @@
 <link href="css/article.css" rel="stylesheet">
 <!--相册插件-->
 <link href="plugins/blueimp/css/blueimp-gallery.min.css" rel="stylesheet">
+<!--表情转图片-->
+<link href="http://cdn.staticfile.org/emoji/0.2.2/emoji.css" rel="stylesheet" type="text/css" />
 <link href="css/m.css" rel="stylesheet">
 <style>
 	.lightBoxGallery{ font-size: 0; }
@@ -27,6 +29,8 @@
 	.img-box .delete{ position: absolute; top: 10px; right: 22px; cursor: pointer; opacity: 0.8; }
 	.img-box .delete:hover{ opacity: 1; }
 	.img-box img{ width: 100%; }
+	
+	.ck-content{ min-height: 150px; }
 </style>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue"></script>
 <body>
@@ -92,7 +96,7 @@
 					<label>您的名称：<input type="text" name="name" pattern=".{0,20}" title="20字以内" placeholder="选填" class="input" /></label> &nbsp;&nbsp;&nbsp;
 					<label>联系方式：<input type="text" name="connection" max=".{0,50}" title="50字以内" placeholder="选填" class="input" /></label>
 				</div>
-				<script id="editor_add" name="content" type="text/plain" style="width:100%;height: 135px;"></script>
+				<div id="editor"></div>
 				<div class="btn-box">
 					<input type="submit" class="submit" value="评论" />
 				</div>
@@ -103,7 +107,7 @@
 						<img class="head" src="images/comment_user.png">
 						<div class="comment-box">
 							<div class="content">
-								<span v-html="comment.content"></span>
+								<div v-emoji2img="" v-html="comment.content"></div>
 							</div>
 							<div class="info">
 								<span>{{ comment.name=='' ? '匿名' : comment.name }}[{{ comment.connection=='' ? '无' : comment.connection }}]</span>&nbsp;
@@ -135,9 +139,8 @@
 <script type="text/javascript" src="js/Page.js"></script>
 <!--相册插件-->
 <script src="plugins/blueimp/jquery.blueimp-gallery.min.js"></script>
-<!--ueditor编辑器-->
-<script src="plugins/ueditor/ueditor.config.js"></script>
-<script src="http://www.gd-filmfund.cn/static/js/plugins/ueditor/ueditor.all.min.js"></script>
+<!--表情转图片-->
+<script src="http://cdn.staticfile.org/emoji/0.2.2/emoji.js"></script>
 <script type="text/javascript">
 	loadHtml('tpl/header.tpl', document.querySelector('header'));
 	loadHtml('tpl/footer.tpl', document.querySelector('footer'));
@@ -158,31 +161,35 @@
 			},
 		},
 	});
-	
-	ajax('get', '/index/index', null, function(res) {
-		vueDom.userInfo = res.userInfo;
-	});
-	ajax('get', '/album/getRecommend', null, function(res) {
-		vueDom.albumRecommendList = res;
+	Vue.directive('emoji2img', function(el) {
+		el.innerHTML = jEmoji.unifiedToHTML(el.innerHTML);
 	});
 	
-	var album_id;
-	function init() {
+	(function() {
+		//侧边栏
+		ajax('get', '/index/index', null, function(res) {
+			vueDom.userInfo = res.userInfo;
+		});
+		ajax('get', '/album/getRecommend', null, function(res) {
+			vueDom.albumRecommendList = res;
+		});
+		
+		//相册主体
 		var hash = window.location.hash.split('#');
-		album_id = hash[1];
+		window.album_id = hash[1];
 		ajax('get', '/album/getDetail', {
 			album_id: album_id,
 		}, function(res) {
 			vueDom.albumInfo = res.albumInfo;
 			vueDom.imgList = res.imgList;
-			loadJs('js/piccontent.min.js');
 		});
 		vueDom.commentList = [];
-		page.page = 1;
-		getComment();
-	}
-	
-	//评论列表
+	})();
+</script>
+<!--ckeditor编辑器-->
+<script src="http://47.107.246.194/ckeditor5/ckeditor.js"></script>
+<script type="text/javascript">
+	//获取评论列表
 	function getComment() {
 		ajax('get', '/albumComment/getList', {
 			album_id: album_id,
@@ -196,17 +203,52 @@
 			vueDom.commentNum = res.count;
 		});
 	}
-	//评论分页
-	var page = new Page(getComment);
-	page.limit = 2;
 	
-	init();
-	
-	//文本编辑器
-	//实例化编辑器
-	document.domain = document.domain;
-	window.UEDITOR_CONFIG.serverUrl = DOMAIN + '/ueditor/index?type=album_comment';//type决定上传到哪个目录
-	var editor_add = UE.getEditor('editor_add');
+	(function() {
+		//评论分页
+		window.page = new Page(getComment);
+		page.limit = 2;
+		page.page = 1;
+		//获取评论列表
+		getComment();
+		
+		//留言编辑器
+		ClassicEditor.create(document.querySelector('#editor'), {
+				toolbar: {
+					items: [
+						'emoji',
+					],
+				},
+			})
+			.then(function(editor) {
+				window.editor = editor;
+			})
+			.catch(function(error) {
+				console.error(error);
+			});
+	})();
+		
+	//发表评论
+	function addComment(form) {
+		var data = getFormObj(form);
+		data.album_id = album_id;
+		data.content = editor.getData();
+		if(data.content == '') {
+			alert('留言内容不得为空');
+			return false;
+		}
+		var submitBtn = form.querySelector('[type="submit"]');
+		submitBtn.disabled = true;
+		ajax('post', '/albumComment/add', data, function(res) {
+			editor.setData('');
+			vueDom.commentList = [];
+			page.page = 1;
+			getComment();
+		}, null, function end() {
+			submitBtn.disabled = false;
+		});
+		return false;
+	}
 	
 	//点赞
 	function like() {
@@ -221,27 +263,6 @@
 			vueDom.albumInfo.like_num += 1;
 			localStorage.setItem('album_like_'+ album_id, 1);
 		});
-	}
-	
-	//发表评论
-	function addComment(form) {
-		var data = getFormObj(form);
-		data.album_id = album_id;
-		if(!editor_add.hasContents()) {
-			alert('留言内容不得为空');
-			return false;
-		}
-		var submitBtn = form.querySelector('[type="submit"]');
-		submitBtn.disabled = true;
-		ajax('post', '/albumComment/add', data, function(res) {
-			editor_add.execCommand('cleardoc');
-			vueDom.commentList = [];
-			page.page = 1;
-			getComment();
-		}, null, function end() {
-			submitBtn.disabled = false;
-		});
-		return false;
 	}
 	
 	window.addEventListener('hashchange', function() {
