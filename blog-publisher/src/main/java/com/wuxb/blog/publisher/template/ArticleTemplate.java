@@ -22,10 +22,6 @@ public class ArticleTemplate extends MyTemplate {
 
 	@Override
 	public void display(JSONArray inputData) {
-		data.put("userInfo", curlGetMap("/index/index").get("userInfo"));
-		data.put("articleRecommendList", curlGetList("/article/getRecommend"));
-		data.put("articleTypeList", curlGetList("/article/getTypes"));
-		
 		for(Object row : inputData) {
 			String article_id = (row instanceof Integer) ? String.valueOf((int) row) : (String) row;
 			JSONObject articleInfo = curlGetMap("/article/getOne?article_id="+ article_id);

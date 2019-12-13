@@ -1,0 +1,10 @@
+<div class="wdxc">
+	<h2>我的相册</h2>
+	<ul>
+	<#list albumRecommendList as albumInfo>
+		<li>
+			<a href="/album/${ albumInfo.album_id }.html"><img title="${ albumInfo.title }" src="${ albumInfo.thumb_url ! STATIC_DOMAIN+'/images/default_thumb_264x176.jpg' }"></a>
+		</li>
+	</#list>
+	</ul>
+</div>

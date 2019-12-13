@@ -69,9 +69,11 @@ public class ArticleTypeController {
 		data.put("sort", postMap.get("sort"));
 		int type_id = Db.table("article_type").insert(data);
 		
+		//静态html渲染
 		Publisher publisher = new Publisher("articleList");
 		publisher.addInputData(type_id);
 		publisher.send();
+		new Publisher("common/fenlei").send();
 		
 		return Tools.returnSucc();
 	}
@@ -92,9 +94,11 @@ public class ArticleTypeController {
 			.limit(1)
 			.update(data);
 		
+		//静态html渲染
 		Publisher publisher = new Publisher("articleList");
 		publisher.addInputData(type_id);
 		publisher.send();
+		new Publisher("common/fenlei").send();
 		
 		return Tools.returnSucc();
 	}
@@ -112,9 +116,11 @@ public class ArticleTypeController {
 			.limit(1)
 			.delete();
 		
+		//静态html渲染
 		Publisher publisher = new Publisher("articleList");
 		publisher.addDeleteData(type_id);
 		publisher.send();
+		new Publisher("common/fenlei").send();
 		
 		return Tools.returnSucc();
 	}

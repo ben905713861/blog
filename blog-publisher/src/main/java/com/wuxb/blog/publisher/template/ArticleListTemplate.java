@@ -28,24 +28,7 @@ public class ArticleListTemplate extends MyTemplate {
 
 	@Override
 	public void display(JSONArray inputData) {
-		data.put("userInfo", curlGetMap("/index/index").get("userInfo"));
-		data.put("articleRecommendList", curlGetList("/article/getRecommend"));
-		
 		JSONArray articleTypeList = curlGetList("/article/getTypes");
-		{
-			var totalArticle_num = 0;
-			for(Object row : articleTypeList) {
-				JSONObject articleType = (JSONObject) row;
-				totalArticle_num += articleType.getIntValue("article_num");
-			}
-			Map<String, Object> articleType = new JSONObject();
-			articleType.put("type_id", 0);
-			articleType.put("type", "全部");
-			articleType.put("article_num", totalArticle_num);
-			articleTypeList.add(0, articleType);
-		}
-		data.put("articleTypeList", articleTypeList);
-		
 		Map<String, String> type_id2type = new HashMap<String, String>();
 		for(Object row : articleTypeList) {
 			JSONObject articleType = (JSONObject) row;
@@ -53,6 +36,7 @@ public class ArticleListTemplate extends MyTemplate {
 			String type = articleType.getString("type");
 			type_id2type.put(type_id, type);
 		}
+		type_id2type.put("0", "全部");
 		
 		for(Object row : inputData) {
 			String type_id = (row instanceof Integer) ? String.valueOf((int) row) : (String) row;

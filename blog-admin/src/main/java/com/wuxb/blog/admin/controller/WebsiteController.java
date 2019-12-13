@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.wuxb.blog.admin.component.Publisher;
 import com.wuxb.blog.admin.component.UeditorFileDomainFilter;
 import com.wuxb.blog.admin.component.UploadFile;
 import com.wuxb.httpServer.HttpServletRequest;
@@ -78,6 +79,12 @@ public class WebsiteController {
 			.where("id", 1)
 			.limit(1)
 			.update(data);
+		
+		//静态html渲染
+		new Publisher("about").send();
+		new Publisher("common/aboutme").send();
+		new Publisher("common/guanzhu").send();
+		
 		return Tools.returnSucc();
 	}
 	

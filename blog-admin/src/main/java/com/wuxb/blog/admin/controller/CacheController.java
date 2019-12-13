@@ -21,6 +21,7 @@ public class CacheController {
 		switch(type) {
 			case "all":
 				index();
+				leftbar();
 				articleList();
 				article();
 				albumList();
@@ -28,6 +29,9 @@ public class CacheController {
 				break;
 			case "index":
 				index();
+				break;
+			case "leftbar":
+				leftbar();
 				break;
 			case "articleList":
 				articleList();
@@ -52,6 +56,14 @@ public class CacheController {
 		new Publisher("gbook").send();
 		new Publisher("articleSearch").send();
 		new Publisher("about").send();
+	}
+	
+	private static void leftbar() {
+		new Publisher("common/aboutme").send();
+		new Publisher("common/fenlei").send();
+		new Publisher("common/guanzhu").send();
+		new Publisher("common/tuijian").send();
+		new Publisher("common/wdxc").send();
 	}
 	
 	private static void articleList() throws SQLException {

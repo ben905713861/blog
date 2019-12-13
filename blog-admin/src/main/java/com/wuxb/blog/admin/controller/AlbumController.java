@@ -177,6 +177,7 @@ public class AlbumController {
 	private static void publishHtml() {
 		Publisher publisher = new Publisher("albumList");
 		publisher.send();
+		new Publisher("common/wdxc").send();
 	}
 	
 }

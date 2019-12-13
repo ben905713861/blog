@@ -1,0 +1,10 @@
+<div class="fenlei">
+	<h2>文章分类</h2>
+	<ul>
+	<#list articleTypeList as typeInfo>
+		<li>
+			<a href="/articleList/${ typeInfo.type_id }/1.html">${ typeInfo.type }（${ typeInfo.article_num }）</a>
+		</li>
+	</#list>
+	</ul>
+</div>

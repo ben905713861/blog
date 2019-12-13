@@ -1,4 +1,4 @@
-﻿<#include "common/layout.html">
+﻿<#include "layout/layout.html">
 
 <#macro head>
 
@@ -15,38 +15,9 @@
 					<input type="submit" class="input_submit" value="搜索">
 				</form>
 			</div>
-			<div class="fenlei">
-				<h2>文章分类</h2>
-				<ul>
-					<#list articleTypeList as typeInfo>
-					<li>
-						<a href="/articleList/${ typeInfo.type_id }/1.html">${ typeInfo.type }（${ typeInfo.article_num }）</a>
-					</li>
-					</#list>
-				</ul>
-			</div>
-			<div class="tuijian">
-				<h2>站长推荐</h2>
-				<ul>
-				<#list articleRecommendList as articleInfo>
-					<li>
-						<a href="/article/${ articleInfo.article_id}.html">${ articleInfo.title }</a>
-					</li>
-				</#list>
-				</ul>
-			</div>
-			<!--<div class="cloud">
-				<h2>标签云</h2>
-				<ul>
-					<a href="/">陌上花开</a>
-				</ul>
-			</div>-->
-			<div class="guanzhu">
-				<h2>关注我 么么哒</h2>
-				<ul>
-					<img src="${ userInfo.share_code_img_url }">
-				</ul>
-			</div>
+			<loadhtml url="/common/fenlei.html"></loadhtml>
+			<loadhtml url="/common/tuijian.html"></loadhtml>
+			<loadhtml url="/common/guanzhu.html"></loadhtml>
 		</div>
 	</aside>
 	

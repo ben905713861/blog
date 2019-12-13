@@ -101,7 +101,7 @@ function ajax(method, url, data, truefun, falsefun, endfun, errfun, use_alert) {
 	//未登录的处理
 	function noLogin() {
 		sessionStorage.clear();
-		window.top.location.href = 'login.html';
+		window.top.location.href = '/static/login.html';
 	}
 }
 

@@ -18,9 +18,7 @@ public class ArticleSearchTemplate extends MyTemplate {
 
 	@Override
 	public void display(JSONArray inputData) {
-		data.put("userInfo", curlGetMap("/index/index").get("userInfo"));
 		data.put("articleTypeList", curlGetList("/article/getTypes"));
-		data.put("articleRecommendList", curlGetList("/article/getRecommend"));
 		play();
 	}
 	

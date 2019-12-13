@@ -1,0 +1,10 @@
+<div class="tuijian">
+	<h2>站长推荐</h2>
+	<ul>
+	<#list articleRecommendList as articleInfo>
+		<li>
+			<a href="/article/${ articleInfo.article_id}.html">${ articleInfo.title }</a>
+		</li>
+	</#list>
+	</ul>
+</div>

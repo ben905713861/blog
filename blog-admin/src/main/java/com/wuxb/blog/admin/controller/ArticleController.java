@@ -264,13 +264,11 @@ public class ArticleController {
 		}
 		{
 			Publisher publisher = new Publisher("articleList");
-			publisher.addInputData(type_id);
+			publisher.addInputData(new Object[] {0, type_id});
 			publisher.send();
 		}
-		new Publisher("index").send();
-		new Publisher("gbook").send();
-		new Publisher("articleSearch").send();
-		new Publisher("about").send();
+		new Publisher("common/fenlei").send();
+		new Publisher("common/tuijian").send();
 	}
 	
 }

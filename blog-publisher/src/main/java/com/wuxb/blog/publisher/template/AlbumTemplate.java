@@ -22,9 +22,6 @@ public class AlbumTemplate extends MyTemplate {
 
 	@Override
 	public void display(JSONArray inputData) {
-		data.put("userInfo", curlGetMap("/index/index").get("userInfo"));
-		data.put("albumRecommendList", curlGetList("/album/getRecommend"));
-		
 		for(Object row : inputData) {
 			String album_id = (row instanceof Integer) ? String.valueOf((int) row) : (String) row;
 			JSONObject info = curlGetMap("/album/getDetail?album_id="+ album_id);

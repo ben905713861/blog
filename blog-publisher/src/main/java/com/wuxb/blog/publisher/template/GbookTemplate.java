@@ -18,8 +18,6 @@ public class GbookTemplate extends MyTemplate {
 
 	@Override
 	public void display(JSONArray inputData) {
-		data.put("userInfo", curlGetMap("/index/index").get("userInfo"));
-		data.put("albumRecommendList", curlGetList("/album/getRecommend"));
 		play();
 	}
 	

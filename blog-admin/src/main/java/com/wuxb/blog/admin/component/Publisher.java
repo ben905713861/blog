@@ -1,6 +1,5 @@
 package com.wuxb.blog.admin.component;
 
-import java.util.Collections;
 import java.util.List;
 
 import com.alibaba.fastjson.JSONArray;
