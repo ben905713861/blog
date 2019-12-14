@@ -398,6 +398,17 @@ function download_base64_file(base_64, name) {
 	a_download(url, name);
 }
 
+function int2ip(num) {
+	var str;
+	var tt = [];
+	tt[0] = (num >>> 24) >>> 0;
+	tt[1] = ((num << 8) >>> 24) >>> 0;
+	tt[2] = (num << 16) >>> 24;
+	tt[3] = (num << 24) >>> 24;
+	str = String(tt[0]) + "." + String(tt[1]) + "." + String(tt[2]) + "." + String(tt[3]);
+	return str;
+}
+
 //初始化
 if(typeof toastr != 'undefined') {
 	toastr.options = {
@@ -410,14 +421,16 @@ if(typeof layer != 'undefined') {
 	layer.config({extend: 'extend/layer.ext.js'});
 }
 
-
-function int2ip(num) {
-	var str;
-	var tt = [];
-	tt[0] = (num >>> 24) >>> 0;
-	tt[1] = ((num << 8) >>> 24) >>> 0;
-	tt[2] = (num << 16) >>> 24;
-	tt[3] = (num << 24) >>> 24;
-	str = String(tt[0]) + "." + String(tt[1]) + "." + String(tt[2]) + "." + String(tt[3]);
-	return str;
-}
+document.addEventListener('plusready', function() {
+	var webview = plus.webview.currentWebview();
+	plus.key.addEventListener('backbutton', function() {
+		webview.canBack(function(e) {
+			if(e.canBack) {
+				webview.back();
+			} else {
+				webview.close(); //hide,quit
+				//plus.runtime.quit();
+			}
+		})
+	});
+});
