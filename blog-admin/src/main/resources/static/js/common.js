@@ -105,28 +105,6 @@ function ajax(method, url, data, truefun, falsefun, endfun, errfun, use_alert) {
 	}
 }
 
-function loadHtml(url, f2) {
-	var xhr = new XMLHttpRequest;
-	xhr.open('GET', url);
-	xhr.onreadystatechange = function() {
-		if(xhr.readyState == 4 && xhr.status == 200) {
-			if(typeof f2 == 'function') {
-				f2(xhr.responseText);
-			}
-			else if(typeof f2 == 'object') {
-				f2.innerHTML = xhr.responseText;
-			}
-		}
-	}
-	xhr.send();
-}
-
-function loadJs(url) {
-	var script = document.createElement('script');
-	script.src = url;
-	document.body.appendChild(script);
-}
-
 //对象转url
 function urlencode(data, key) {
 	var res = '';
@@ -420,17 +398,3 @@ if(typeof toastr != 'undefined') {
 if(typeof layer != 'undefined') {
 	layer.config({extend: 'extend/layer.ext.js'});
 }
-
-document.addEventListener('plusready', function() {
-	var webview = plus.webview.currentWebview();
-	plus.key.addEventListener('backbutton', function() {
-		webview.canBack(function(e) {
-			if(e.canBack) {
-				webview.back();
-			} else {
-				webview.close(); //hide,quit
-				//plus.runtime.quit();
-			}
-		})
-	});
-});
