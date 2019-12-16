@@ -61,7 +61,7 @@
 		
 		<div class="share">
 			<p class="diggit">
-				<a href="JavaScript:void(0)" onclick="like()"> 很赞哦！ (<b id="diggnum">{{ like_num }}</b>)</a>
+				<button onclick="like(this)"> 很赞哦！ (<b>{{ like_num }}</b>)</button>
 			</p>
 		</div>
 		
@@ -205,10 +205,12 @@
 	}
 	
 	//点赞
-	function like() {
+	function like(btn) {
+		btn.disabled = true;
 		var is_like = localStorage.getItem('album_like_'+ album_id);
 		if(is_like) {
-			alert('您已经为本文章点过赞');
+			alert('您已经为本相册点过赞');
+			btn.disabled = false;
 			return;
 		}
 		ajax('post', '/album/like', {
@@ -216,6 +218,8 @@
 		}, function(res) {
 			vueDom.like_num += 1;
 			localStorage.setItem('album_like_'+ album_id, 1);
+		}, null, function end() {
+			btn.disabled = false;
 		});
 	}
 </script>

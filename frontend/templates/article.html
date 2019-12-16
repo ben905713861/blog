@@ -54,7 +54,7 @@
 		</div>
 		<div class="share">
 			<p class="diggit">
-				<a href="javascript:void(0)" onclick="like()"> 很赞哦！ (<b id="diggnum">{{ like_num }}</b>)</a>
+				<button onclick="like(this)"> 很赞哦！ (<b>{{ like_num }}</b>)</button>
 			</p>
 		</div>
 		<div class="nextinfo">
@@ -207,10 +207,12 @@
 	})();
 		
 	//点赞
-	function like() {
+	function like(btn) {
+		btn.disabled = true;
 		var is_like = localStorage.getItem('article_like_'+ article_id);
 		if(is_like) {
 			alert('您已经为本文章点过赞');
+			btn.disabled = false;
 			return;
 		}
 		ajax('post', '/article/like', {
@@ -218,6 +220,8 @@
 		}, function(res) {
 			vueDom.like_num += 1;
 			localStorage.setItem('article_like_'+ article_id, 1);
+		}, null, function end() {
+			btn.disabled = false;
 		});
 	}
 	
