@@ -1,20 +1,20 @@
 <div style="height: 54px;">
 	<style>
-		nav{ position: fixed; bottom: 0; width: 100%; border-top: 1px solid #eee; height: 50px; background-color: #fff; }
+		nav{ position: fixed; bottom: 0; z-index: 1; width: 100%; border-top: 1px solid #eee; height: 50px; background-color: #fff; }
 		nav ul{ padding: 5px; margin: 0; overflow: hidden; }
-		nav ul li{ list-style-type: none; float: left; width: 33.3333%; text-align: center; }
-		nav ul li a{ font-size: 26px; color: #999; }
+		nav ul li{ list-style-type: none; float: left; width: 33.3333%; }
+		nav ul li a{ font-size: 26px; color: #999; display: block; text-align: center; widows: 100%; }
 	</style>
 	<nav>
 		<ul>
 			<li>
-				<a href="/static/m_index.html"><i class="fa fa-home"></i></a>
+				<a href="/static/m_index.html" target="_top"><i class="fa fa-home"></i></a>
 			</li>
 			<li>
-				<a href="/static/article/m_list.html"><i class="fa fa-edit"></i></a>
+				<a href="/static/article/m_list.html" target="_top"><i class="fa fa-edit"></i></a>
 			</li>
 			<li>
-				<a href="/static/album/m_list.html"><i class="fa fa-photo"></i></a>
+				<a href="/static/album/m_list.html" target="_top"><i class="fa fa-photo"></i></a>
 			</li>
 		</ul>
 	</nav>

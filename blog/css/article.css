@@ -17,8 +17,4 @@
 .nextinfo p { padding: 4px 10px; border-radius: 5px; }
 .nextinfo a:hover { color: #000; text-decoration: underline }
 
-.diggit { text-align: center; }
-.diggit a { color: #fff; padding: 10px 20px; display: inline-block; background: #E2523A; color: #fff; box-shadow: 1px 2px 6px 0px rgba(0,0,0,.2); border-radius: 3px;}
-#diggnum { margin: 5px; }
-
 img{ display: inline; }

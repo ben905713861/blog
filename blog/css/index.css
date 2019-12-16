@@ -28,7 +28,7 @@
 .r_box li h3 a { color: #222 }
 .r_box li h3 a:hover { color: #000; text-decoration: underline }
 .r_box li img { float: right; clear: right; width: 100%; -webkit-transition: all 0.5s; -moz-transition: all 0.5s; transition: all 0.5s; }
-.r_box li i { width: 150px; display: block; max-height: 100px; overflow: hidden; float: right; margin-left: 20px }
+.r_box li i { width: 150px; display: block; overflow: hidden; float: right; margin-left: 20px }
 .r_box li p { margin: 20px 0 0 0; line-height: 22px; overflow: hidden; text-overflow: ellipsis; -webkit-box-orient: vertical; display: -webkit-box; -webkit-line-clamp: 2; }
 .r_box li:hover img { transform: scale(1.05) }
 .r_box li:hover h3 a { color: #19585d; }

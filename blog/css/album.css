@@ -82,8 +82,5 @@ a.gaoqing:hover {  color: #FF702D; text-decoration: underline; }
 .sleft { display: block; width: 23px; height: 76px; background: url(../images/left1.jpg) no-repeat center }
 .sright { display: block; width: 23px; height: 76px; background: url(../images/right1.jpg) no-repeat center }
 .pictext ul{ padding: 20px}
-.diggit { text-align: center; }
-.diggit a { color: #fff; padding: 10px 20px; display: inline-block; background: #E2523A; color: #fff; box-shadow: 1px 2px 6px 0px rgba(0,0,0,.2); border-radius: 3px;}
-#diggnum { margin: 5px; }
 
 img{ display: inline; }

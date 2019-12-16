@@ -37,7 +37,7 @@ if(is_mobileBrowser()) {
 	loadHtml('/static/tpl/nav.html', function(html) {
 		let box = document.createElement('div');
 		box.innerHTML = html;
-		document.body.onload = function() {
+		window.onload = function() {
 			document.body.appendChild(box);
 		}
 	});
