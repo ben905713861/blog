@@ -34,7 +34,7 @@
 			<div class="bloginfo">
 				<ul>
 					<li class="timer">分类：<a href="/articleList/${ articleInfo.type_id }/1.html" style="text-decoration: underline;">${ articleInfo.type }</a></li>
-					<li class="timer">发表时间：${ articleInfo.add_time?number_to_datetime?string("yyyy-MM-dd hh:mm:ss")}</li>
+					<li class="timer">发表时间：${ (articleInfo.add_time*1000)?number_to_datetime?string("yyyy-MM-dd hh:mm:ss")}</li>
 					<li class="author">置顶：${ articleInfo.is_recommend ? string("是", "否")}</li>
 				</ul>
 			</div>
