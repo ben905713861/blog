@@ -4,4 +4,4 @@ sh blog-admin/clear.sh
 sh blog-file/clear.sh
 sh blog-publisher/clear.sh
 
-echo "清理日志完成"
+echo "清理全部日志完成"
