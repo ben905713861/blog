@@ -148,16 +148,28 @@
 		if(data.article_id == '') {
 			return;
 		}
-		layer.confirm('确定要删除吗？', function(index) {
+		layer.confirm('确定要删除吗？', async function(index) {
 			layer.close(index);
-			var article_ids = data.article_id.split(',');
+			let threads = [];
+			let article_ids = data.article_id.split(',');
 			article_ids.forEach(function(article_id) {
-				ajax('post', '/article/delete', {
-					article_id: article_id,
-				}, function(res) {
-					refresh();
+				let thread = new Promise((reslove, reject) => {
+					ajax('post', '/article/delete', {
+						article_id: article_id,
+					}, function(res) {
+						reslove();
+					}, function() {
+						reject();
+					}, null, function() {
+						reject();
+					});
 				});
+				threads.push(thread);
 			});
+			for(let i = 0; i < threads.length; i++) {
+				await threads[i];
+			}
+			refresh();
 		});
 	}
 	
