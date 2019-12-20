@@ -14,7 +14,7 @@
 .wdxc li img { max-width: 100%; max-height: 100%; -webkit-transition: all 0.5s; -moz-transition: all 0.5s; transition: all 0.5s; }
 .wdxc li img:hover { transform: scale(1.05) }
 .fenlei li { margin-bottom: 10px; margin-left: 10px }
-.tuijian li { text-overflow: ellipsis; white-space: nowrap; overflow: hidden; margin-bottom: 5px; background: url(../images/li.png) left center no-repeat; padding-left: 20px }
+.tuijian li { text-overflow: ellipsis; white-space: nowrap; overflow: hidden; margin-bottom: 5px; background: url(../images/li.png) left center no-repeat; padding-left: 10px }
 .links a { display: block; float: left; margin: 0 10px 5px 0 }
 .guanzhu img { width: 100% }
 
