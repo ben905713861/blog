@@ -68,12 +68,13 @@
 	
 	<div class="infosbox">
 		<div class="newsview">
-			<h3 class="news_title">{{ articleInfo.title }}</h3>
+			<h2 class="news_title">{{ articleInfo.title }}</h2>
 			<div class="bloginfo">
 				<ul>
-					<li class="timer">分类：<a :href="'articleList.html#'+ articleInfo.type_id" style="text-decoration: underline;">{{ articleInfo.type }}</a></li>
-					<li class="timer">发表时间：{{ articleInfo.add_time | timestampToStr }}</li>
-					<li class="author">置顶：{{ articleInfo.is_recommend ? '是' : '否' }}</li>
+					<li><b>分类：</b><a :href="'articleList.html#'+ articleInfo.type_id" style="text-decoration: underline;">{{ articleInfo.type }}</a></li>
+					<li><b>阅读数：</b>{{ articleInfo.read_num }}</li>
+					<li><b>置顶：</b>{{ articleInfo.is_recommend ? '是' : '否' }}</li>
+					<li><b>发表时间：</b>{{ articleInfo.add_time | timestampToStr }}</li>
 				</ul>
 			</div>
 			<div class="tags">
@@ -209,6 +210,16 @@
 			vueDom.lastArticleInfo = res.lastArticleInfo;
 			vueDom.nextArticleInfo = res.nextArticleInfo;
 		});
+		//阅读数+1
+		var is_read = localStorage.getItem('article_read_'+ article_id);
+		if(!is_read) {
+			ajax('post', '/article/read', {
+				article_id: article_id,
+			}, function(res) {
+				vueDom.articleInfo.read_num += 1;
+				localStorage.setItem('article_read_'+ article_id, 1);
+			}, null, null, null, false);
+		}
 	}
 	
 	(function() {

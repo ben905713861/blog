@@ -115,20 +115,30 @@
 				align: 'center',
 			},
 			{
-				field: 'add_time',
-				title: '发布时间',
-				align: 'center',
-				formatter: function(value) {
-					return timestampToStr(value);
-				}
-			},
-			{
 				field: 'is_recommend',
 				title: '是否推荐',
 				align: 'center',
 				formatter: function(value) {
 					return value ? '是' : '否';
 				},
+			},
+			{
+				field: 'read_num',
+				title: '阅读数',
+				align: 'center',
+			},
+			{
+				field: 'like_num',
+				title: '点赞数',
+				align: 'center',
+			},
+			{
+				field: 'add_time',
+				title: '发布时间',
+				align: 'center',
+				formatter: function(value) {
+					return timestampToStr(value);
+				}
 			},
 			{
 				field: 'article_id',

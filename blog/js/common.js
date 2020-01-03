@@ -1,4 +1,4 @@
-function ajax(method, url, data, truefun, falsefun, endfun) {
+function ajax(method, url, data, truefun, falsefun, endfun, errfun, use_alert) {
 	var succfun;
 	var xhr = new XMLHttpRequest();
 	method = method.toLowerCase();
@@ -60,27 +60,33 @@ function ajax(method, url, data, truefun, falsefun, endfun) {
 				var res = JSON.parse(xhr.responseText);
 				succfun(res);
 			}
-			else if(xhr.status == 401) {
-				_alert('尚未登录或登陆失效');
-				noLogin();
-			}
-			else if(xhr.status == 403) {
-				_alert(xhr.responseText);
-			}
-			else if(xhr.status == 404) {
-				_alert('链接不存在');
-			}
-			else if(xhr.status>=500 && xhr.status<=599) {
-				_alert('服务器错误，请稍后再试');
-			}
 			else {
-				_alert('未知错误'+xhr.status);
+				if(xhr.status == 401) {
+					_alert('尚未登录或登陆失效');
+					noLogin();
+				}
+				else if(xhr.status == 403) {
+					_alert(xhr.responseText);
+				}
+				else if(xhr.status == 404) {
+					_alert('链接不存在');
+				}
+				else if(xhr.status>=500 && xhr.status<=599) {
+					_alert('服务器错误，请稍后再试');
+				}
+				else {
+					_alert('未知错误'+xhr.status);
+				}
+				errfun && errfun();
 			}
 		}
 	}
 	xhr.send(data);
 	//用户提示
 	function _alert(msg, type) {
+		if(use_alert === false) {
+			return;
+		}
 		if(!type) {
 			type = 'error';
 		}

@@ -33,12 +33,13 @@
 	
 	<div class="infosbox">
 		<div class="newsview">
-			<h3 class="news_title">${ articleInfo.title }</h3>
+			<h2 class="news_title">${ articleInfo.title }</h2>
 			<div class="bloginfo">
 				<ul>
-					<li class="timer">分类：<a href="/articleList/${ articleInfo.type_id }/1.html" style="text-decoration: underline;">${ articleInfo.type }</a></li>
-					<li class="timer">发表时间：${ (articleInfo.add_time*1000)?number_to_datetime?string("yyyy-MM-dd HH:mm:ss")}</li>
-					<li class="author">置顶：${ articleInfo.is_recommend ? string("是", "否")}</li>
+					<li><b>分类：</b><a href="/articleList/${ articleInfo.type_id }/1.html" style="text-decoration: underline;">${ articleInfo.type }</a></li>
+					<li><b>阅读数：</b>{{ articleInfo.read_num }}</li>
+					<li><b>置顶：</b>${ articleInfo.is_recommend ? string("是", "否")}</li>
+					<li><b>发表时间：</b>${ (articleInfo.add_time*1000)?number_to_datetime?string("yyyy-MM-dd HH:mm:ss")}</li>
 				</ul>
 			</div>
 			<div class="tags">
@@ -49,7 +50,7 @@
 				</#if>
 			</div>
 			<div class="news_about">
-				${ articleInfo.description }
+				${ articleInfo.description?html }
 			</div>
 			<div class="news_con">
 				${ articleInfo.content }
@@ -57,7 +58,7 @@
 		</div>
 		<div class="share">
 			<p class="diggit">
-				<button onclick="like(this)"> 很赞哦！ (<b>{{ like_num }}</b>)</button>
+				<button onclick="like(this)"> 很赞哦！ (<b>{{ articleInfo.like_num }}</b>)</button>
 			</p>
 		</div>
 		<div class="nextinfo">
@@ -123,11 +124,29 @@
 <script src="https://cdn.staticfile.org/emoji/0.2.2/emoji.js"></script>
 <script type="text/javascript">
 	var article_id = ${ articleInfo.article_id};
-	
+	console.log({
+		el: '.infosbox',
+		data: {
+			articleInfo: {
+				read_num: 0,
+				like_num: 0,
+			},
+			commentList: [],
+			commentNum: 0,
+		},
+		filters: {
+			timestampToStr: function(value) {
+				return timestampToStr(value);
+			},
+		},
+	})
 	var vueDom = new Vue({
 		el: '.infosbox',
 		data: {
-			like_num: 0,
+			articleInfo: {
+				read_num: 0,
+				like_num: 0,
+			},
 			commentList: [],
 			commentNum: 0,
 		},
@@ -152,12 +171,23 @@
 			hljs.highlightBlock(code);
 		});
 		
-		//点赞数
-		ajax('get', '/article/getLikeNum', {
+		//获取阅读数和点赞数
+		ajax('get', '/article/getNum', {
 			article_id: article_id,
 		}, function(res) {
-			vueDom.like_num = res.like_num;
+			vueDom.articleInfo = res;
 		});
+		
+		//阅读数+1
+		var is_read = localStorage.getItem('article_read_'+ article_id);
+		if(!is_read) {
+			ajax('post', '/article/read', {
+				article_id: article_id,
+			}, function(res) {
+				vueDom.articleInfo.read_num += 1;
+				localStorage.setItem('article_read_'+ article_id, 1);
+			}, null, null, null, false);
+		}
 	})();
 </script>
 <!--ckeditor编辑器-->
@@ -208,7 +238,7 @@
 				console.error(error);
 			});
 	})();
-		
+	
 	//点赞
 	function like(btn) {
 		btn.disabled = true;
@@ -221,7 +251,7 @@
 		ajax('post', '/article/like', {
 			article_id: article_id,
 		}, function(res) {
-			vueDom.like_num += 1;
+			vueDom.articleInfo.like_num += 1;
 			localStorage.setItem('article_like_'+ article_id, 1);
 		}, null, function end() {
 			btn.disabled = false;

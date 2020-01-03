@@ -140,10 +140,10 @@ public class ArticleController {
 		return res;
 	}
 	
-	@RequestMapping("/getLikeNum")
+	@RequestMapping("/getNum")
 	public Map<String, Object> getLikeNum(@GetParam Map<String, Object> getMap) throws SQLException {
 		return Db.table("article")
-			.field("like_num")
+			.field("read_num,like_num")
 			.where("article_id", getMap.get("article_id"))
 			.find();
 	}
@@ -154,6 +154,15 @@ public class ArticleController {
 			.where("article_id", postMap.get("article_id"))
 			.limit(1)
 			.setInc("like_num", 1);
+		return Tools.returnSucc();
+	}
+	
+	@RequestMapping(value="/read", method=RequestMethod.POST)
+	public Map<String, Object> read(@PostParam Map<String, Object> postMap) throws SQLException {
+		Db.table("article")
+			.where("article_id", postMap.get("article_id"))
+			.limit(1)
+			.setInc("read_num", 1);
 		return Tools.returnSucc();
 	}
 	
