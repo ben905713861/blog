@@ -7,7 +7,7 @@
 .l_box div li a { display: block; padding: 3px 10px; }
 .l_box div li a:hover { background-color: #ddd; }
 .about_me img { width: 100% }
-.about_me p { line-height: 24px; font-size: 14px }
+.about_me p { margin: 0; line-height: 24px; font-size: 14px }
 .about_me i { width: 120px; float: left; clear: left; margin-right: 10px; height: 90px; overflow: hidden }
 .wdxc li { width: 32%; overflow: hidden; float: left; height: 80px; margin-bottom: 2px; margin-right: 2px }
 .wdxc li a { width: 100%; height: 100%; }
