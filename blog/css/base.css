@@ -12,9 +12,9 @@ article { width: 1150px; margin: 80px auto 0; overflow: hidden; zoom: 1; }
 nav { width: 1150px; margin: auto }
 .logo { float: left; font-size: 22px }
 article, aside { display: block; position: relative; }
-#mnavh { display: none; width: 30px; height: 40px; float: right; text-align: center; padding: 0 5px }
-ul#starlist { margin: 0; padding: 0; float: right; }
-ul#starlist li { float: left; display: block; padding: 0 0 0 40px; font-size: 16px }
+#mnavh { display: none; width: 30px; height: 40px; float: right; text-align: center; padding: 0 5px; margin: 0; }
+#starlist { margin: 0; padding: 0; float: right; }
+#starlist li { float: left; display: block; padding: 0 0 0 40px; font-size: 16px }
 .navicon { display: block; position: relative; width: 30px; height: 5px; background-color: #000; margin-top: 20px }
 .navicon:before, .navicon:after { content: ''; display: block; width: 30px; height: 5px; position: absolute; background: #000; -webkit-transition-property: margin, -webkit-transform; transition-property: margin, -webkit-transform; transition-property: margin, transform; transition-property: margin, transform, -webkit-transform; -webkit-transition-duration: 300ms; transition-duration: 300ms; }
 .navicon:before { margin-top: -10px; }

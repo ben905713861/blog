@@ -17,7 +17,7 @@
 .news_about strong { color: #38485A; font-weight: 400 !important; font-size: 13px; padding-right: 8px; }
 /*.news_content { line-height: 24px; font-size: 14px; }
 .news_content p { overflow: hidden; padding-bottom: 4px; padding-top: 6px; word-wrap: break-word; }*/
-.tags a { background: #F4650E; padding: 3px 8px; margin: 0 5px 0 0; color: #fff; }
+.tags a { display: inline-block; background: #F4650E; padding: 3px 8px; margin: 0 5px 5px 0; color: #fff; }
 .tags { padding: 10px 0; }
 .infosbox img { max-width: 100%; }
 .share { padding: 20px; }
