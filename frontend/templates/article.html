@@ -124,22 +124,6 @@
 <script src="https://cdn.staticfile.org/emoji/0.2.2/emoji.js"></script>
 <script type="text/javascript">
 	var article_id = ${ articleInfo.article_id};
-	console.log({
-		el: '.infosbox',
-		data: {
-			articleInfo: {
-				read_num: 0,
-				like_num: 0,
-			},
-			commentList: [],
-			commentNum: 0,
-		},
-		filters: {
-			timestampToStr: function(value) {
-				return timestampToStr(value);
-			},
-		},
-	})
 	var vueDom = new Vue({
 		el: '.infosbox',
 		data: {
