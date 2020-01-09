@@ -25,5 +25,5 @@
 .nextinfo p { padding: 4px 10px; border-radius: 5px; }
 .nextinfo a:hover { color: #000; text-decoration: underline }
 
-img{ display: inline; }
-p{ margin: 0 0 10px; }
+/*ckeditor文章样式*/
+.image>figcaption{ display: table-caption; caption-side: bottom; word-break: break-word; color: #333; background-color: #f7f7f7; padding: .6em; font-size: .75em; outline-offset: -1px;}
