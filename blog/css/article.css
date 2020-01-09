@@ -26,4 +26,5 @@
 .nextinfo a:hover { color: #000; text-decoration: underline }
 
 /*ckeditor文章样式*/
+.image { display: table; clear: both; text-align: center; margin: 1em auto;}
 .image>figcaption{ display: table-caption; caption-side: bottom; word-break: break-word; color: #333; background-color: #f7f7f7; padding: .6em; font-size: .75em; outline-offset: -1px;}
