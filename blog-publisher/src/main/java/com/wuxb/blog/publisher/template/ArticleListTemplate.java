@@ -11,7 +11,7 @@ import compoment.Page;
 
 public class ArticleListTemplate extends MyTemplate {
 
-	private static final int limit = 3;
+	private static final int limit = 10;
 	
 	@Override
 	protected String setTemplate() {
