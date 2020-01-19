@@ -267,6 +267,7 @@ public class ArticleController {
 			publisher.addInputData(new Object[] {0, type_id});
 			publisher.send();
 		}
+		new Publisher("index").send();
 		new Publisher("common/fenlei").send();
 		new Publisher("common/tuijian").send();
 	}
