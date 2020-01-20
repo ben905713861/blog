@@ -112,7 +112,7 @@
 	
 	var load = new Promise(function(resolve, reject) {
 		ajax('get', '/article/getOne', {
-			article_id: article_id
+			article_id: article_id,
 		}, function(res) {
 			resolve(res);
 		}, null, null, function error() {
@@ -136,6 +136,7 @@
 					delete res.thumb_url;
 				}
 				formload(document.querySelector('body>form'), res);
+				res.content = res.content.replace(/&amp;/g, '＆');
 				editor.setData(res.content);
 			});
 	})();
@@ -170,6 +171,7 @@
 			submitBtn.disabled = false;
 			return;
 		}
+		data.content = data.content.replace(/＆/g, '&amp;');
 		ajax('post', '/article/update', data, function(res) {
 			windowClose(true);
 		}, null, function end() {
