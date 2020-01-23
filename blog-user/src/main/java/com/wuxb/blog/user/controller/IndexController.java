@@ -20,7 +20,7 @@ public class IndexController {
 		Map<String, Object> res = new HashMap<String, Object>();
 		
 		Map<String, Object> userInfo = Db.table("website")
-			.field("website_name,description,head_img_path,share_code_img_path")
+			.field("website_name,description,head_img_path,share_code_img_path,connection")
 			.cache(10)
 			.find();
 		

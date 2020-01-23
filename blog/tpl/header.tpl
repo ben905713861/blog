@@ -1,6 +1,6 @@
 <nav>
 	<div class="logo">
-		<a href="/">个人博客</a>
+		<a href="/">小彬个人博客</a>
 	</div>
 	<h2 id="mnavh" onclick="mnavhClick(this)"><span class="navicon"></span></h2>
 	<ul id="starlist">

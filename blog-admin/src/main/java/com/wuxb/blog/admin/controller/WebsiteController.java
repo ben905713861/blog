@@ -70,6 +70,7 @@ public class WebsiteController {
 		data.put("website_name", postMap.get("website_name"));
 		data.put("description", postMap.get("description"));
 		data.put("head_img_path", postMap.get("head_img_path"));
+		data.put("connection", postMap.get("connection"));
 		data.put("share_code_img_path", postMap.get("share_code_img_path"));
 		//html富文本替换文件baseurl
 		String aboutme = (String) postMap.get("aboutme");
