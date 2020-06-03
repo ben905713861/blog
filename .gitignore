@@ -12,3 +12,6 @@
 /frontend/html/
 /upload/
 */src/main/resources/*.pfx
+.classpath
+.settings/
+.project
