@@ -10,7 +10,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.wuxb.httpServer.ClassReader;
 import com.wuxb.httpServer.Redis;
 
-import compoment.MyTemplate;
 import redis.clients.jedis.Jedis;
 
 public class Publisher {

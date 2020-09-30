@@ -39,9 +39,9 @@ public class MyInterceptor implements Interceptor {
 		}
 	}
 	
-	private void checkPremission() throws HttpInterceptInterrupt {
-		httpServletResponse.setResponseCode(403);
-		throw new HttpInterceptInterrupt("没有权限访问");
-	}
+//	private void checkPremission() throws HttpInterceptInterrupt {
+//		httpServletResponse.setResponseCode(403);
+//		throw new HttpInterceptInterrupt("没有权限访问");
+//	}
 	
 }
