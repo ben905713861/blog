@@ -1,10 +1,23 @@
 package com.wuxb.blog.user.controller;
 
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.core.CountRequest;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+
+import com.wuxb.blog.admin.component.ElasticSearchConnection;
 import com.wuxb.blog.admin.component.UeditorFileDomainFilter;
 import com.wuxb.httpServer.annotation.GetParam;
 import com.wuxb.httpServer.annotation.PostParam;
@@ -19,6 +32,7 @@ import com.wuxb.httpServer.util.Tools;
 @RequestMapping("/article")
 public class ArticleController {
 
+	private static final RestHighLevelClient esClient = ElasticSearchConnection.getClient();
 	private static final String FILE_SERVER_DOMAIN = Config.get("FILE_SERVER_DOMAIN");
 	
 	@RequestMapping("/getTypes")
@@ -45,63 +59,131 @@ public class ArticleController {
 		return articleRecommendList;
 	}
 	
+	
 	@RequestMapping("/getList")
-	public Map<String, Object> getList(@GetParam Map<String, Object> getMap) throws SQLException {
-		Map<String, Object> res = new HashMap<String, Object>();
+	public Map<String, Object> getList(@GetParam Map<String, Object> getMap) throws IOException {
+		var highlightBuilder = new HighlightBuilder()
+//			.boundaryMaxScan(10)
+			.preTags("<span style=\"color:red\">")
+			.postTags("</span>")
+			.field("title").field("content"); 
 		
-		Map<String, Object> where = new HashMap<String, Object>();
-		Object _title = getMap.get("title");
-		if(_title != null) {
-			String title;
-			if(_title instanceof String) {
-				title = (String) _title;
-			} else {
-				title = _title.toString();
-			}
-			if(title != null && !title.isBlank()) {
-				where.put("title", new Object[] {"LIKE", "%"+title.trim()+"%"});
-			}
-		}
-		Long type_id = (Long) getMap.get("type_id");
+		//过滤条件
+		var boolQueryBuilder = new BoolQueryBuilder();
+		var type_id = getMap.get("type_id");
 		if(type_id != null) {
-			where.put("type_id", type_id);
+			boolQueryBuilder.filter(QueryBuilders.termQuery("type_id", type_id));
+		}
+		var title = getMap.get("title");
+		if(title != null) {
+			boolQueryBuilder.must(QueryBuilders.queryStringQuery(String.valueOf(title)).field("title").field("content"));
 		}
 		
-		List<Map<String, Object>> list = Db.table("article")
-			.where(where)
-			.order("add_time", "DESC")
-			.page((long)getMap.getOrDefault("page", 1l), (long)getMap.getOrDefault("limit", 10l))
-			.cache(10)
-			.select();
-		for(Map<String, Object> map : list) {
-			String thumb_path = (String) map.get("thumb_path");
+		//es搜索
+		var searchSourceBuilder = new SearchSourceBuilder()
+			.query(boolQueryBuilder)
+			.highlighter(highlightBuilder);
+		//分页查询
+		long page = (Long) getMap.getOrDefault("page", 1l);
+		long limit = (Long) getMap.getOrDefault("limit", 10l);
+		long offset = (page - 1) * limit;
+		searchSourceBuilder.from(Long.valueOf(offset).intValue())
+			.size(Long.valueOf(limit).intValue());
+		var searchRequest = new SearchRequest(ElasticSearchConnection.INDEX)
+			.source(searchSourceBuilder);
+		var response = esClient.search(searchRequest, RequestOptions.DEFAULT);
+		//查询总条数
+		var countRequest = new CountRequest()
+			.query(boolQueryBuilder);
+		var countResponse = esClient.count(countRequest, RequestOptions.DEFAULT);
+		
+		//处理返回结果
+		var searchHits = response.getHits().getHits();
+		var responseList = new ArrayList<Map<String, Object>>();
+		for (SearchHit hit : searchHits) {
+			var articleInfo = hit.getSourceAsMap();
+			//主键
+			articleInfo.put("article_id", hit.getId());
+			//缩略图
+			var thumb_path = (String) articleInfo.get("thumb_path");
 			if(thumb_path == null || thumb_path.isEmpty()) {
-//				map.put("thumb_url", "images/default_thumb_264x176.jpg");
+				articleInfo.put("thumb_url", "images/default_thumb_264x176.jpg");
 			} else {
-				map.put("thumb_url", FILE_SERVER_DOMAIN + thumb_path);
+				articleInfo.put("thumb_url", FILE_SERVER_DOMAIN + thumb_path);
 			}
-		}
-		res.put("list", list);
-		
-		int count = Db.table("article")
-			.where(where)
-			.cache(10)
-			.count();
-		res.put("count", count);
-		
-		String type;
-		if(type_id != null) {
-			type = (String) Db.table("article_type")
-				.where("type_id", type_id)
-				.limit(1)
-				.value("type");
-		} else {
-			type = "全部";
-		}
-		res.put("type", type);
-		
+			hit.getHighlightFields().forEach((key, value) -> {
+				var description = new StringBuffer();
+				for(var fragment : value.getFragments()) {
+					description.append(fragment);
+				}
+				articleInfo.put(key, description.toString());
+			});
+			responseList.add(articleInfo);
+        }
+		var res = new HashMap<String, Object>();
+		res.put("list", responseList);
+		res.put("count", countResponse.getCount());
+		res.put("type", "全部");
 		return res;
 	}
+	
+//	@RequestMapping("/getList")
+//	public Map<String, Object> getList(@GetParam Map<String, Object> getMap) throws SQLException {
+//		Map<String, Object> res = new HashMap<String, Object>();
+//		
+//		Map<String, Object> where = new HashMap<String, Object>();
+//		Object _title = getMap.get("title");
+//		if(_title != null) {
+//			String title;
+//			if(_title instanceof String) {
+//				title = (String) _title;
+//			} else {
+//				title = _title.toString();
+//			}
+//			if(title != null && !title.isBlank()) {
+//				where.put("title", new Object[] {"LIKE", "%"+title.trim()+"%"});
+//			}
+//		}
+//		Long type_id = (Long) getMap.get("type_id");
+//		if(type_id != null) {
+//			where.put("type_id", type_id);
+//		}
+//		
+//		List<Map<String, Object>> list = Db.table("article")
+//			.where(where)
+//			.order("add_time", "DESC")
+//			.page((long)getMap.getOrDefault("page", 1l), (long)getMap.getOrDefault("limit", 10l))
+//			.cache(10)
+//			.select();
+//		for(Map<String, Object> map : list) {
+//			String thumb_path = (String) map.get("thumb_path");
+//			if(thumb_path == null || thumb_path.isEmpty()) {
+////				map.put("thumb_url", "images/default_thumb_264x176.jpg");
+//			} else {
+//				map.put("thumb_url", FILE_SERVER_DOMAIN + thumb_path);
+//			}
+//		}
+//		res.put("list", list);
+//		
+//		int count = Db.table("article")
+//			.where(where)
+//			.cache(10)
+//			.count();
+//		res.put("count", count);
+//		
+//		String type;
+//		if(type_id != null) {
+//			type = (String) Db.table("article_type")
+//				.where("type_id", type_id)
+//				.limit(1)
+//				.value("type");
+//		} else {
+//			type = "全部";
+//		}
+//		res.put("type", type);
+//		
+//		return res;
+//	}
 	
 	@RequestMapping("/getOne")
 	public Map<String, Object> getOne(@GetParam Map<String, Object> getMap) throws SQLException {

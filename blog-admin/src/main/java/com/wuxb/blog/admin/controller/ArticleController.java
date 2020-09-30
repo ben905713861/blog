@@ -6,6 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
+
+import com.wuxb.blog.admin.component.ElasticSearchConnection;
 import com.wuxb.blog.admin.component.ImageCutter;
 import com.wuxb.blog.admin.component.Publisher;
 import com.wuxb.blog.admin.component.UeditorFileDomainFilter;
@@ -28,6 +34,7 @@ import com.wuxb.httpServer.util.Tools;
 @RequestMapping("/article")
 public class ArticleController {
 
+	private static RestHighLevelClient esClient = ElasticSearchConnection.getClient();
 	private static final String FILE_SERVER_DOMAIN = Config.get("FILE_SERVER_DOMAIN");
 	
 	@RequestMapping("/init")
@@ -166,6 +173,7 @@ public class ArticleController {
 			Db.table("article_content").insert(data2);
 			Db.commit();
 			
+			postElasticSearch(article_id, postMap);
 			publishHtml(article_id, postMap.get("type_id"));
 		} catch (SQLException e) {
 			Db.rollback();
@@ -222,6 +230,7 @@ public class ArticleController {
 			
 			Db.commit();
 			
+			postElasticSearch((int) article_id, postMap);
 			publishHtml(article_id, postMap.get("type_id"));
 		} catch (SQLException e) {
 			Db.rollback();
@@ -248,6 +257,7 @@ public class ArticleController {
 				.delete();
 			Db.commit();
 			
+			postElasticSearch((int) article_id, null);
 			publishHtml(article_id, type_id);
 		} catch (SQLException e) {
 			Db.rollback();
@@ -270,6 +280,34 @@ public class ArticleController {
 		new Publisher("index").send();
 		new Publisher("common/fenlei").send();
 		new Publisher("common/tuijian").send();
+	}
+	
+	//添加/更新/删除到es系统
+	private static void postElasticSearch(int article_id, Map<String, Object> postdata) {
+		//删除
+		if(postdata == null) {
+			var deleteRequest = new DeleteRequest(ElasticSearchConnection.INDEX, String.valueOf(article_id));
+			try {
+				esClient.delete(deleteRequest, RequestOptions.DEFAULT);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return;
+		}
+		//新增或修改
+		var indexRequest = new IndexRequest(ElasticSearchConnection.INDEX);
+		var data = new HashMap<String, Object>();
+		data.put("title", postdata.get("title"));
+		String content = HtmlFilter.stripTags((String) postdata.get("content"));
+		data.put("content", content);
+		data.put("type_id", postdata.get("type_id"));
+		data.put("thumb_path", postdata.get("thumb_path"));
+		indexRequest.id(String.valueOf(article_id)).source(data);
+		try {
+			esClient.index(indexRequest, RequestOptions.DEFAULT);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

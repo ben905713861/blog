@@ -80,7 +80,7 @@
 <script src="../js/ImageCutter.js"></script>
 <script src="../js/common.js"></script>
 <script type="text/javascript">
-	var article_id = window.location.hash.split('#')[1];
+	var article_id = Number(window.location.hash.split('#')[1]);
 	
 	var vueDom = new Vue({
 		el: 'select[name="type_id"]',
