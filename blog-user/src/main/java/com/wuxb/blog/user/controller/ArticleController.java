@@ -7,10 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.core.CountRequest;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -61,7 +61,7 @@ public class ArticleController {
 	
 	
 	@RequestMapping("/getList")
-	public Map<String, Object> getList(@GetParam Map<String, Object> getMap) throws IOException {
+	public Map<String, Object> getList(@GetParam Map<String, Object> getMap) throws IOException, SQLException {
 		var highlightBuilder = new HighlightBuilder()
 //			.boundaryMaxScan(10)
 			.preTags("<span style=\"color:red\">")
@@ -76,7 +76,12 @@ public class ArticleController {
 		}
 		var title = getMap.get("title");
 		if(title != null) {
-			boolQueryBuilder.must(QueryBuilders.queryStringQuery(String.valueOf(title)).field("title").field("content"));
+			String queryString = String.valueOf(title);
+			//对特殊字符加反斜杠转义
+			if(queryString.length() == 1) {
+				queryString = QueryParser.escape(queryString);
+			}
+			boolQueryBuilder.must(QueryBuilders.queryStringQuery(queryString).field("title").field("content"));
 		}
 		
 		//es搜索
@@ -92,13 +97,13 @@ public class ArticleController {
 		var searchRequest = new SearchRequest(ElasticSearchConnection.INDEX)
 			.source(searchSourceBuilder);
 		var response = esClient.search(searchRequest, RequestOptions.DEFAULT);
+		var hits = response.getHits();
+		
 		//查询总条数
-		var countRequest = new CountRequest()
-			.query(boolQueryBuilder);
-		var countResponse = esClient.count(countRequest, RequestOptions.DEFAULT);
+		long count = hits.getTotalHits().value;
 		
 		//处理返回结果
-		var searchHits = response.getHits().getHits();
+		var searchHits = hits.getHits();
 		var responseList = new ArrayList<Map<String, Object>>();
 		for (SearchHit hit : searchHits) {
 			var articleInfo = hit.getSourceAsMap();
@@ -111,19 +116,41 @@ public class ArticleController {
 			} else {
 				articleInfo.put("thumb_url", FILE_SERVER_DOMAIN + thumb_path);
 			}
-			hit.getHighlightFields().forEach((key, value) -> {
-				var description = new StringBuffer();
-				for(var fragment : value.getFragments()) {
-					description.append(fragment);
+			//没有关键词高亮的，直接截取正文前200字符显示
+			if(hit.getHighlightFields().size() == 0) {
+				var content = (String) articleInfo.get("content");
+				String simpleContent;
+				if(content.length() > 200) {
+					simpleContent = content.substring(0, 200);
+				} else {
+					simpleContent = content;
 				}
-				articleInfo.put(key, description.toString());
-			});
+				articleInfo.put("content", simpleContent);
+			} else {
+				hit.getHighlightFields().forEach((key, value) -> {
+					var description = new StringBuffer();
+					for(var fragment : value.getFragments()) {
+						description.append(fragment);
+					}
+					articleInfo.put(key, description.toString());
+				});
+			}
 			responseList.add(articleInfo);
         }
 		var res = new HashMap<String, Object>();
 		res.put("list", responseList);
-		res.put("count", countResponse.getCount());
-		res.put("type", "全部");
+		res.put("count", count);
+		
+		String type;
+		if(type_id != null) {
+			type = (String) Db.table("article_type")
+				.where("type_id", type_id)
+				.limit(1)
+				.value("type");
+		} else {
+			type = "全部";
+		}
+		res.put("type", type);
 		return res;
 	}
 	
