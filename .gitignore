@@ -11,6 +11,7 @@
 /blog-publisher/log/
 /frontend/html/
 /upload/
+/blog-file/upload/
 */src/main/resources/*.pfx
 .classpath
 .settings/
